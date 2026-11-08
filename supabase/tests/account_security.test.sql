@@ -76,7 +76,7 @@ begin
   if not has_function_privilege('service_role','public.bootstrap_first_admin(uuid)','EXECUTE') then
     raise exception 'service_role_cannot_bootstrap_admin';
   end if;
-end
+end;
 $bootstrap_permissions$;
 set role service_role;
 set request.jwt.claim.role = 'service_role';
@@ -87,7 +87,7 @@ begin
   if (select raw_app_meta_data ->> 'role' from auth.users where id='00000000-0000-4000-8000-000000000005') <> 'admin' then
     raise exception 'first_admin_bootstrap_failed';
   end if;
-end
+end;
 $bootstrap_result$;
 
 update auth.users set raw_app_meta_data='{"role":"admin"}'::jsonb

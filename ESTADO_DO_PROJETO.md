@@ -48,7 +48,7 @@
 3. Homologar em duas contas reais o salvamento, carregamento após novo login, isolamento entre usuários, revogação e exclusão dos registros de saúde.
 4. Implantar a Edge Function administrativa somente quando o painel de gestão estiver pronto e criar o primeiro administrador por procedimento seguro.
 5. Realizar testes reais com duas contas: cadastro, confirmação de e-mail, recuperação, suspensão, exclusão e isolamento dos dados.
-7. Revisão jurídica da LGPD, Termos e Política; definir contato do controlador, retenção, exclusão e direitos dos titulares.
+6. Revisão jurídica da LGPD, Termos e Política; definir contato do controlador, retenção, exclusão e direitos dos titulares.
 8. Revisão clínica e editorial por profissionais habilitados antes de uso público.
 9. Planejar publicação e testar em celulares reais. Não declarar produto pronto, clinicamente validado ou em conformidade legal antes dessas etapas.
 

@@ -177,7 +177,7 @@ export default function AuthGate() {
         {isAdmin && <button type="button" onClick={() => setAdminOpen(value => !value)}>{adminOpen ? "Voltar ao aplicativo" : "Administração"}</button>}
         <button onClick={() => void supabase!.auth.signOut()}>Sair da conta</button>
       </div></div>
-      {isAdmin && adminOpen ? <AdminPanel /> : <App userId={profile.id} />}
+      {isAdmin && adminOpen ? <AdminPanel currentUserId={profile.id} /> : <App userId={profile.id} />}
     </>;
   }
 

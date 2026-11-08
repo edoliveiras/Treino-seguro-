@@ -81,8 +81,8 @@ Secrets de produção: `APP_ORIGIN`, `OTP_HMAC_SECRET` (mínimo 32 caracteres), 
 - A revisão jurídica, clínica e os testes reais de ponta a ponta permanecem obrigatórios antes da publicação.
 
 ## Gestão administrativa de contas — implementação versionada
-- Edge Function `supabase/functions/admin-account/index.ts`: aceita somente POST com JWT válido, origem igual a `APP_ORIGIN` e usuário cuja `app_metadata.role` seja `admin`.
+- Edge Function `supabase/functions/admin-account/index.ts`: aceita somente POST com JWT válido, origem igual a `APP_ORIGIN` e usuário cuja `app_metadata.role` seja `admin`. Depois de verificar o usuário, usa service_role apenas no servidor; as RPCs conferem novamente `auth.users.raw_app_meta_data` antes de executar.
 - A função permite suspender, reativar ou excluir uma conta chamando RPCs protegidas. A autorização também é verificada no banco; a validação no Edge Function não é a única barreira.
-- Migração `202611080003_admin_delete.sql`: exclusão atômica da conta em `auth.users`, remoção em cascata do perfil, consentimentos e desafios OTP, limpeza dos logs de envio associados ao telefone e registro da ação administrativa sem guardar dados clínicos.
+- Migrações `202611080003_admin_delete.sql` e `202611080006_restrict_admin_account_rpcs.sql`: exclusão atômica da conta e RPCs administrativas restritas à service_role, com verificação independente do administrador em `auth.users.raw_app_meta_data`.
 - A exclusão administrativa não equivale a uma política completa de retenção/eliminação de backups. A retenção legal, backups, solicitações do titular e revisão jurídica ainda precisam ser definidos antes de produção.
-- A função e a migração estão versionadas, mas não implantadas em projeto Supabase real.
+- As migrações estão aplicadas no projeto Supabase. As Edge Functions continuam apenas versionadas e não implantadas; faltam os secrets de produção e a URL definitiva do aplicativo.

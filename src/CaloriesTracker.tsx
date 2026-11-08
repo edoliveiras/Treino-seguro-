@@ -1,0 +1,91 @@
+import { useMemo, useState } from "react";
+
+export type FoodLog = { id: string; name: string; grams: number; kcal: number; date: string };
+export type ActivityLog = { id: string; name: string; minutes: number; kcal: number; date: string };
+
+const foods = [
+  { name: "Arroz branco cozido", kcal: 128 }, { name: "Arroz integral cozido", kcal: 124 },
+  { name: "Feijão carioca cozido", kcal: 76 }, { name: "Feijão preto cozido", kcal: 77 },
+  { name: "Peito de frango grelhado sem pele", kcal: 159 }, { name: "Patinho grelhado", kcal: 219 },
+  { name: "Ovo cozido", kcal: 146 }, { name: "Banana prata", kcal: 98 },
+  { name: "Maçã com casca", kcal: 56 }, { name: "Pão francês", kcal: 300 },
+  { name: "Aveia em flocos", kcal: 394 }, { name: "Batata-doce cozida", kcal: 77 },
+  { name: "Batata inglesa cozida", kcal: 52 }, { name: "Macarrão cozido", kcal: 157 },
+  { name: "Mandioca cozida", kcal: 125 }, { name: "Abóbora cabotiá cozida", kcal: 48 },
+  { name: "Brócolis cozido", kcal: 25 }, { name: "Alface", kcal: 11 },
+  { name: "Tomate", kcal: 15 }, { name: "Queijo minas frescal", kcal: 264 },
+  { name: "Leite integral", kcal: 61 }, { name: "Iogurte natural", kcal: 51 },
+  { name: "Azeite de oliva", kcal: 884 }, { name: "Abacate", kcal: 96 },
+  { name: "Tapioca (goma hidratada)", kcal: 240 }, { name: "Cuscuz de milho cozido", kcal: 113 },
+];
+
+const activities = [
+  { name: "Caminhada leve", met: 3.0 }, { name: "Caminhada moderada", met: 3.8 },
+  { name: "Caminhada rápida", met: 4.8 }, { name: "Corrida leve", met: 7.0 },
+  { name: "Corrida moderada", met: 8.3 }, { name: "Bicicleta leve", met: 4.0 },
+  { name: "Bicicleta moderada", met: 6.8 }, { name: "Musculação leve", met: 3.0 },
+  { name: "Musculação moderada", met: 3.5 }, { name: "Musculação intensa", met: 6.0 },
+  { name: "Calistenia moderada", met: 3.8 }, { name: "Calistenia vigorosa", met: 8.0 },
+  { name: "HIIT vigoroso", met: 8.0 }, { name: "Dança moderada", met: 4.5 },
+  { name: "Subir escadas", met: 8.8 }, { name: "Natação moderada", met: 6.0 },
+];
+
+const today = () => new Date().toLocaleDateString("en-CA");
+const fmt = (n: number) => Math.round(n).toLocaleString("pt-BR");
+
+export default function CaloriesTracker({ weight, foodLogs, setFoodLogs, activityLogs, setActivityLogs }: {
+  weight: string; foodLogs: FoodLog[]; setFoodLogs: (v: FoodLog[] | ((old: FoodLog[]) => FoodLog[])) => void;
+  activityLogs: ActivityLog[]; setActivityLogs: (v: ActivityLog[] | ((old: ActivityLog[]) => ActivityLog[])) => void;
+}) {
+  const [foodName, setFoodName] = useState(foods[0].name);
+  const [grams, setGrams] = useState("100");
+  const [activityName, setActivityName] = useState(activities[0].name);
+  const [minutes, setMinutes] = useState("30");
+  const date = today();
+  const bodyWeight = Number(weight);
+  const food = foods.find(x => x.name === foodName) ?? foods[0];
+  const activity = activities.find(x => x.name === activityName) ?? activities[0];
+  const foodEstimate = Number(grams) > 0 ? food.kcal * Number(grams) / 100 : 0;
+  const activityEstimate = bodyWeight > 0 && Number(minutes) > 0
+    ? activity.met * 3.5 * bodyWeight / 200 * Number(minutes) : 0;
+  const todayFoods = useMemo(() => foodLogs.filter(x => x.date === date), [foodLogs, date]);
+  const todayActivities = useMemo(() => activityLogs.filter(x => x.date === date), [activityLogs, date]);
+  const consumed = todayFoods.reduce((sum, x) => sum + x.kcal, 0);
+  const burned = todayActivities.reduce((sum, x) => sum + x.kcal, 0);
+  return <div className="calorie-tracker">
+    <section className="panel">
+      <span className="eyebrow">CALCULADORA DE ALIMENTOS</span><h2>Calorias consumidas</h2>
+      <p>Escolha o alimento e informe a quantidade em gramas. O cálculo usa valores de referência por 100 g.</p>
+      <div className="form-grid">
+        <label>Alimento<select value={foodName} onChange={e => setFoodName(e.target.value)}>{foods.map(x => <option key={x.name} value={x.name}>{x.name}</option>)}</select></label>
+        <label>Quantidade (gramas)<input type="number" min="1" max="3000" value={grams} onChange={e => setGrams(e.target.value)} /></label>
+      </div>
+      <div className="calorie-preview"><span>{food.kcal} kcal / 100 g</span><b>{fmt(foodEstimate)} kcal nesta porção</b></div>
+      <button className="primary" disabled={!Number(grams) || Number(grams) <= 0} onClick={() => setFoodLogs(old => [...old, { id: crypto.randomUUID(), name: food.name, grams: Number(grams), kcal: foodEstimate, date }])}>Adicionar alimento ao diário</button>
+      <p className="muted">A preparação muda as calorias. Selecione a versão mais parecida com a que foi consumida; óleo, molhos e acompanhamentos devem ser registrados separadamente.</p>
+    </section>
+    <section className="panel">
+      <span className="eyebrow">CALCULADORA DE ATIVIDADE</span><h2>Calorias gastas nos exercícios</h2>
+      <p>Estimativa baseada no peso informado na avaliação, no tipo de atividade e no tempo realizado.</p>
+      <div className="form-grid">
+        <label>Exercício<select value={activityName} onChange={e => setActivityName(e.target.value)}>{activities.map(x => <option key={x.name}>{x.name}</option>)}</select></label>
+        <label>Duração (minutos)<input type="number" min="1" max="600" value={minutes} onChange={e => setMinutes(e.target.value)} /></label>
+      </div>
+      <div className="calorie-preview"><span>{bodyWeight > 0 ? `Peso usado: ${bodyWeight} kg` : "Informe seu peso na aba Avaliação"}</span><b>{fmt(activityEstimate)} kcal estimadas</b></div>
+      <button className="primary" disabled={!bodyWeight || bodyWeight <= 0 || !Number(minutes) || Number(minutes) <= 0} onClick={() => setActivityLogs(old => [...old, { id: crypto.randomUUID(), name: activity.name, minutes: Number(minutes), kcal: activityEstimate, date }])}>Registrar exercício</button>
+      <p className="muted">Estimativa por MET; intensidade real, condicionamento, pausas e características individuais alteram o gasto. Não é uma medição do relógio ou equipamento.</p>
+    </section>
+    <section className="panel">
+      <span className="eyebrow">RESUMO DE HOJE</span><h2>Seu balanço calórico registrado</h2>
+      <div className="calorie-summary">
+        <div><small>CONSUMIDAS</small><b>{fmt(consumed)} kcal</b></div>
+        <div><small>GASTAS EM EXERCÍCIOS</small><b>{fmt(burned)} kcal</b></div>
+        <div><small>DIFERENÇA</small><b>{fmt(consumed - burned)} kcal</b></div>
+      </div>
+      <p className="muted">A diferença é apenas entre alimentos e exercícios registrados aqui. Não representa o balanço energético completo do dia: o corpo também gasta energia em repouso e nas atividades cotidianas. Não use esse número sozinho para definir dieta ou meta de emagrecimento.</p>
+      <div className="calorie-log"><b>Alimentos de hoje</b>{todayFoods.length ? todayFoods.map(x => <div className="calorie-log-row" key={x.id}><span>{x.name} · {x.grams} g</span><b>{fmt(x.kcal)} kcal</b><button aria-label={"Excluir " + x.name} onClick={() => setFoodLogs(old => old.filter(y => y.id !== x.id))}>×</button></div>) : <p>Nenhum alimento registrado hoje.</p>}</div>
+      <div className="calorie-log"><b>Exercícios de hoje</b>{todayActivities.length ? todayActivities.map(x => <div className="calorie-log-row" key={x.id}><span>{x.name} · {x.minutes} min</span><b>{fmt(x.kcal)} kcal</b><button aria-label={"Excluir " + x.name} onClick={() => setActivityLogs(old => old.filter(y => y.id !== x.id))}>×</button></div>) : <p>Nenhum exercício registrado hoje.</p>}</div>
+    </section>
+    <p className="muted">Base alimentar de referência: TACO/NEPA-Unicamp. Valores aproximados por 100 g; não substituem avaliação nutricional. Gasto dos exercícios calculado por estimativa MET.</p>
+  </div>;
+}

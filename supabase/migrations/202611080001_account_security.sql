@@ -113,6 +113,9 @@ begin
        or coalesce(new.raw_user_meta_data ->> 'privacy_accepted','') <> 'true' then
       raise exception 'required_signup_acknowledgements_missing';
     end if;
+    if v_name is null or v_phone is null then
+      raise exception 'required_account_fields_missing';
+    end if;
     if v_name is not null and v_phone is not null then
       insert into public.profiles
         (id, full_name, email, whatsapp_e164, email_verified_at, adult_confirmed_at)

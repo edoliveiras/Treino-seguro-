@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  blocksRunningRecommendation,
+  blocksRunningRecommendation,\n  canCompleteAssessment,
   isValidMeasurement,
   requiresMedicalReview,
   requiresPainReview,
@@ -35,5 +35,20 @@ describe("regras de segurança da avaliação", () => {
     expect(blocksRunningRecommendation(35, "Começar a correr")).toBe(true);
     expect(blocksRunningRecommendation(34.9, "Começar a correr")).toBe(false);
     expect(blocksRunningRecommendation(38, "Condicionamento")).toBe(false);
+  });
+});
+
+describe("liberação do fluxo de treino", () => {
+  const valid = {
+    adult: true, understood: true, weight: 90, heightCm: 170,
+    medicalReviewNeeded: false, medicalClearanceDeclared: false, runningBlocked: false,
+  };
+  it("só libera a avaliação quando todos os requisitos estão atendidos", () => {
+    expect(canCompleteAssessment(valid)).toBe(true);
+    expect(canCompleteAssessment({ ...valid, adult: false })).toBe(false);
+    expect(canCompleteAssessment({ ...valid, understood: false })).toBe(false);
+    expect(canCompleteAssessment({ ...valid, medicalReviewNeeded: true })).toBe(false);
+    expect(canCompleteAssessment({ ...valid, medicalReviewNeeded: true, medicalClearanceDeclared: true })).toBe(true);
+    expect(canCompleteAssessment({ ...valid, runningBlocked: true })).toBe(false);
   });
 });

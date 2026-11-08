@@ -21,6 +21,6 @@ export default function LegalPage({ kind }: { kind: "terms" | "privacy" }) {
       <h2>5. Limitações</h2><p>O conteúdo é fornecido para fins educativos e pode ser atualizado. Resultados variam entre pessoas. Nenhuma meta de peso, desempenho ou mudança corporal é garantida.</p>
       <h2>6. Privacidade</h2><p>O tratamento de dados pessoais é descrito na Política de Privacidade. Autorizações para dados de saúde, fotos e notificações são opcionais e separadas dos termos obrigatórios.</p>
     </>}
-    <button className="auth-button" onClick={() => { window.history.back(); }}>Voltar ao cadastro</button>
+    <button className="auth-button" onClick={() => { window.location.assign("/?mode=signup"); }}>Voltar ao cadastro</button>
   </article></main>;
 }

@@ -8,8 +8,8 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 function completeBasicAssessment() {
   fireEvent.change(screen.getByLabelText("Peso atual (kg)"), { target: { value: "90" } });
   fireEvent.change(screen.getByLabelText("Altura (cm)"), { target: { value: "170" } });
-  fireEvent.click(screen.getByText("Confirmo que tenho 18 anos ou mais.").previousElementSibling as HTMLInputElement);
-  fireEvent.click(screen.getByText(/Compreendo que o app é educativo/).previousElementSibling as HTMLInputElement);
+  fireEvent.click(screen.getByLabelText("Confirmo que tenho 18 anos ou mais."));
+  fireEvent.click(screen.getByLabelText(/Compreendo que o app é educativo/));
   fireEvent.click(screen.getByRole("button", { name: /Concluir avaliação/ }));
 }
 

@@ -14,7 +14,7 @@ npm test
 npm run build
 ```
 
-O CI também verifica a função de OTP com Deno e executa as migrações de contas/OTP em um PostgreSQL temporário, com stubs mínimos de Supabase Auth. Essa simulação verifica regras SQL, mas não substitui homologação em um projeto Supabase real.
+O CI também verifica componentes de segurança legados de OTP com Deno e executa as migrações de contas, consentimento e registros de saúde em um PostgreSQL temporário, com stubs mínimos de Supabase Auth. Essa simulação verifica regras SQL, mas não substitui homologação em um projeto Supabase real.
 
 ## Acessibilidade
 - Atalho visível ao receber foco para pular diretamente ao conteúdo principal.
@@ -27,7 +27,7 @@ O CI também verifica a função de OTP com Deno e executa as migrações de con
 - IMC é apenas triagem. IMC ≥ 35 não gera recomendação automática para corrida.
 - Dor no peito, falta de ar intensa/incomum, tontura, desmaio, fraqueza/formigamento novo ou dor forte/piorando exigem interrupção e avaliação.
 - Cadastro e login estão ligados ao projeto Supabase dedicado. A conta é liberada após confirmação de e-mail; o telefone informado fica apenas como contato, sem integração com aplicativos de mensagens. O aplicativo não depende de Facebook, Meta, WhatsApp ou envio de SMS.
-- Dados de treino, alimentação, peso e medidas continuam apenas na memória da página e desaparecem ao atualizar/fechar. Ainda não existe histórico clínico persistido nem upload de fotos.
+- Avaliações, treinos, refeições, peso e medidas podem ser sincronizados na conta somente após autorização específica de dados de saúde. RLS limita leitura e gravação à própria conta, ativa e com e-mail confirmado; retirar a autorização bloqueia novas leituras/gravações. Fotos de evolução ainda não têm upload ou armazenamento habilitado.
 - As telas iniciais de Termos e Política exigem revisão jurídica antes da publicação. Não use o aplicativo como serviço clínico ou para inserir dados sensíveis reais até concluir homologação e revisão.
 
 ## Fontes

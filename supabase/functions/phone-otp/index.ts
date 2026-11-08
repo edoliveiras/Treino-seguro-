@@ -39,6 +39,31 @@ async function hmacCode(code: string): Promise<string> {
   return Array.from(new Uint8Array(signature), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
+async function sendTwilioSms(phoneE164: string, code: string): Promise<void> {
+  const accountSid = Deno.env.get("TWILIO_ACCOUNT_SID");
+  const authToken = Deno.env.get("TWILIO_AUTH_TOKEN");
+  const messagingServiceSid = Deno.env.get("TWILIO_MESSAGING_SERVICE_SID");
+  if (!accountSid || !authToken || !messagingServiceSid) {
+    throw new Error("sms_fallback_not_configured");
+  }
+
+  const credentials = btoa(`${accountSid}:${authToken}`);
+  const form = new URLSearchParams({
+    To: phoneE164,
+    MessagingServiceSid: messagingServiceSid,
+    Body: `Seu código de confirmação do Treino Seguro é ${code}. Ele expira em 10 minutos. Não compartilhe este código.`,
+  });
+  const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Basic ${credentials}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: form,
+  });
+  if (!response.ok) throw new Error("sms_delivery_failed");
+}
+
 async function sendMetaWhatsApp(phoneE164: string, code: string): Promise<void> {
   const token = Deno.env.get("WHATSAPP_ACCESS_TOKEN");
   const phoneNumberId = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID");
@@ -145,21 +170,35 @@ Deno.serve(async (request) => {
         return json(200, { ok: true, message: "Se a solicitação puder ser atendida, você receberá as instruções." });
       }
 
+      let deliveredBy: "meta_whatsapp" | "twilio_sms";
       try {
         await sendMetaWhatsApp(profile.whatsapp_e164, code);
-        const { error: deliveryError } = await adminClient.rpc("record_phone_otp_delivery", {
-          p_challenge_id: challengeId,
-          p_outcome: "sent",
-        });
-        if (deliveryError) return json(503, { error: "service_unavailable" });
-        return json(200, { ok: true, message: "Código enviado pelo WhatsApp." });
+        deliveredBy = "meta_whatsapp";
       } catch {
-        await adminClient.rpc("record_phone_otp_delivery", {
-          p_challenge_id: challengeId,
-          p_outcome: "failed",
-        });
-        return json(503, { error: "delivery_unavailable", message: "Não foi possível enviar agora. Tente mais tarde." });
+        try {
+          await sendTwilioSms(profile.whatsapp_e164, code);
+          deliveredBy = "twilio_sms";
+        } catch {
+          await adminClient.rpc("record_phone_otp_delivery", {
+            p_challenge_id: challengeId,
+            p_outcome: "failed",
+            p_provider: "twilio_sms",
+          });
+          return json(503, { error: "delivery_unavailable", message: "Não foi possível enviar agora. Tente mais tarde." });
+        }
       }
+
+      const { error: deliveryError } = await adminClient.rpc("record_phone_otp_delivery", {
+        p_challenge_id: challengeId,
+        p_outcome: "sent",
+        p_provider: deliveredBy,
+      });
+      if (deliveryError) return json(503, { error: "service_unavailable" });
+      return json(200, {
+        ok: true,
+        channel: deliveredBy === "meta_whatsapp" ? "whatsapp" : "sms",
+        message: deliveredBy === "meta_whatsapp" ? "Código enviado pelo WhatsApp." : "WhatsApp indisponível; código enviado por SMS.",
+      });
     } catch {
       return json(503, { error: "service_unavailable" });
     }

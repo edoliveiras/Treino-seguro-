@@ -87,7 +87,9 @@ export default function AuthGate() {
   }, [loadProfile]);
 
   useEffect(() => {
-    if (window.location.hash.includes("type=recovery") || new URLSearchParams(window.location.search).get("flow") === "recovery" || (new URLSearchParams(window.location.search).has("code") && window.location.pathname === "/redefinir-senha")) setMode("recovery");
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("flow") === "recovery" || window.location.hash.includes("type=recovery") || (params.has("code") && window.location.pathname === "/redefinir-senha")) setMode("recovery");
+    else if (params.get("mode") === "signup") setMode("signup");
   }, []);
 
   if (window.location.pathname === "/termos") return <LegalPage kind="terms" />;

@@ -134,7 +134,7 @@ set role authenticated;
 set request.jwt.claim.role = 'authenticated';
 set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
 set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"user"}}';
-do $
+do $rls$
 declare
   v_denied boolean := false;
 begin
@@ -154,10 +154,10 @@ begin
     v_denied := true;
   end;
   if not v_denied then raise exception 'non_admin_changed_account_status'; end if;
-end $;
+end $rls$;
 
 set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
-do $
+do $rls$
 begin
   if (select count(*) from public.admin_account_directory) <> 4 then
     raise exception 'admin_directory_missing_profiles';
@@ -167,16 +167,16 @@ begin
     raise exception 'admin_suspend_failed';
   end if;
   perform public.admin_set_account_status('00000000-0000-4000-8000-000000000002','reactivate');
-end $;
+end $rls$;
 reset role;
-do $
+do $rls$
 begin
   if (select count(*) from public.account_admin_audit
       where target_user_id='00000000-0000-4000-8000-000000000002'
         and action in ('suspend','reactivate')) <> 2 then
     raise exception 'admin_actions_not_audited';
   end if;
-end $;
+end $rls$;
 reset request.jwt.claim.role;
 reset request.jwt.claim.sub;
 reset request.jwt.claims;

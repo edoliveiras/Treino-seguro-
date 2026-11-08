@@ -132,3 +132,25 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 @media(max-width:1000px){.home-hero{padding:42px 35px;grid-template-columns:1.15fr .85fr}.home-hero h2{font-size:48px}.modality-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:650px){.home-hero{grid-template-columns:1fr;padding:31px 24px 24px;min-height:0}.home-hero h2{font-size:44px;letter-spacing:-2px;margin-top:20px}.home-hero-copy>p{font-size:13px}.home-hero-visual{min-height:235px;margin-top:8px}.hero-number{width:165px;height:165px}.hero-number b{font-size:70px}.orbit-one{width:245px;height:180px}.orbit-two{width:285px;height:215px}.hero-stamp{right:2%;bottom:0}.home-intro{grid-template-columns:1fr;gap:12px;padding:34px 3px 20px}.home-intro h2{font-size:25px}.home-feature-grid{grid-template-columns:1fr}.home-feature{min-height:190px}.home-section-heading{align-items:flex-start;flex-direction:column;gap:5px}.home-section-heading h2{font-size:22px}.modality-grid{grid-template-columns:1fr 1fr;gap:9px}.modality-card{min-height:170px;padding:15px}.modality-card>b{font-size:17px;margin-top:22px}.modality-card>small{font-size:10px}.home-bottom{grid-template-columns:auto 1fr;gap:13px;padding:18px}.home-bottom>button{grid-column:2;justify-self:start}.home-bottom h2{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.home-feature,.modality-card{transition:none}}
+
+
+/* Exercise pairings in the personalized workout builder */
+.workout-builder .conjugate-block {
+  border: 1px solid var(--border, #dce5df);
+  border-radius: 14px;
+  padding: 14px;
+  margin: 14px 0;
+  background: rgba(30, 110, 75, 0.045);
+}
+.workout-builder .conjugate-block > b {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--foreground, inherit);
+}
+.workout-builder .conjugate-block .planned-exercise {
+  margin: 8px 0;
+}
+.workout-builder .conjugate-block > .muted {
+  margin: 8px 0 0;
+  font-size: .9rem;
+}

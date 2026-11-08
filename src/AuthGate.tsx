@@ -1,6 +1,7 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import App from "./App";
+import LegalPage from "./LegalPage";
 import { supabase, supabaseConfigured } from "./lib/supabase";
 
 type Profile = {
@@ -72,7 +73,8 @@ export default function AuthGate() {
       await loadProfile(data.session?.user ?? null);
       if (alive) setLoading(false);
     });
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (event === "PASSWORD_RECOVERY") setMode("recovery");
       setSession(nextSession);
       window.setTimeout(() => {
         if (alive) void loadProfile(nextSession?.user ?? null);
@@ -85,8 +87,11 @@ export default function AuthGate() {
   }, [loadProfile]);
 
   useEffect(() => {
-    if (window.location.hash.includes("type=recovery")) setMode("recovery");
+    if (window.location.hash.includes("type=recovery") || new URLSearchParams(window.location.search).has("code") && window.location.pathname === "/redefinir-senha") setMode("recovery");
   }, []);
+
+  if (window.location.pathname === "/termos") return <LegalPage kind="terms" />;
+  if (window.location.pathname === "/privacidade") return <LegalPage kind="privacy" />;
 
   const run = async (event: FormEvent, action: () => Promise<void>) => {
     event.preventDefault();

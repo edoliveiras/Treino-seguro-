@@ -113,3 +113,25 @@ describe("fluxos de segurança da interface", () => {
       expect(mobileNavigation.querySelector('button[aria-label="Abrir ' + name + '"]')).toBeTruthy();
     });
   });
+
+  it("permite apagar todos os dados mantidos apenas na sessão", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
+    completeBasicAssessment();
+    fireEvent.click(screen.getByRole("button", { name: "Privacidade" }));
+    expect(screen.getByText("Modo demonstração sem persistência")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Apagar dados desta sessão" }));
+    expect(screen.getByRole("status").textContent).toContain("apagados");
+    fireEvent.click(screen.getByRole("button", { name: "Treino" }));
+    expect(screen.getByText("Comece com segurança")).toBeTruthy();
+  });
+
+  it("identifica cada exercício pelo nome para leitores de tela e expõe estado marcado", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Exercícios" }));
+    const markButton = screen.getByRole("button", { name: "Marcar Caminhada confortável" });
+    expect(markButton.getAttribute("aria-pressed")).toBe("false");
+    fireEvent.click(markButton);
+    expect(screen.getByRole("button", { name: "Desmarcar Caminhada confortável" }).getAttribute("aria-pressed")).toBe("true");
+  });
+

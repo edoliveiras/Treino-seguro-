@@ -1,6 +1,12 @@
 -- RPCs transacionais para OTP do WhatsApp.
 -- Aplicar somente após revisão e em projeto Supabase de homologação.
 -- Chamadas permitidas exclusivamente à service_role, a partir de Edge Functions.
+-- Número só fica reservado depois da confirmação; evita que um cadastro não verificado
+-- bloqueie o WhatsApp de seu verdadeiro titular.
+alter table public.profiles drop constraint if exists profiles_whatsapp_e164_key;
+create unique index if not exists profiles_verified_whatsapp_unique
+  on public.profiles(whatsapp_e164) where whatsapp_verified_at is not null;
+
 alter table public.phone_otp_challenges
   add column if not exists user_id uuid references public.profiles(id) on delete cascade,
   add column if not exists purpose text not null default 'signup'
@@ -40,10 +46,19 @@ begin
 
   select whatsapp_e164 into v_phone
     from public.profiles
-    where id = p_user_id and account_status <> 'suspended';
+    where id = p_user_id and account_status <> 'suspended'
+      and whatsapp_verified_at is null;
   if v_phone is null then raise exception 'request_not_allowed'; end if;
 
   perform pg_advisory_xact_lock(hashtextextended(v_phone, 0));
+
+  if exists (
+    select 1 from public.profiles
+    where whatsapp_e164 = v_phone and whatsapp_verified_at is not null
+      and id <> p_user_id
+  ) then
+    raise exception 'request_not_allowed';
+  end if;
 
   select count(*), max(sent_at)
     into v_send_count, v_last_send
@@ -149,8 +164,11 @@ begin
       and account_status <> 'suspended';
 
   return found;
+exception
+  when unique_violation then
+    return false;
 end;
-$$;
+$;
 
 revoke all on function public.create_phone_otp_challenge(uuid,text) from public, anon, authenticated;
 revoke all on function public.record_phone_otp_delivery(uuid,text) from public, anon, authenticated;

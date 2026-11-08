@@ -129,7 +129,7 @@ begin
 end $$;
 
 -- Verify the 60-second resend cooldown and three-send hourly limit.
-do $
+do $$
 declare
   v_rejected boolean := false;
 begin
@@ -175,7 +175,7 @@ begin
     else raise; end if;
   end;
   if not v_rejected then raise exception 'otp_hourly_send_limit_not_applied'; end if;
-end $;
+end $$;
 
 -- Verify row-level access and audited admin-only status changes.
 grant select on public.profiles to authenticated, anon;

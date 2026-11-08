@@ -29,6 +29,7 @@ $$;
 \ir ../migrations/202611080005_deny_client_access_to_private_account_tables.sql
 \ir ../migrations/202611080006_restrict_admin_account_rpcs.sql
 \ir ../migrations/202611080007_email_only_account_activation.sql
+\ir ../migrations/202611080008_user_health_records_with_consent.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),
@@ -195,6 +196,14 @@ begin
   if not v_rejected then raise exception 'otp_hourly_send_limit_not_applied'; end if;
 end $$;
 
+-- Health records require active verified accounts, ownership, and latest explicit consent.
+insert into public.account_consent_events(user_id,consent_type,action,policy_version)
+values
+('00000000-0000-4000-8000-000000000001','health_data','granted','test-v1'),
+('00000000-0000-4000-8000-000000000002','health_data','granted','test-v1');
+insert into public.health_data_records(user_id,payload) values
+('00000000-0000-4000-8000-000000000002','{"weight":"75","private":"user2"}');
+
 -- Verify row-level access and audited admin-only status changes.
 grant select on public.profiles to authenticated, anon;
 grant select on public.admin_account_directory to authenticated;
@@ -231,6 +240,51 @@ begin
     raise exception 'admin_directory_missing_profiles';
   end if;
 end $rls$;
+reset role;
+
+-- User 1 can only read/write their own records.
+insert into public.health_data_records(user_id,payload)
+values ('00000000-0000-4000-8000-000000000001','{"weight":"90","meals":["feijao"]}');
+do $health_rls$
+declare
+  v_denied boolean := false;
+begin
+  if (select count(*) from public.health_data_records) <> 1 then
+    raise exception 'health_records_not_limited_to_owner';
+  end if;
+  begin
+    insert into public.health_data_records(user_id,payload)
+    values ('00000000-0000-4000-8000-000000000002','{"weight":"1"}');
+  exception when insufficient_privilege then
+    v_denied := true;
+  end;
+  if not v_denied then raise exception 'user_inserted_another_users_health_data'; end if;
+end
+$health_rls$;
+reset role;
+insert into public.account_consent_events(user_id,consent_type,action,policy_version)
+values ('00000000-0000-4000-8000-000000000001','health_data','withdrawn','test-v1');
+set role authenticated;
+set request.jwt.claim.role = 'authenticated';
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"user"}}';
+do $health_revoke$
+declare
+  v_denied boolean := false;
+begin
+  if (select count(*) from public.health_data_records) <> 0 then
+    raise exception 'withdrawn_consent_did_not_hide_health_records';
+  end if;
+  begin
+    insert into public.health_data_records(user_id,payload)
+    values ('00000000-0000-4000-8000-000000000001','{"weight":"91"}');
+  exception when insufficient_privilege then
+    v_denied := true;
+  end;
+  if not v_denied then raise exception 'health_data_write_allowed_after_withdrawal'; end if;
+  delete from public.health_data_records where user_id='00000000-0000-4000-8000-000000000001';
+end
+$health_revoke$;
 reset role;
 
 -- Privileged actions are performed only through service_role after server-side

@@ -92,3 +92,13 @@ CI validado no commit `33fbdf65f407d931e7f8eb3f91b18f828235ef7a` (workflow 42479
 - Respostas da solicitação de envio foram uniformizadas para reduzir enumeração de contas/telefones.
 - Último commit funcional registrado nesta atualização: `1ccfd563b64d74c07eb25ae39417d174983cbe9d`. CI correspondente: workflow 42481048682 em execução no momento do registro.
 - A aprovação de CI não substitui teste SQL em PostgreSQL/Supabase, teste de entrega real da Meta, revisão de segurança ou implantação.
+
+
+## 11. Continuação — fallback SMS Twilio (08/11/2026)
+- A Edge Function `supabase/functions/phone-otp/index.ts` agora tenta primeiro enviar OTP pelo template oficial da Meta WhatsApp Cloud API e, se houver falha, tenta Twilio Programmable Messaging por SMS. O mesmo código permanece controlado pelo banco, com HMAC, expiração e limite de tentativas.
+- O registro de entrega agora identifica o provedor efetivamente usado (`meta_whatsapp` ou `twilio_sms`) sem armazenar o OTP.
+- Secrets necessários para o fallback: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` e `TWILIO_MESSAGING_SERVICE_SID`. A documentação foi atualizada em `docs/CADASTRO_E_VERIFICACAO.md`.
+- Commits desta etapa: função SMS `6966898ef36a83fefc58196251c2a8b5930b2df5`; RPC de registro do provedor `1942ae7856979a53ee6060be8af22ea1c8f58e18`; documentação `afab482e3cf9b13f2e737b50dab58ed8e929f046`.
+- CI dos commits de código `42481144741` e `42481152231` estava em execução no momento do registro; não declarar aprovação até conclusão.
+- O envio Meta/Twilio ainda não foi testado com contas e credenciais reais. Não há implantação Supabase, tela de cadastro/login, recuperação ou troca de contato conectadas ao frontend. A migração SQL segue sem execução e sem validação PostgreSQL.
+- Próxima etapa: verificar os dois workflows, adicionar testes unitários para geração/validação de payload e testar as RPCs/migrações em PostgreSQL/Supabase de homologação; depois implementar cadastro/login e recuperação no app, mantendo dados de saúde/fotos desativados.

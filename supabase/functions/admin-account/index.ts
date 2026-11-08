@@ -42,7 +42,8 @@ Deno.serve(async (request) => {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  const { data: userData, error: userError } = await client.auth.getUser();
+  const accessToken = authorization.slice("Bearer ".length);
+  const { data: userData, error: userError } = await client.auth.getUser(accessToken);
   if (userError || !userData.user) return json(401, { error: "authentication_required" });
   if (userData.user.app_metadata?.role !== "admin") {
     return json(403, { error: "not_authorized" });

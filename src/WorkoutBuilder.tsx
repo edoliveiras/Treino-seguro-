@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Dumbbell, Clock3, CalendarDays, Target, RotateCcw } from "lucide-react";
+import { Clock3, Target, RotateCcw } from "lucide-react";
 
 type Focus = "Glúteos" | "Abdômen" | "Pernas" | "Braços" | "Costas" | "Peito" | "Corpo inteiro";
 type Exercise = { name: string; focus: Focus[]; home: boolean; gym: boolean; beginner: boolean; sets: string; reps: string; rest: string; cue: string };

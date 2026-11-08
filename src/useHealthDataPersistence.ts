@@ -125,7 +125,8 @@ export function useHealthDataPersistence(
       setStatus("Não foi possível apagar os registros salvos.");
       return false;
     }
-    setStatus("Os registros salvos na nuvem foram apagados.");
+    setConsent(false);
+    setStatus("Os registros salvos foram apagados. A sincronização foi pausada para evitar que dados desta sessão sejam enviados novamente.");
     return true;
   }, [userId]);
 

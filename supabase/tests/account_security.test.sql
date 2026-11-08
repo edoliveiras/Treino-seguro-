@@ -9,7 +9,8 @@ create table auth.users (
   id uuid primary key,
   email text not null,
   email_confirmed_at timestamptz,
-  raw_user_meta_data jsonb not null default '{}'::jsonb
+  raw_user_meta_data jsonb not null default '{}'::jsonb,
+  raw_app_meta_data jsonb not null default '{}'::jsonb
 );
 create function auth.uid() returns uuid language sql stable as $$
   select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid
@@ -24,6 +25,9 @@ $$;
 \ir ../migrations/202611080001_account_security.sql
 \ir ../migrations/202611080002_phone_otp_rpc.sql
 \ir ../migrations/202611080003_admin_delete.sql
+\ir ../migrations/202611080004_lock_trigger_function.sql
+\ir ../migrations/202611080005_deny_client_access_to_private_account_tables.sql
+\ir ../migrations/202611080006_restrict_admin_account_rpcs.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),
@@ -46,7 +50,10 @@ begin
   if (select count(*) from public.account_consent_events where user_id='00000000-0000-4000-8000-000000000001') <> 2 then
     raise exception 'required_consents_not_recorded';
   end if;
-end $$;
+end $;
+
+update auth.users set raw_app_meta_data='{"role":"admin"}'::jsonb
+where id='00000000-0000-4000-8000-000000000001';
 
 set request.jwt.claim.role = 'service_role';
 do $$
@@ -199,7 +206,7 @@ begin
   if not v_denied then raise exception 'authenticated_user_can_read_otp_table'; end if;
   v_denied := false;
   begin
-    perform public.admin_set_account_status('00000000-0000-4000-8000-000000000003','suspend');
+    perform public.admin_set_account_status('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000003','suspend');
   exception when insufficient_privilege then
     v_denied := true;
   end;
@@ -212,17 +219,26 @@ begin
   if (select count(*) from public.admin_account_directory) <> 4 then
     raise exception 'admin_directory_missing_profiles';
   end if;
-  perform public.admin_set_account_status('00000000-0000-4000-8000-000000000002','suspend');
-  if (select account_status from public.profiles where id='00000000-0000-4000-8000-000000000002') <> 'suspended' then
-    raise exception 'admin_suspend_failed';
-  end if;
-  perform public.admin_set_account_status('00000000-0000-4000-8000-000000000002','reactivate');
-  perform public.admin_delete_account('00000000-0000-4000-8000-000000000002');
-  if (select count(*) from public.admin_account_directory) <> 3 then
+end $rls$;
+reset role;
+
+-- Privileged actions are performed only through service_role after server-side
+-- verification of the admin caller stored in auth.users.raw_app_meta_data.
+set role service_role;
+set request.jwt.claim.role = 'service_role';
+do $admin$
+begin
+  perform public.admin_set_account_status('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002','suspend');
+  perform public.admin_set_account_status('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002','reactivate');
+  perform public.admin_delete_account('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002');
+end $admin$;
+reset role;
+do $rls$
+begin
+  if (select count(*) from public.profiles) <> 3 then
     raise exception 'admin_delete_did_not_remove_profile';
   end if;
 end $rls$;
-reset role;
 do $rls$
 begin
   if (select count(*) from public.account_admin_audit

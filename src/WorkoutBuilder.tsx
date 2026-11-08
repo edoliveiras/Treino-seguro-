@@ -130,20 +130,41 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
  const [runningDistance,setRunningDistance]=useState("5 km");
  const [aiRequest,setAiRequest]=useState("");
  const [generatedRequest,setGeneratedRequest]=useState("");
+ const [variation,setVariation]=useState(0);
  const [expanded,setExpanded]=useState<number|null>(0);
  const generateFromRequest=()=>{
   const q=aiRequest.trim().toLowerCase();
   if(!q)return;
   setGeneratedRequest(aiRequest.trim());
-  if(/gl[uú]te|bumbum|perna|inferior|posterior|quadr[ií]ceps/.test(q)){setFocus(/perna|inferior|quadr[ií]ceps/.test(q)&&!/gl[uú]te|bumbum/.test(q)?"Pernas":"Glúteos");setStyle("Musculação");setDuration(/40|quarenta/.test(q)?"40":/50|cinquenta/.test(q)?"50":"60");}
+  // Interpreta modalidade, objetivo, foco, nível, ambiente, frequência e duração.
+  if(/intermedi[aá]ri/.test(q))setLevel("Intermediário");
+  else if(/avan[cç]ad/.test(q))setLevel("Avançado");
+  else if(/iniciante|come[cç]ando|come[cç]ar do zero/.test(q))setLevel("Iniciante");
+  if(/academia|academia completa|máquina|máquinas|polia|barra e anilha/.test(q))setPlace("Academia");
+  else if(/em casa|na minha casa|sem academia|peso do corpo|sem equipamento/.test(q))setPlace("Casa");
+  const dayMatch=q.match(/([2-5])\\s*(?:dias|vezes)\\s*(?:por semana|na semana)?/);
+  if(dayMatch)setDays(Number(dayMatch[1]));
+  if(/30|minutos|meia hora/.test(q))setDuration("40");
+  else if(/40|minutos|quarenta/.test(q))setDuration("40");
+  else if(/50|minutos|cinquenta/.test(q))setDuration("50");
+  else if(/60|minutos|1 hora|uma hora|sess[aã]o longa/.test(q))setDuration("60");
+  if(/gl[uú]te|bumbum/.test(q))setFocus("Glúteos");
+  else if(/quadr[ií]ceps|posterior de coxa|pernas|membros inferiores/.test(q))setFocus("Pernas");
   else if(/abd[oô]men|core/.test(q))setFocus("Abdômen");
-  else if(/bra[cç]o|b[ií]ceps|tr[ií]ceps/.test(q))setFocus("Braços");
+  else if(/bra[cç]o|b[ií]ceps|tr[ií]ceps|ombro/.test(q))setFocus("Braços");
   else if(/costas/.test(q))setFocus("Costas");
-  else if(/corrida|correr|5\s?km|10\s?km|15\s?km/.test(q)){setStyle("Corrida");setRunningDistance(/15\s?km/.test(q)?"15 km":/10\s?km/.test(q)?"10 km":"5 km");}
-  else if(/calistenia/.test(q))setStyle("Calistenia");
-  else if(/hiit/.test(q))setStyle("HIIT");
+  else if(/peito|peitoral/.test(q))setFocus("Peito");
+  else if(/corpo inteiro|full.?body/.test(q))setFocus("Corpo inteiro");
+  if(/corrida|correr|5\\s?km|10\\s?km|15\\s?km/.test(q)){
+   setStyle("Corrida");
+   setRunningDistance(/15\\s?km/.test(q)?"15 km":/10\\s?km/.test(q)?"10 km":"5 km");
+  } else if(/calistenia|peso corporal/.test(q))setStyle("Calistenia");
+  else if(/hiit|intervalado/.test(q))setStyle("HIIT");
   else if(/funcional/.test(q))setStyle("Funcional");
   else if(/full.?body|corpo inteiro/.test(q))setStyle("Full body");
+  else if(/muscula[cç][aã]o|hipertrofia|ganho de massa|for[cç]a/.test(q))setStyle("Musculação");
+  else if(/mobilidade|alongamento/.test(q))setStyle("Funcional");
+  setVariation(v=>v+1);
   setExpanded(0);
  };
  const glutePriority=/gl[uú]te|bumbum|perna|inferior|posterior|quadr[ií]ceps/.test(generatedRequest.toLowerCase());
@@ -157,27 +178,24 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    const glutePreferred=glutePriority&&focus==="Glúteos"&&style==="Musculação"?gluteOrder.map(n=>unique.find(e=>e.name===n)).filter((e):e is Exercise=>Boolean(e)):[];
    const ordered=[...glutePreferred,...preferred.filter(e=>!glutePreferred.includes(e)),...unique.filter(e=>!preferred.includes(e)&&!glutePreferred.includes(e))];
    const limit=Number(duration)>=60?10:Number(duration)>=50?8:6;
-   const targetCount=Math.floor(Math.min(ordered.length,limit)/2)*2;
-   const rotated=ordered.length>0?[...ordered.slice((index*2)%ordered.length),...ordered.slice(0,(index*2)%ordered.length)]:[];
-   const selected: Exercise[]=[];
-   const used=new Set<number>();
-   for(let step=0;selected.length<targetCount&&step<rotated.length*2;step++){
-    const pick=(step*3)%rotated.length;
-    if(!used.has(pick)){used.add(pick);selected.push(rotated[pick]);}
-   }
-   return {title:`Treino ${String.fromCharCode(65+index)}`,groups,items:selected,pairs:buildConjugatePairs(selected,index)};
+   const targetCount=Math.min(ordered.length,limit);
+   // Rotação real entre dias e a cada nova geração; evita o padrão fixo e a seleção por saltos repetidos.
+   const offset=ordered.length?(index*3+variation*2)%ordered.length:0;
+   const rotated=ordered.length?[...ordered.slice(offset),...ordered.slice(0,offset)]:[];
+   const selected=rotated.slice(0,targetCount);
+   return {title:`Treino ${String.fromCharCode(65+index)}`,groups,items:selected,pairs:buildConjugatePairs(selected,index+variation)};
   });
- },[days,place,level,duration,focus,style,glutePriority]);
+ },[days,place,level,duration,focus,style,glutePriority,variation]);
  return <section className="panel workout-builder">
   <span className="eyebrow">ASSISTENTE DE TREINO · PLANO PERSONALIZÁVEL</span>
   <h2>Seu treino, do seu jeito</h2>
   <div className="ai-workout-box">
    <label htmlFor="ai-workout-request"><b>Peça seu treino ao assistente</b><small>Escreva com suas palavras o que deseja treinar. Ex.: “Quero um treino pesado de pernas e glúteos na academia, com ênfase em hipertrofia”.</small></label>
    <textarea id="ai-workout-request" value={aiRequest} onChange={e=>setAiRequest(e.target.value)} rows={3} placeholder="Descreva o treino que você quer..." />
-   <button type="button" className="home-primary" onClick={generateFromRequest} disabled={!aiRequest.trim()}>✦ Montar meu treino</button>
+   <button type="button" className="home-primary" onClick={generateFromRequest} disabled={!aiRequest.trim()}>✦ Interpretar pedido e montar treino</button>
    {generatedRequest&&<p className="muted" role="status">Pedido interpretado: “{generatedRequest}”. Ajustamos o foco e as opções do plano abaixo. Revise o treino e adapte cargas e pausas ao seu nível.</p>}
   </div>
-  <p>Plano inicial considerando seu objetivo ({initialGoal.toLowerCase()}), nível {initialLevel.toLowerCase()}, {initialDays} dias por semana e treino em {initialPlace.toLowerCase()}. Você pode ajustar as preferências abaixo.</p>
+  <p>Plano inicial considerando sua avaliação. O pedido escrito também ajusta modalidade, foco, nível, local, frequência e duração quando essas informações aparecem no texto. Você pode revisar tudo abaixo antes de usar.</p>
   <div className="bmi"><Target/><div><b>Objetivo considerado: {initialGoal}</b><p>{initialGoal === "Emagrecer" ? "Prioridade em sessões de corpo inteiro, força e condicionamento progressivo. O treino não promete perda localizada nem substitui orientação nutricional." : initialGoal === "Força" ? "Prioridade em exercícios de resistência, técnica controlada e progressão gradual de carga." : initialGoal === "Mobilidade e bem-estar" ? "Prioridade em movimentos funcionais confortáveis, controle corporal e mobilidade sem forçar amplitudes." : initialGoal === "Começar a correr" ? "A preparação começa com condicionamento geral e baixo impacto. A corrida não é liberada automaticamente; siga avaliação profissional antes de iniciar." : "Prioridade em desenvolver condicionamento geral e força de forma gradual."}</p></div></div>
   <div className="form-grid">
    <label>Modalidade<select value={style} onChange={e=>setStyle(e.target.value as Style)}>{["Musculação","Full body","Calistenia","Funcional","HIIT","Corrida"].map(x=><option key={x}>{x}</option>)}</select></label>
@@ -205,6 +223,6 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   <p className="muted"><Clock3 size={15}/> O tempo total inclui 8–10 min de aquecimento, as séries conjugadas de cada bloco, alternando A e B com pausas entre voltas e 5–8 min de finalização. Para 40/50/60 min, o plano agora seleciona até 6/8/10 exercícios principais; o tempo real varia conforme ritmo, carga e pausas. Não acelere a execução para caber no relógio.</p>
   {initialBmi >= 35 && <div className="safety-alert"><b>Adaptação importante</b><p>Como o IMC informado está na faixa de 35 ou mais, este plano não inclui corrida nem saltos como recomendação automática. Priorize movimentos confortáveis e obtenha orientação profissional individual antes de aumentar a intensidade.</p></div>}
   <p className="muted">Este é um plano educativo inicial baseado nas respostas da avaliação, não uma prescrição clínica. Se houver dor, limitação, condição clínica ou dúvida sobre a execução, suspenda o exercício e procure avaliação individual de profissional de Educação Física e/ou saúde. A seleção automática não substitui avaliação presencial.</p>
-  <button type="button" className="secondary" onClick={()=>{setFocus("Glúteos");setStyle("Musculação");setDays(3);setPlace("Casa");setLevel("Iniciante");setDuration("50");setRunningDistance("5 km");setExpanded(0)}}><RotateCcw size={16}/> Restaurar opções iniciais</button>
+  <button type="button" className="secondary" onClick={()=>{setFocus("Glúteos");setStyle("Musculação");setDays(3);setPlace("Casa");setLevel("Iniciante");setDuration("50");setRunningDistance("5 km");setVariation(0);setGeneratedRequest("");setAiRequest("");setExpanded(0)}}><RotateCcw size={16}/> Restaurar opções iniciais</button>
  </section>;
 }

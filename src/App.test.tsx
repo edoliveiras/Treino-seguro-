@@ -135,3 +135,19 @@ describe("fluxos de segurança da interface", () => {
     expect(screen.getByRole("button", { name: "Desmarcar Caminhada confortável" }).getAttribute("aria-pressed")).toBe("true");
   });
 
+
+
+describe("acessibilidade de navegação", () => {
+  it("oferece atalho de teclado e informa a seção ativa", () => {
+    render(<App />);
+    const skipLink = screen.getByRole("link", { name: "Pular para o conteúdo principal" });
+    expect(skipLink.getAttribute("href")).toBe("#main-content");
+    expect(screen.getByRole("main").getAttribute("tabindex")).toBe("-1");
+
+    const homeButton = screen.getByRole("button", { name: "Abrir Início" });
+    expect(homeButton.getAttribute("aria-current")).toBe("page");
+    fireEvent.click(screen.getByRole("button", { name: "Abrir Ciência" }));
+    expect(screen.getByRole("button", { name: "Abrir Ciência" }).getAttribute("aria-current")).toBe("page");
+    expect(screen.getByRole("button", { name: "Abrir Início" }).getAttribute("aria-current")).toBeNull();
+  });
+});

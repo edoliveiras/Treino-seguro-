@@ -41,7 +41,7 @@
 
 ## 6. Testes e validação
 - Testes de interface, persistência com consentimento, regras de segurança, build, verificação estática das Edge Functions, testes dos componentes OTP e testes SQL das migrações em PostgreSQL temporário.
-- A execução CI #226 concluiu com sucesso: testes do aplicativo (incluindo consentimento e persistência), compilação, tipos das Edge Functions, testes OTP e migrações SQL passaram.
+- A execução CI #229 concluiu com sucesso: testes do aplicativo (incluindo consentimento e persistência), compilação, tipos das Edge Functions, testes OTP e migrações SQL passaram.
 - Testes automatizados não substituem teste real de cadastro, confirmação de e-mail, recuperação de senha, RLS e suspensão em ambiente de homologação.
 
 ## 7. Pendências para disponibilização pública

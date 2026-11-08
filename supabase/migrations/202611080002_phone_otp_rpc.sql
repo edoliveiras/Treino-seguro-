@@ -17,6 +17,12 @@ alter table public.phone_otp_send_log
   add column if not exists challenge_id uuid references public.phone_otp_challenges(id) on delete set null;
 
 alter table public.phone_otp_send_log
+  drop constraint if exists phone_otp_send_log_provider_check;
+alter table public.phone_otp_send_log
+  add constraint phone_otp_send_log_provider_check
+  check (provider in ('meta_whatsapp','twilio_whatsapp','sms','twilio_sms'));
+
+alter table public.phone_otp_send_log
   drop constraint if exists phone_otp_send_log_outcome_check;
 alter table public.phone_otp_send_log
   add constraint phone_otp_send_log_outcome_check

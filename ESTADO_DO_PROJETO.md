@@ -75,3 +75,12 @@ CI validado no commit `33fbdf65f407d931e7f8eb3f91b18f828235ef7a` (workflow 42479
 - CI desse commit: workflow 42480280197 concluído com sucesso. Isso valida somente os comandos automatizados já configurados (`npm install`, testes do app e build); **não executa nem valida a migração SQL em um banco Supabase**.
 - O esquema SQL continua como rascunho técnico não implantado. A criação de Edge Functions, envio real de OTP, cadastro/login integrado, recuperação, gestão administrativa e testes SQL/RLS continuam pendentes.
 - Não ativar autenticação nem prometer confirmação por e-mail/WhatsApp enquanto o projeto Supabase não estiver conectado e configurado com os secrets do provedor. Não colocar chaves no repositório ou no frontend.
+
+
+## 9. Continuação — OTP WhatsApp e validação estática
+- Criada a Edge Function `supabase/functions/phone-otp/index.ts`: exige usuário autenticado e e-mail confirmado, gera código de 6 dígitos com Web Crypto, armazena somente HMAC-SHA-256 e envia por template de autenticação da Meta. A ação `verify` valida o código sem expô-lo em resposta ou logs.
+- Criada a migração `supabase/migrations/202611080002_phone_otp_rpc.sql`: RPCs restritas à service_role, expiração de 10 minutos, 5 tentativas, bloqueio de 15 minutos, 60 segundos entre envios e máximo de 3 solicitações por número/hora. O WhatsApp só é reservado após verificação, reduzindo risco de bloqueio por cadastro falso.
+- A função Meta requer template de autenticação aprovado com parâmetro no corpo e botão de copiar código. O fallback Twilio SMS ainda não foi implementado.
+- CI ampliado para instalar Deno e executar `deno check` da Edge Function. A primeira execução falhou por configuração de dependências npm; foi adicionado `deno.json` com resolução automática. A nova execução do workflow 42481004788 estava em andamento no momento desta atualização.
+- As migrações continuam sem validação em PostgreSQL/Supabase e não foram aplicadas. A Edge Function não foi implantada nem testada com credenciais/provedor reais. Não existe envio de OTP em produção.
+- Próximas tarefas: confirmar CI com Deno; validar migrações em banco de homologação; adicionar testes de integração/abuso; implementar adaptador Twilio Verify; concluir cadastro/login, recuperação, troca de contato e painel administrativo; somente então integrar ao frontend.

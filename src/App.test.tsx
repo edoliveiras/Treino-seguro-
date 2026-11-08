@@ -78,9 +78,10 @@ describe("fluxos de segurança da interface", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
     fireEvent.click(screen.getByLabelText("Joelho"));
-    fireEvent.click(screen.getByLabelText("Nenhuma"));
+    const noPainOption = screen.getAllByLabelText("Nenhuma")[0];
+    fireEvent.click(noPainOption);
     expect((screen.getByLabelText("Joelho") as HTMLInputElement).checked).toBe(false);
-    expect((screen.getByLabelText("Nenhuma") as HTMLInputElement).checked).toBe(true);
+    expect((screen.getAllByLabelText("Nenhuma")[0] as HTMLInputElement).checked).toBe(true);
   });
 
   it("oferece navegação móvel para todas as áreas do aplicativo", () => {

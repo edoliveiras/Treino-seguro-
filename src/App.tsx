@@ -28,7 +28,7 @@ export default function App(){
  const [pains,setPains]=useState<string[]>([]),[conditions,setConditions]=useState<string[]>([]),[clearance,setClearance]=useState(false),[adult,setAdult]=useState(false),[understood,setUnderstood]=useState(false),[saved,setSaved]=useState(false);
  const [done,setDone]=useState<string[]>([]),[meal,setMeal]=useState(""),[mealEntries,setMealEntries]=useState<string[]>([]),[newWeight,setNewWeight]=useState(""),[weights,setWeights]=useState<string[]>([]),[waist,setWaist]=useState(""),[waists,setWaists]=useState<string[]>([]);
  const [photoNote,setPhotoNote]=useState(false);
- const toggle=(v:string,arr:string[],setter:(v:string[])=>void)=>setter(arr.includes(v)?arr.filter(x=>x!==v):[...arr,v]);
+ const toggle=(v:string,arr:string[],setter:(v:string[])=>void)=>setter(arr.includes(v)?arr.filter(x=>x!==v):v==="Nenhuma"?[v]:[...arr.filter(x=>x!=="Nenhuma"),v]);
  const bmi=useMemo(()=>{const w=Number(weight),h=Number(height)/100;return w>0&&h>0?w/(h*h):0},[weight,height]);
  const bmiClass=bmi===0?"—":bmi<18.5?"Abaixo do peso":bmi<25?"Faixa adequada":bmi<30?"Sobrepeso":bmi<35?"Obesidade grau I":bmi<40?"Obesidade grau II":"Obesidade grau III";
  const medicalNeeded=conditions.some(x=>x!=="Nenhuma");

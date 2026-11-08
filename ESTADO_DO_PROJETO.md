@@ -84,3 +84,11 @@ CI validado no commit `33fbdf65f407d931e7f8eb3f91b18f828235ef7a` (workflow 42479
 - CI ampliado para instalar Deno e executar `deno check` da Edge Function. A primeira execução falhou por configuração de dependências npm; foi adicionado `deno.json` com resolução automática. A nova execução do workflow 42481004788 estava em andamento no momento desta atualização.
 - As migrações continuam sem validação em PostgreSQL/Supabase e não foram aplicadas. A Edge Function não foi implantada nem testada com credenciais/provedor reais. Não existe envio de OTP em produção.
 - Próximas tarefas: confirmar CI com Deno; validar migrações em banco de homologação; adicionar testes de integração/abuso; implementar adaptador Twilio Verify; concluir cadastro/login, recuperação, troca de contato e painel administrativo; somente então integrar ao frontend.
+
+
+## 10. Validação adicional
+- Deno foi incluído no CI com `deno check` para a Edge Function. Workflow 42481004788 (commit `f231aadb74bf76e3e7ca58b3ed4608a677a2041c`) concluiu com sucesso: 14 testes do app, build e verificação estática da Edge Function.
+- Migração RPC endurecida para exigir claim `service_role`; números de WhatsApp são únicos somente após verificação.
+- Respostas da solicitação de envio foram uniformizadas para reduzir enumeração de contas/telefones.
+- Último commit funcional registrado nesta atualização: `1ccfd563b64d74c07eb25ae39417d174983cbe9d`. CI correspondente: workflow 42481048682 em execução no momento do registro.
+- A aprovação de CI não substitui teste SQL em PostgreSQL/Supabase, teste de entrega real da Meta, revisão de segurança ou implantação.

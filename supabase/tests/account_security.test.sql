@@ -276,6 +276,9 @@ set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
 set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
 insert into public.health_data_records(user_id,payload)
 values ('00000000-0000-4000-8000-000000000001','{"weight":"90","meals":["feijao"]}');
+update public.health_data_records
+set payload='{"weight":"91","meals":["feijao","salada"]}'
+where user_id='00000000-0000-4000-8000-000000000001';
 do $health_rls$
 declare
   v_denied boolean := false;

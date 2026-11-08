@@ -142,7 +142,7 @@ Deno.serve(async (request) => {
         { p_user_id: user.id, p_code_hmac: digest },
       );
       if (challengeError || !challengeId) {
-        return json(429, { error: "request_not_allowed", message: "Aguarde antes de solicitar outro código." });
+        return json(200, { ok: true, message: "Se a solicitação puder ser atendida, você receberá as instruções." });
       }
 
       try {

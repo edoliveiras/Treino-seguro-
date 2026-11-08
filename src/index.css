@@ -4,3 +4,12 @@
 .screening{border:1px solid #e4ebe2;background:#f8faf7;border-radius:14px;padding:16px;margin:18px 0;display:grid;gap:12px}.screening>b{font-size:13px;color:#385442}.choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.choice-grid label,.safety-alert label{display:flex;align-items:center;gap:7px;font-size:12px;color:#637469;background:#fff;border:1px solid #e2e9e1;border-radius:9px;padding:9px}.choice-grid input,.safety-alert input{width:auto}.safety-alert{background:#fff4df;border:1px solid #f0dfb8;border-radius:11px;padding:13px}.safety-alert>b{color:#79561c}.safety-alert p{font-size:12px;line-height:1.5;color:#806b42;margin:7px 0}.safety-alert label{background:transparent;border:0;padding:5px 0}@media(max-width:600px){.choice-grid{grid-template-columns:1fr 1fr}}
 
 .exercise-copy{min-width:0;flex:1}.exercise-copy strong{color:#405c49}.exercise-copy p{margin:7px 0 0}.log-list{background:#f5f8f3;border-radius:12px;padding:14px;margin-top:16px}.log-list p{font-size:13px;color:#647469;margin:8px 0}.success-text{color:#367449;font-weight:700;font-size:13px}.safety-alert> b{display:flex;align-items:center;gap:8px}.panel ul{color:#65766b;font-size:13px;line-height:1.9;padding-left:22px}.panel h3{font:700 17px Manrope;color:#294b37}
+
+/* A navegação compacta mantém todas as áreas acessíveis em tablets e celulares. */
+.mobile-nav{display:none}
+@media(max-width:850px){
+  .mobile-nav{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 12px;margin:0 0 14px;scrollbar-width:thin}
+  .mobile-nav-button{flex:0 0 auto;display:flex;align-items:center;gap:7px;border:1px solid #dce7dc;border-radius:999px;background:#fff;color:#385443;padding:9px 12px;font:600 12px 'DM Sans',sans-serif;white-space:nowrap}
+  .mobile-nav-button.active{background:#174b35;color:#fff;border-color:#174b35}
+}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #8bbd73;outline-offset:3px}

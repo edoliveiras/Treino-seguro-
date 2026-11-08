@@ -61,3 +61,16 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .admin-account-actions button{font-size:12px}
 @media(max-width:850px){.admin-main{margin:0;padding:24px 20px 40px}}
 @media(max-width:600px){.account-actions{gap:6px}.account-bar{justify-content:space-between;padding:10px 12px}.admin-main{padding:20px 12px 32px}.admin-panel{padding:16px}.admin-account-card{grid-template-columns:1fr;gap:12px}.admin-account-actions{display:grid;grid-template-columns:1fr 1fr}.admin-panel-heading{align-items:flex-start}}
+
+/* Montador de treinos personalizados */
+.workout-builder{display:grid;gap:16px}
+.workout-builder .form-grid{margin:8px 0 4px}
+.workout-day{border:1px solid #dfe8de;border-radius:13px;overflow:hidden;background:#fff;margin:10px 0}
+.workout-day-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:left;gap:12px;padding:14px 16px;border:0;border-radius:0}
+.workout-day-toggle>span:first-child{display:grid;gap:4px}
+.workout-day-toggle small{font-size:12px;color:#607367;font-weight:500}
+.workout-day-content{padding:14px 16px;display:grid;gap:10px}
+.planned-exercise{padding:12px;border-left:3px solid #6b9270;background:#f7faf6;border-radius:0 10px 10px 0}
+.planned-exercise p{margin:6px 0;font-size:13px;color:#52675a;line-height:1.5}
+.planned-exercise small{font-size:12px;font-weight:700;color:#315b3d}
+.workout-builder .muted{display:flex;align-items:flex-start;gap:7px;line-height:1.5}

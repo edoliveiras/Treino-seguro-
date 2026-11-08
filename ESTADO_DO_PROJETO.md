@@ -27,28 +27,27 @@
 - Tela de cadastro: nome, e-mail, WhatsApp com DDD e senha.
 - Declaração de 18 anos, aceite obrigatório dos Termos e da Política; consentimentos de saúde e fotos opcionais e separados; notificações opcionais desligadas por padrão.
 - Login por e-mail e senha, reenvio do link de confirmação, recuperação e redefinição de senha.
-- Confirmação do e-mail via Supabase Auth e confirmação do WhatsApp por OTP de 6 dígitos.
-- O app só libera as áreas após e-mail e WhatsApp confirmados e conta com status ativo.
+- Confirmação do e-mail via Supabase Auth. O telefone/WhatsApp é coletado apenas como contato, sem integração ou envio de mensagens.
+- O app libera as áreas após confirmação do e-mail e status ativo.
 - Páginas iniciais de Termos e Política incluídas; ainda precisam de revisão jurídica, dados de contato do controlador e definição final de retenção.
 
 ## 5. Envio e funções administrativas — ainda não ativados
-- Edge Function de OTP está versionada no repositório, com HMAC, expiração de 10 minutos, até 5 tentativas, bloqueio temporário, 60 segundos entre reenvios e máximo de 3 envios por número/hora.
-- A função tenta WhatsApp Cloud API da Meta e usa SMS Twilio como fallback.
-- Edge Functions de OTP e administração ainda não foram implantadas no projeto. Faltam secrets de produção, template de autenticação aprovado da Meta e/ou configuração de SMS Twilio.
+- O fluxo público não utiliza WhatsApp, Facebook, Meta, SMS ou OTP por telefone. O código antigo de OTP permanece no repositório, mas não é chamado pelo aplicativo e não deve ser implantado.
+- A Edge Function administrativa ainda não foi implantada no projeto.
 - Ainda não foi criado um usuário administrador. O primeiro administrador deverá receber o papel exclusivamente por procedimento seguro no servidor, nunca por cadastro público.
 - Confirmação por e-mail depende de confirmar a configuração do Supabase Auth, URLs de retorno e template de e-mail.
 
 ## 6. Testes e validação
 - Testes de interface e regras de segurança existentes; CI executa testes, build, verificação estática das Edge Functions, testes dos componentes OTP e testes SQL das migrações em PostgreSQL temporário.
 - A última execução completa aprovada do CI validou instalação, testes do aplicativo, compilação, verificação das duas Edge Functions, testes dos componentes OTP e testes SQL das seis migrações. Os dois ajustes finais de navegação das telas legais estão em nova execução de CI.
-- Testes automatizados não substituem teste real de cadastro, confirmação de e-mail, entrega de WhatsApp/SMS, recuperação de senha, RLS e suspensão em ambiente de homologação.
+- Testes automatizados não substituem teste real de cadastro, confirmação de e-mail, confirmação de e-mail, recuperação de senha, RLS e suspensão em ambiente de homologação.
 
 ## 7. Pendências para disponibilização pública
 1. Concluir e aprovar a execução atual de CI, corrigindo qualquer falha encontrada.
 2. Configurar Supabase Auth: confirmação de e-mail, modelos de mensagem e URLs de retorno.
 3. Definir URL definitiva de publicação e configurar APP_ORIGIN.
-4. Configurar secrets das Edge Functions (service role, HMAC e credenciais Meta/Twilio) e implantá-las.
-5. Criar o primeiro administrador por procedimento seguro.
+4. Configurar e testar a confirmação de e-mail no Supabase Auth, com URL definitiva e template de mensagem.
+5. Implantar apenas a Edge Function administrativa quando o painel de gestão estiver pronto e criar o primeiro administrador por procedimento seguro.
 6. Realizar testes reais com duas contas, e-mail, WhatsApp/SMS, recuperação, suspensão, exclusão e isolamento de dados.
 7. Revisão jurídica da LGPD, Termos e Política; definir contato do controlador, retenção, exclusão e direitos dos titulares.
 8. Revisão clínica e editorial por profissionais habilitados antes de uso público.

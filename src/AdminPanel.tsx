@@ -90,10 +90,14 @@ export default function AdminPanel({ currentUserId }: { currentUserId: string })
           <small>{account.email_verified_at ? "E-mail confirmado" : "E-mail não confirmado"}</small>
         </div>
         <div className="admin-account-actions">
-          {account.account_status === "suspended"
-            ? <button type="button" className="secondary" disabled={busyId === account.id} onClick={() => void updateAccount(account, "reactivate")}><UserCheck size={16}/> Reativar</button>
-            : <button type="button" className="secondary" disabled={busyId === account.id} onClick={() => void updateAccount(account, "suspend")}><UserX size={16}/> Suspender</button>}
-          {account.id !== currentUserId && <button type="button" className="danger-button" disabled={busyId === account.id} onClick={() => void updateAccount(account, "delete")}><Trash2 size={16}/> Excluir</button>}
+          {account.id === currentUserId
+            ? <small>Sua conta de administrador</small>
+            : <>
+                {account.account_status === "suspended"
+                  ? <button type="button" className="secondary" disabled={busyId === account.id} onClick={() => void updateAccount(account, "reactivate")}><UserCheck size={16}/> Reativar</button>
+                  : <button type="button" className="secondary" disabled={busyId === account.id} onClick={() => void updateAccount(account, "suspend")}><UserX size={16}/> Suspender</button>}
+                <button type="button" className="danger-button" disabled={busyId === account.id} onClick={() => void updateAccount(account, "delete")}><Trash2 size={16}/> Excluir</button>
+              </>}
         </div>
       </article>)}
     </div>}

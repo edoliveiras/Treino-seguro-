@@ -127,5 +127,53 @@ begin
   if not v_rejected then raise exception 'verified_phone_was_not_protected'; end if;
 end $$;
 
+-- Verify row-level access and audited admin-only status changes.
+grant select on public.profiles to authenticated, anon;
+grant select on public.admin_account_directory to authenticated;
+set role authenticated;
+set request.jwt.claim.role = 'authenticated';
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"user"}}';
+do $
+declare
+  v_denied boolean := false;
+begin
+  if (select count(*) from public.profiles) <> 1 then
+    raise exception 'rls_did_not_limit_profile_to_owner';
+  end if;
+  begin
+    perform * from public.phone_otp_challenges;
+  exception when insufficient_privilege then
+    v_denied := true;
+  end;
+  if not v_denied then raise exception 'authenticated_user_can_read_otp_table'; end if;
+  begin
+    perform public.admin_set_account_status('00000000-0000-4000-8000-000000000003','suspend');
+  exception when insufficient_privilege then
+    v_denied := true;
+  end;
+  if not v_denied then raise exception 'non_admin_changed_account_status'; end if;
+end $;
+
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
+do $
+begin
+  if (select count(*) from public.admin_account_directory) <> 4 then
+    raise exception 'admin_directory_missing_profiles';
+  end if;
+  perform public.admin_set_account_status('00000000-0000-4000-8000-000000000002','suspend');
+  if (select account_status from public.profiles where id='00000000-0000-4000-8000-000000000002') <> 'suspended' then
+    raise exception 'admin_suspend_failed';
+  end if;
+  perform public.admin_set_account_status('00000000-0000-4000-8000-000000000002','reactivate');
+  if (select count(*) from public.account_admin_audit
+      where target_user_id='00000000-0000-4000-8000-000000000002'
+        and action in ('suspend','reactivate')) <> 2 then
+    raise exception 'admin_actions_not_audited';
+  end if;
+end $;
+reset role;
 reset request.jwt.claim.role;
+reset request.jwt.claim.sub;
+reset request.jwt.claims;
 select 'account_security_and_otp_sql_tests_passed' as result;

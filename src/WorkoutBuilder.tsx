@@ -57,7 +57,10 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    const candidates=library.filter(e=>(e.home&&place==="Casa"||e.gym&&place==="Academia")&&e.styles.includes(style)&&groups.some(g=>e.focus.includes(g))&&(level!=="Iniciante"||e.beginner||e.focus.includes("Glúteos")&&e.name==="Elevação pélvica"));
    const unique=candidates.filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i);
    const preferred=unique.filter(e=>e.focus.includes(focus));
-   const selected=[...preferred,...unique.filter(e=>!preferred.includes(e))].slice(0,Number(duration)>=60?6:5);
+   const ordered=[...preferred,...unique.filter(e=>!preferred.includes(e))];
+   const limit=Number(duration)>=60?6:Number(duration)>=50?5:4;
+   const rotated=ordered.length>0?[...ordered.slice(index%ordered.length),...ordered.slice(0,index%ordered.length)]:[];
+   const selected=rotated.slice(0,limit);
    return {title:`Treino ${String.fromCharCode(65+index)}`,groups,items:selected};
   });
  },[days,place,level,duration,focus]);
@@ -81,7 +84,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    <button type="button" className="secondary workout-day-toggle" aria-expanded={expanded===index} onClick={()=>setExpanded(expanded===index?null:index)}><span><b>{session.title} · Dia {index+1}</b><small>{session.groups.join(" · ")}</small></span><span>{expanded===index?"−":"+"}</span></button>
    {expanded===index&&<div className="workout-day-content">
     <p><b>Aquecimento:</b> 5–8 minutos de caminhada, bicicleta leve ou mobilidade confortável.</p>
-    {session.items.map((e,i)=><div className="planned-exercise" key={e.name}><div><b>{i+1}. {e.name}</b><p>{e.cue}</p><small>{e.sets} séries · {e.reps} repetições/tempo · descanso {e.rest}</small></div></div>)}
+    {session.items.map((e,i)=><div className="planned-exercise" key={e.name}><div><b>{i+1}. {e.name}</b><p>{e.cue}</p><small>{Math.min(5,Number.parseInt(e.sets,10)+(level==="Iniciante"?0:level==="Intermediário"?1:2))} séries · {e.reps} repetições/tempo · descanso {e.rest}</small></div></div>)}
     <p><b>Finalização:</b> 3–5 minutos leves e respiração confortável. Registre as cargas e repetições realizadas.</p>
    </div>}
   </article>)}

@@ -40,7 +40,7 @@
 
 ## 6. Testes e validação
 - Testes de interface e regras de segurança existentes; CI executa testes, build, verificação estática das Edge Functions, testes dos componentes OTP e testes SQL das migrações em PostgreSQL temporário.
-- Uma correção de TypeScript do fluxo de autenticação foi aprovada pelo CI. As alterações mais recentes nas migrações e nos testes SQL estão em nova execução de CI.
+- A última execução completa aprovada do CI validou instalação, testes do aplicativo, compilação, verificação das duas Edge Functions, testes dos componentes OTP e testes SQL das seis migrações. Os dois ajustes finais de navegação das telas legais estão em nova execução de CI.
 - Testes automatizados não substituem teste real de cadastro, confirmação de e-mail, entrega de WhatsApp/SMS, recuperação de senha, RLS e suspensão em ambiente de homologação.
 
 ## 7. Pendências para disponibilização pública

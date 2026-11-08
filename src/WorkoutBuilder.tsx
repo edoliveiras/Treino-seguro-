@@ -65,7 +65,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    const selected=rotated.slice(0,limit);
    return {title:`Treino ${String.fromCharCode(65+index)}`,groups,items:selected};
   });
- },[days,place,level,duration,focus]);
+ },[days,place,level,duration,focus,style]);
  return <section className="panel workout-builder">
   <span className="eyebrow">MONTADOR DE TREINO · PLANO PERSONALIZÁVEL</span>
   <h2>Seu treino, a partir da sua avaliação</h2>

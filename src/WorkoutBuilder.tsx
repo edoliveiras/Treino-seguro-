@@ -1,9 +1,32 @@
 import { useMemo, useState } from "react";
+import { getWorkoutCatalog } from "./ExerciseLibrary";
 import { Clock3, Target, RotateCcw } from "lucide-react";
 
 type Focus = "Glúteos" | "Abdômen" | "Pernas" | "Braços" | "Costas" | "Peito" | "Corpo inteiro";
 type Style = "Musculação" | "Full body" | "Calistenia" | "Funcional" | "HIIT" | "Corrida";
 type Exercise = { name: string; focus: Focus[]; home: boolean; gym: boolean; beginner: boolean; styles: Style[]; sets: string; reps: string; rest: string; cue: string };
+const catalogFocus = (segment:string): Focus[] => {
+ const s=segment.toLowerCase();
+ if (/gl[uú]te/.test(s)) return ["Glúteos","Pernas"];
+ if (/quadr[ií]ceps|posterior|panturrilha|adutores/.test(s)) return ["Pernas"];
+ if (/abd[oô]men|lombar|core/.test(s)) return ["Abdômen"];
+ if (/peito/.test(s)) return ["Peito","Braços"];
+ if (/costas|trap[eé]zio/.test(s)) return ["Costas","Braços"];
+ if (/ombro|b[ií]ceps|tr[ií]ceps|antebraço/.test(s)) return ["Braços"];
+ return ["Corpo inteiro"];
+};
+const catalogStyles = (activity:string): Style[] => {
+ if (activity==="Musculação") return ["Musculação","Full body"];
+ if (activity==="Calistenia" || activity==="Isometria") return ["Calistenia","Full body"];
+ if (activity==="Funcional" || activity==="Propriocepção") return ["Funcional","Full body"];
+ if (activity==="Cardio") return ["HIIT","Funcional"];
+ return ["Funcional","Full body"];
+};
+const catalogExercises: Exercise[] = getWorkoutCatalog().map(e=>({
+ name:e.name, focus:catalogFocus(e.segment), home:e.place!=="Academia", gym:e.place!=="Casa",
+ beginner:e.level==="Iniciante", styles:catalogStyles(e.activity), sets:"3", reps:"8–12", rest:"60–90 s",
+ cue:"Execute com controle, respeite a amplitude confortável e interrompa se houver dor ou sintomas incomuns."
+}));
 const library: Exercise[] = [
 
  {name:"Supino reto com barra",focus:["Peito","Braços"],home:false,gym:true,beginner:false,styles:["Musculação","Full body"],sets:"4",reps:"6–8",rest:"120–150 s",cue:"Mantenha escápulas apoiadas, pés firmes e desça a barra com controle até amplitude confortável."},
@@ -176,7 +199,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
     style==="Corrida" ? Array.from({length:days},()=>fullBodyGroups) :
     Array.from({length:days},()=>fullBodyGroups);
   return templates.map((groups,index)=>{
-   const candidates=library.filter(e=>(place==="Casa"?e.home:e.gym)&&e.styles.includes(style)&&groups.some(g=>e.focus.includes(g))&&(level==="Iniciante" ? e.beginner : level==="Intermediário" ? !e.beginner : true));
+   const candidates=[...catalogExercises,...library].filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i).filter(e=>(place==="Casa"?e.home:e.gym)&&e.styles.includes(style)&&groups.some(g=>e.focus.includes(g))&&(level==="Iniciante" ? e.beginner : level==="Intermediário" ? !e.beginner : true));
    const unique=candidates.filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i);
    const preferred=unique.filter(e=>e.focus.includes(focus));
    const gluteOrder=["Hip thrust com barra","Elevação pélvica","Agachamento búlgaro","Levantamento terra romeno com halteres","Agachamento goblet","Leg press","Coice de glúteo na polia","Abdução de quadril com faixa","Mesa flexora","Agachamento sumô","Afundo apoiado"];

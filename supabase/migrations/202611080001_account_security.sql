@@ -78,6 +78,10 @@ alter table public.account_admin_audit enable row level security;
 
 create policy "profile_read_own" on public.profiles
   for select to authenticated using (id = auth.uid());
+create policy "profile_admin_read_directory" on public.profiles
+  for select to authenticated using (coalesce(auth.jwt() -> 'app_metadata' ->> 'role','') = 'admin');
+revoke update on public.profiles from authenticated;
+grant update (full_name) on public.profiles to authenticated;
 create policy "profile_update_own_name" on public.profiles
   for update to authenticated
   using (id = auth.uid() and account_status = 'active' and role = 'user')
@@ -104,11 +108,32 @@ begin
   v_name := nullif(trim(new.raw_user_meta_data ->> 'full_name'), '');
   v_phone := nullif(new.raw_user_meta_data ->> 'whatsapp_e164', '');
   if tg_op = 'INSERT' then
+    if new.raw_user_meta_data ->> 'adult_confirmed' <> 'true'
+       or new.raw_user_meta_data ->> 'terms_accepted' <> 'true'
+       or new.raw_user_meta_data ->> 'privacy_accepted' <> 'true' then
+      raise exception 'required_signup_acknowledgements_missing';
+    end if;
     if v_name is not null and v_phone is not null then
       insert into public.profiles
         (id, full_name, email, whatsapp_e164, email_verified_at, adult_confirmed_at)
       values
         (new.id, v_name, lower(new.email), v_phone, new.email_confirmed_at, now());
+      insert into public.account_consent_events(user_id,consent_type,action,policy_version)
+        values (new.id,'terms','granted',coalesce(new.raw_user_meta_data ->> 'terms_version','current')),
+               (new.id,'privacy_policy','granted',coalesce(new.raw_user_meta_data ->> 'privacy_version','current'));
+      if new.raw_user_meta_data ->> 'health_data_consent' = 'true' then
+        insert into public.account_consent_events(user_id,consent_type,action,policy_version)
+          values(new.id,'health_data','granted',coalesce(new.raw_user_meta_data ->> 'health_policy_version','current'));
+      end if;
+      if new.raw_user_meta_data ->> 'progress_photos_consent' = 'true' then
+        insert into public.account_consent_events(user_id,consent_type,action,policy_version)
+          values(new.id,'progress_photos','granted',coalesce(new.raw_user_meta_data ->> 'photos_policy_version','current'));
+      end if;
+      insert into public.account_notification_preferences(user_id,workout_reminders,progress_photo_reminders,product_news)
+        values(new.id,
+          coalesce((new.raw_user_meta_data ->> 'workout_reminders')::boolean,false),
+          coalesce((new.raw_user_meta_data ->> 'progress_photo_reminders')::boolean,false),
+          coalesce((new.raw_user_meta_data ->> 'product_news')::boolean,false));
     end if;
   else
     update public.profiles
@@ -165,8 +190,8 @@ begin
     values(v_actor,p_target_user_id,p_action);
 end;
 $$;
-revoke all on function public.admin_set_account_status(uuid,text) from public, anon, authenticated;
-grant execute on function public.admin_set_account_status(uuid,text) to service_role;
+revoke all on function public.admin_set_account_status(uuid,text) from public, anon;
+grant execute on function public.admin_set_account_status(uuid,text) to authenticated, service_role;
 
 create or replace view public.admin_account_directory
 with (security_invoker = true) as

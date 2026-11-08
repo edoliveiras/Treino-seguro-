@@ -1,6 +1,6 @@
 # Cadastro, autenticação e vínculo de conta — Treino Seguro
 
-Status: **base de banco e especificação preparadas; não implantadas nem conectadas**. O repositório ainda não tem projeto Supabase configurado nem credenciais de provedores. Não apresentar o cadastro como funcional até aplicar a migração, implantar as Edge Functions, configurar provedores e concluir testes reais.
+Status: **banco Supabase dedicado criado e protegido; telas de cadastro/login e ligação do cliente estão versionadas**. A confirmação por e-mail/WhatsApp ainda depende da configuração e implantação dos serviços externos e de testes reais. Não apresentar o envio de códigos como ativo até concluir essa etapa.
 
 ## Fluxo obrigatório
 
@@ -70,11 +70,15 @@ Secrets de produção: `APP_ORIGIN`, `OTP_HMAC_SECRET` (mínimo 32 caracteres), 
 
 ## Estado técnico real
 
-- A migração supabase/migrations/202611080001_account_security.sql prepara tabelas, unicidade, RLS, status e trilha administrativa.
-- A Edge Function inicial de OTP Meta e as RPCs transacionais foram adicionadas ao repositório, mas **não foram implantadas nem testadas em projeto Supabase**.
-- O fallback Twilio SMS foi acrescentado à Edge Function; ainda falta configurá-lo e testá-lo com credenciais reais. Também faltam endpoints administrativos completos, tela de cadastro/login/consentimentos, recuperação e troca de contato, testes SQL/RLS e testes de integração, além da configuração do projeto/provedores.
-- As migrações não foram executadas. Não há envio real de e-mail, WhatsApp ou SMS.
-
+- Migrações 001 a 006 aplicadas no projeto Supabase dedicado; as tabelas cadastrais, de consentimento, preferências, OTP e auditoria estão vazias e protegidas por RLS.
+- O cliente React usa a chave publishable do projeto Supabase. A chave service_role e os segredos dos provedores não são enviados ao navegador nem armazenados no repositório.
+- O código contém cadastro, login, reenvio de confirmação de e-mail, recuperação de senha, consentimentos, tela de confirmação de WhatsApp e bloqueio do aplicativo até os dois contatos serem confirmados e a conta estar ativa.
+- Páginas iniciais de Termos e Política estão no aplicativo; exigem revisão jurídica e inclusão dos dados de contato do controlador.
+- Edge Functions de OTP e administração estão versionadas, mas ainda não implantadas. Faltam APP_ORIGIN, OTP_HMAC_SECRET, service role em secrets, credenciais da Meta/Twilio e template de autenticação aprovado.
+- Não há envio real de e-mail, WhatsApp ou SMS comprovado. A configuração de confirmação de e-mail no Supabase Auth e as URLs de retorno ainda precisam ser verificadas.
+- Não existe primeiro administrador criado. A atribuição do papel deve ocorrer apenas por procedimento seguro no servidor.
+- Não há dados clínicos, fotos, peso, medidas ou diário alimentar persistidos no banco. Essas funções continuam apenas na sessão local.
+- A revisão jurídica, clínica e os testes reais de ponta a ponta permanecem obrigatórios antes da publicação.
 
 ## Gestão administrativa de contas — implementação versionada
 - Edge Function `supabase/functions/admin-account/index.ts`: aceita somente POST com JWT válido, origem igual a `APP_ORIGIN` e usuário cuja `app_metadata.role` seja `admin`.

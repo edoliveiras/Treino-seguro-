@@ -2,27 +2,28 @@ import { useMemo, useState } from "react";
 import { Clock3, Target, RotateCcw } from "lucide-react";
 
 type Focus = "Glúteos" | "Abdômen" | "Pernas" | "Braços" | "Costas" | "Peito" | "Corpo inteiro";
-type Style = "Musculação" | "Full body" | "Calistenia" | "Funcional";\ntype Exercise = { name: string; focus: Focus[]; home: boolean; gym: boolean; beginner: boolean; styles: Style[]; sets: string; reps: string; rest: string; cue: string };
+type Style = "Musculação" | "Full body" | "Calistenia" | "Funcional";
+type Exercise = { name: string; focus: Focus[]; home: boolean; gym: boolean; beginner: boolean; styles: Style[]; sets: string; reps: string; rest: string; cue: string };
 const library: Exercise[] = [
- {name:"Agachamento até a cadeira",focus:["Glúteos","Pernas","Corpo inteiro"],home:true,gym:true,beginner:true,sets:"3",reps:"10–12",rest:"90 s",cue:"Desça com controle, mantendo os pés apoiados e os joelhos alinhados."},
- {name:"Ponte de glúteos",focus:["Glúteos"],home:true,gym:true,beginner:true,sets:"3",reps:"12–15",rest:"60–90 s",cue:"Eleve o quadril sem hiperestender a lombar; pause brevemente no alto."},
- {name:"Elevação pélvica",focus:["Glúteos"],home:false,gym:true,beginner:false,sets:"3–4",reps:"8–12",rest:"120 s",cue:"Apoie a parte alta das costas, mantenha o tronco firme e controle a descida."},
- {name:"Abdução de quadril com faixa",focus:["Glúteos"],home:true,gym:true,beginner:true,sets:"3",reps:"12–20",rest:"60 s",cue:"Afaste os joelhos sem girar o tronco; retorne devagar."},
- {name:"Levantamento terra romeno com halteres",focus:["Glúteos","Pernas","Costas"],home:true,gym:true,beginner:false,sets:"3",reps:"8–12",rest:"120 s",cue:"Leve o quadril para trás, mantenha a coluna neutra e os pesos próximos às pernas."},
- {name:"Afundo apoiado",focus:["Glúteos","Pernas"],home:true,gym:true,beginner:false,sets:"3",reps:"8–10 por lado",rest:"90 s",cue:"Use apoio estável e amplitude confortável; mantenha o joelho alinhado."},
- {name:"Dead bug",focus:["Abdômen","Corpo inteiro"],home:true,gym:true,beginner:true,sets:"3",reps:"8–10 por lado",rest:"45–60 s",cue:"Mantenha a lombar confortável e mova braço e perna opostos sem perder o controle."},
- {name:"Prancha inclinada",focus:["Abdômen"],home:true,gym:true,beginner:true,sets:"3",reps:"20–35 s",rest:"60 s",cue:"Apoie as mãos em superfície firme, alinhe o corpo e respire continuamente."},
- {name:"Pallof press com faixa/cabo",focus:["Abdômen"],home:true,gym:true,beginner:false,sets:"3",reps:"10–12 por lado",rest:"60 s",cue:"Resista à rotação do tronco; mantenha quadril e ombros apontados à frente."},
- {name:"Crunch curto",focus:["Abdômen"],home:true,gym:true,beginner:true,sets:"2–3",reps:"10–15",rest:"45–60 s",cue:"Eleve pouco o tronco sem puxar a cabeça; pare se houver desconforto cervical ou lombar."},
- {name:"Remada sentada",focus:["Costas","Braços","Corpo inteiro"],home:false,gym:true,beginner:true,sets:"3",reps:"10–12",rest:"90 s",cue:"Puxe os cotovelos para trás sem encolher os ombros."},
- {name:"Remada unilateral com halter",focus:["Costas","Braços"],home:true,gym:true,beginner:false,sets:"3",reps:"10–12 por lado",rest:"90 s",cue:"Apoie uma mão, mantenha o tronco estável e evite girar o corpo."},
- {name:"Flexão na parede ou banco",focus:["Peito","Braços"],home:true,gym:true,beginner:true,sets:"3",reps:"8–12",rest:"60–90 s",cue:"Ajuste a inclinação para manter o movimento controlado e sem dor."},
- {name:"Supino com halteres ou máquina",focus:["Peito","Braços"],home:false,gym:true,beginner:false,sets:"3",reps:"8–12",rest:"90 s",cue:"Mantenha os punhos alinhados e não force amplitude no ombro."},
- {name:"Desenvolvimento sentado leve",focus:["Braços"],home:false,gym:true,beginner:false,sets:"2–3",reps:"8–12",rest:"90 s",cue:"Use carga confortável e não arqueie a lombar."},
- {name:"Rosca bíceps",focus:["Braços"],home:true,gym:true,beginner:true,sets:"2–3",reps:"10–15",rest:"60 s",cue:"Mantenha os cotovelos próximos ao corpo e evite balançar o tronco."},
- {name:"Tríceps na polia ou extensão com faixa",focus:["Braços"],home:true,gym:true,beginner:true,sets:"2–3",reps:"10–15",rest:"60 s",cue:"Mantenha os cotovelos estáveis e use amplitude confortável."},
- {name:"Agachamento goblet",focus:["Pernas","Glúteos"],home:true,gym:true,beginner:false,sets:"3",reps:"8–12",rest:"90–120 s",cue:"Segure o peso junto ao peito e mantenha o tronco firme."},
- {name:"Caminhada ou bicicleta leve",focus:["Corpo inteiro"],home:true,gym:true,beginner:true,sets:"1",reps:"8–12 min",rest:"—",cue:"Ritmo confortável para aquecer; ajuste ao condicionamento."}
+ {name:"Agachamento até a cadeira",focus:["Glúteos","Pernas","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"3",reps:"10–12",rest:"90 s",cue:"Desça com controle, mantendo os pés apoiados e os joelhos alinhados."},
+ {name:"Ponte de glúteos",focus:["Glúteos"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"3",reps:"12–15",rest:"60–90 s",cue:"Eleve o quadril sem hiperestender a lombar; pause brevemente no alto."},
+ {name:"Elevação pélvica",focus:["Glúteos"],home:false,gym:true,beginner:false,styles:["Musculação","Full body"],sets:"3–4",reps:"8–12",rest:"120 s",cue:"Apoie a parte alta das costas, mantenha o tronco firme e controle a descida."},
+ {name:"Abdução de quadril com faixa",focus:["Glúteos"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"3",reps:"12–20",rest:"60 s",cue:"Afaste os joelhos sem girar o tronco; retorne devagar."},
+ {name:"Levantamento terra romeno com halteres",focus:["Glúteos","Pernas","Costas"],home:true,gym:true,beginner:false,styles:["Musculação","Full body"],sets:"3",reps:"8–12",rest:"120 s",cue:"Leve o quadril para trás, mantenha a coluna neutra e os pesos próximos às pernas."},
+ {name:"Afundo apoiado",focus:["Glúteos","Pernas"],home:true,gym:true,beginner:false,styles:["Musculação","Full body"],sets:"3",reps:"8–10 por lado",rest:"90 s",cue:"Use apoio estável e amplitude confortável; mantenha o joelho alinhado."},
+ {name:"Dead bug",focus:["Abdômen","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"3",reps:"8–10 por lado",rest:"45–60 s",cue:"Mantenha a lombar confortável e mova braço e perna opostos sem perder o controle."},
+ {name:"Prancha inclinada",focus:["Abdômen"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"3",reps:"20–35 s",rest:"60 s",cue:"Apoie as mãos em superfície firme, alinhe o corpo e respire continuamente."},
+ {name:"Pallof press com faixa/cabo",focus:["Abdômen"],home:true,gym:true,beginner:false,styles:["Musculação","Full body"],sets:"3",reps:"10–12 por lado",rest:"60 s",cue:"Resista à rotação do tronco; mantenha quadril e ombros apontados à frente."},
+ {name:"Crunch curto",focus:["Abdômen"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"2–3",reps:"10–15",rest:"45–60 s",cue:"Eleve pouco o tronco sem puxar a cabeça; pare se houver desconforto cervical ou lombar."},
+ {name:"Remada sentada",focus:["Costas","Braços","Corpo inteiro"],home:false,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"3",reps:"10–12",rest:"90 s",cue:"Puxe os cotovelos para trás sem encolher os ombros."},
+ {name:"Remada unilateral com halter",focus:["Costas","Braços"],home:true,gym:true,beginner:false,styles:["Musculação","Full body"],sets:"3",reps:"10–12 por lado",rest:"90 s",cue:"Apoie uma mão, mantenha o tronco estável e evite girar o corpo."},
+ {name:"Flexão na parede ou banco",focus:["Peito","Braços"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"3",reps:"8–12",rest:"60–90 s",cue:"Ajuste a inclinação para manter o movimento controlado e sem dor."},
+ {name:"Supino com halteres ou máquina",focus:["Peito","Braços"],home:false,gym:true,beginner:false,styles:["Musculação","Full body"],sets:"3",reps:"8–12",rest:"90 s",cue:"Mantenha os punhos alinhados e não force amplitude no ombro."},
+ {name:"Desenvolvimento sentado leve",focus:["Braços"],home:false,gym:true,beginner:false,styles:["Musculação","Full body"],sets:"2–3",reps:"8–12",rest:"90 s",cue:"Use carga confortável e não arqueie a lombar."},
+ {name:"Rosca bíceps",focus:["Braços"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"2–3",reps:"10–15",rest:"60 s",cue:"Mantenha os cotovelos próximos ao corpo e evite balançar o tronco."},
+ {name:"Tríceps na polia ou extensão com faixa",focus:["Braços"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"2–3",reps:"10–15",rest:"60 s",cue:"Mantenha os cotovelos estáveis e use amplitude confortável."},
+ {name:"Agachamento goblet",focus:["Pernas","Glúteos"],home:true,gym:true,beginner:false,styles:["Musculação","Full body"],sets:"3",reps:"8–12",rest:"90–120 s",cue:"Segure o peso junto ao peito e mantenha o tronco firme."},
+ {name:"Caminhada ou bicicleta leve",focus:["Corpo inteiro"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"1",reps:"8–12 min",rest:"—",cue:"Ritmo confortável para aquecer; ajuste ao condicionamento."}
 ];
 const split: Record<number, Focus[][]> = {
  2:[["Glúteos","Pernas","Abdômen"],["Costas","Peito","Braços","Abdômen"]],
@@ -31,7 +32,8 @@ const split: Record<number, Focus[][]> = {
  5:[["Glúteos","Pernas","Abdômen"],["Costas","Peito","Braços"],["Glúteos","Pernas"],["Costas","Peito","Braços","Abdômen"],["Glúteos","Abdômen"]]
 };
 export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa", initialLevel = "Iniciante" }: { initialDays?: string; initialPlace?: string; initialLevel?: string }) {
- const [focus,setFocus]=useState<Focus>("Glúteos");\n const [style,setStyle]=useState<Style>("Musculação");
+ const [focus,setFocus]=useState<Focus>("Glúteos");
+ const [style,setStyle]=useState<Style>("Musculação");
  const [days,setDays]=useState(Math.min(5,Math.max(2,Number(initialDays)||3)));
  const [place,setPlace]=useState(initialPlace==="Academia"?"Academia":"Casa");
  const [level,setLevel]=useState(initialLevel);
@@ -52,14 +54,16 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   <h2>Monte um treino com seu objetivo</h2>
   <p>Escolha o foco e veja uma divisão semanal com exercícios, séries, repetições, intervalos e instruções. O foco prioriza o grupo escolhido, sem abandonar o equilíbrio muscular.</p>
   <div className="form-grid">
-   <label>Modalidade<select value={style} onChange={e=>setStyle(e.target.value as Style)}>{["Musculação","Full body","Calistenia","Funcional"].map(x=><option key={x}>{x}</option>)}</select></label>\n   <label>Meu foco principal<select value={focus} onChange={e=>setFocus(e.target.value as Focus)}>{["Glúteos","Abdômen","Pernas","Braços","Costas","Peito","Corpo inteiro"].map(x=><option key={x}>{x}</option>)}</select></label>
+   <label>Modalidade<select value={style} onChange={e=>setStyle(e.target.value as Style)}>{["Musculação","Full body","Calistenia","Funcional"].map(x=><option key={x}>{x}</option>)}</select></label>
+   <label>Meu foco principal<select value={focus} onChange={e=>setFocus(e.target.value as Focus)}>{["Glúteos","Abdômen","Pernas","Braços","Costas","Peito","Corpo inteiro"].map(x=><option key={x}>{x}</option>)}</select></label>
    <label>Onde vou treinar<select value={place} onChange={e=>setPlace(e.target.value)}><option>Casa</option><option>Academia</option></select></label>
    <label>Nível<select value={level} onChange={e=>setLevel(e.target.value)}>{["Iniciante","Intermediário","Avançado"].map(x=><option key={x}>{x}</option>)}</select></label>
    <label>Dias por semana<select value={days} onChange={e=>setDays(Number(e.target.value))}>{[2,3,4,5].map(x=><option key={x} value={x}>{x} dias</option>)}</select></label>
    <label>Duração desejada<select value={duration} onChange={e=>setDuration(e.target.value)}><option value="40">40 minutos</option><option value="50">50 minutos</option><option value="60">60 minutos</option></select></label>
   </div>
   <div className="bmi"><Target/><div><b>Foco selecionado: {focus}</b><p>O treino distribui o foco em mais de uma sessão, conforme os dias disponíveis. Exercícios abdominais fortalecem o core, mas não eliminam gordura localizada.</p></div></div>
-  <h3>Seu planejamento semanal</h3>\n  <p className="muted">{style==="Full body"?"Full body: cada sessão trabalha os principais grupos musculares, com alternância de exercícios e recuperação entre dias.":style==="Calistenia"?"Calistenia: exercícios com o peso do corpo, com progressões e regressões conforme o nível.":style==="Funcional"?"Funcional: movimentos integrados para força, estabilidade e coordenação.":"Musculação: foco em força e hipertrofia com exercícios de resistência."}</p>
+  <h3>Seu planejamento semanal</h3>
+  <p className="muted">{style==="Full body"?"Full body: cada sessão trabalha os principais grupos musculares, com alternância de exercícios e recuperação entre dias.":style==="Calistenia"?"Calistenia: exercícios com o peso do corpo, com progressões e regressões conforme o nível.":style==="Funcional"?"Funcional: movimentos integrados para força, estabilidade e coordenação.":"Musculação: foco em força e hipertrofia com exercícios de resistência."}</p>
   <div className="workout-meta"><div><small>FREQUÊNCIA</small><b>{days} dias</b></div><div><small>SESSÃO</small><b>{duration} min</b></div><div><small>AMBIENTE</small><b>{place}</b></div></div>
   {sessions.map((session,index)=><article className="workout-day" key={session.title}>
    <button type="button" className="secondary workout-day-toggle" aria-expanded={expanded===index} onClick={()=>setExpanded(expanded===index?null:index)}><span><b>{session.title} · Dia {index+1}</b><small>{session.groups.join(" · ")}</small></span><span>{expanded===index?"−":"+"}</span></button>

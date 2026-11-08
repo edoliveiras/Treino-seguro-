@@ -13,12 +13,12 @@
 - Dores/limitações ocultam a biblioteca de movimentos até avaliação individual; condições específicas exigem orientação/liberação médica declarada.
 - Conteúdo de exercícios é demonstrativo e inclui adaptações, cuidados e sinais de alerta.
 - Diário alimentar não estima calorias nem reconhece alimentos por foto.
-- Dados de treino, alimentação, peso e medidas continuam somente na sessão do navegador; ainda não são salvos no banco.
-- Fotos de evolução ainda não estão habilitadas.
+- Avaliações, parâmetros de treino, exercícios marcados, refeições, peso e medidas são salvos em um registro individual no Supabase após consentimento específico. O usuário pode conceder/retirar a autorização e apagar os dados armazenados.
+- Fotos de evolução ainda não estão habilitadas; não existe upload nem bucket de imagens.
 
 ## 3. Banco e segurança de contas
 - Projeto Supabase dedicado ativo e saudável; tabelas de cadastro, consentimentos, preferências, OTP e auditoria criadas e com RLS habilitado.
-- Migrações 001 a 007 aplicadas no banco: perfil cadastral, consentimentos separados, preferências opcionais, OTP, auditoria, proteção da função de sincronização, políticas explícitas de negação de acesso direto às tabelas internas e RPCs administrativas exclusivas da service_role.
+- Migrações de conta e autenticação aplicadas; migrações 008 e 009 criam `health_data_records`, RLS de propriedade/conta ativa/e-mail confirmado/consentimento vigente e remoção de índice sem uso. O acesso anon é negado; authenticated recebe apenas as permissões cobertas por RLS.
 - As tabelas estão vazias; não há contas ou dados clínicos cadastrados.
 - Verificação de segurança do Supabase: sem alertas ativos após as últimas correções. Operações administrativas são verificadas na Edge Function e novamente no banco, consultando o papel de administrador em app_metadata.
 - A chave publishable do projeto está configurada no cliente; nenhuma chave service_role ou segredo de provedor está no navegador ou no repositório.
@@ -39,20 +39,20 @@
 
 ## 6. Testes e validação
 - Testes de interface e regras de segurança existentes; CI executa testes, build, verificação estática das Edge Functions, testes dos componentes OTP e testes SQL das migrações em PostgreSQL temporário.
-- A execução mais recente de CI após a mudança para ativação somente por e-mail foi concluída com sucesso: instalação, testes do aplicativo, compilação, verificação de tipos das Edge Functions, testes dos componentes OTP e testes SQL das migrações.
+- A execução de CI após a mudança para ativação somente por e-mail foi concluída com sucesso. Uma nova execução foi disparada pelas alterações recentes de persistência e ainda precisa terminar.
 - Testes automatizados não substituem teste real de cadastro, confirmação de e-mail, recuperação de senha, RLS e suspensão em ambiente de homologação.
 
 ## 7. Pendências para disponibilização pública
 1. Confirmar no Supabase Auth a confirmação de e-mail, o modelo da mensagem e a lista de URLs de retorno permitidas; o teste transacional do banco confirmou que conta não verificada fica pendente e que a confirmação de e-mail a ativa.
 2. Definir a URL definitiva de publicação e configurar os redirecionamentos de autenticação.
-3. Implementar persistência segura para treino, alimentação e evolução, com RLS e consentimentos apropriados; hoje esses registros existem apenas na sessão do navegador.
+3. Homologar em duas contas reais o salvamento, carregamento após novo login, isolamento entre usuários, revogação e exclusão dos registros de saúde.
 4. Implantar a Edge Function administrativa somente quando o painel de gestão estiver pronto e criar o primeiro administrador por procedimento seguro.
 5. Realizar testes reais com duas contas: cadastro, confirmação de e-mail, recuperação, suspensão, exclusão e isolamento dos dados.
 7. Revisão jurídica da LGPD, Termos e Política; definir contato do controlador, retenção, exclusão e direitos dos titulares.
 8. Revisão clínica e editorial por profissionais habilitados antes de uso público.
 9. Planejar publicação e testar em celulares reais. Não declarar produto pronto, clinicamente validado ou em conformidade legal antes dessas etapas.
 
-## 8. Fontes bibliográficas do protótipo
+## 8. Fontes bibliográficas do aplicativo
 - Bull FC et al. (2020), diretrizes OMS: https://bjsm.bmj.com/content/54/24/1451
 - Donnelly JE et al. (2009), ACSM: https://pubmed.ncbi.nlm.nih.gov/19127177/
 - Hayden JA et al. (2021), Cochrane: https://pubmed.ncbi.nlm.nih.gov/34580864/

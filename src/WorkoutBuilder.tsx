@@ -142,12 +142,14 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   else if(/iniciante|come[cç]ando|come[cç]ar do zero/.test(q))setLevel("Iniciante");
   if(/academia|academia completa|máquina|máquinas|polia|barra e anilha/.test(q))setPlace("Academia");
   else if(/em casa|na minha casa|sem academia|peso do corpo|sem equipamento/.test(q))setPlace("Casa");
-  const dayMatch=q.match(/([2-5])\\s*(?:dias|vezes)\\s*(?:por semana|na semana)?/);
+  const dayMatch=q.match(/([2-5])\s*(?:dias|vezes)\s*(?:por semana|na semana)?/);
   if(dayMatch)setDays(Number(dayMatch[1]));
-  if(/30|minutos|meia hora/.test(q))setDuration("40");
-  else if(/40|minutos|quarenta/.test(q))setDuration("40");
-  else if(/50|minutos|cinquenta/.test(q))setDuration("50");
-  else if(/60|minutos|1 hora|uma hora|sess[aã]o longa/.test(q))setDuration("60");
+  const timeMatch=q.match(/(30|40|50|60)\\s*(?:min|minutos)/);
+  if(timeMatch)setDuration(timeMatch[1]==="30"?"40":timeMatch[1]);
+  else if(/meia hora/.test(q))setDuration("40");
+  else if(/quarenta/.test(q))setDuration("40");
+  else if(/cinquenta/.test(q))setDuration("50");
+  else if(/1 hora|uma hora|sess[aã]o longa/.test(q))setDuration("60");
   if(/gl[uú]te|bumbum/.test(q))setFocus("Glúteos");
   else if(/quadr[ií]ceps|posterior de coxa|pernas|membros inferiores/.test(q))setFocus("Pernas");
   else if(/abd[oô]men|core/.test(q))setFocus("Abdômen");
@@ -155,9 +157,9 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   else if(/costas/.test(q))setFocus("Costas");
   else if(/peito|peitoral/.test(q))setFocus("Peito");
   else if(/corpo inteiro|full.?body/.test(q))setFocus("Corpo inteiro");
-  if(/corrida|correr|5\\s?km|10\\s?km|15\\s?km/.test(q)){
+  if(/corrida|correr|5\s?km|10\s?km|15\s?km/.test(q)){
    setStyle("Corrida");
-   setRunningDistance(/15\\s?km/.test(q)?"15 km":/10\\s?km/.test(q)?"10 km":"5 km");
+   setRunningDistance(/15\s?km/.test(q)?"15 km":/10\s?km/.test(q)?"10 km":"5 km");
   } else if(/calistenia|peso corporal/.test(q))setStyle("Calistenia");
   else if(/hiit|intervalado/.test(q))setStyle("HIIT");
   else if(/funcional/.test(q))setStyle("Funcional");

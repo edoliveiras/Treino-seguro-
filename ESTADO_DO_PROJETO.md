@@ -34,7 +34,8 @@
 
 ## 5. Envio e funções administrativas — ainda não ativados
 - O fluxo público não utiliza Facebook, Meta, WhatsApp, SMS ou OTP por telefone. O código e as tabelas antigas de OTP permanecem apenas como legado de testes; não são chamados pelo aplicativo e não devem ser implantados.
-- A Edge Function administrativa ainda não foi implantada no projeto.
+- A interface de administração de contas foi criada e só aparece quando o token da conta contém o papel `admin`; ela lista dados cadastrais e oferece suspensão, reativação e exclusão, sem expor dados de saúde.
+- A Edge Function administrativa ainda não foi implantada no projeto; as ações do painel não funcionarão até a implantação e configuração da origem pública.
 - Ainda não foi criado um usuário administrador. O primeiro administrador deverá receber o papel exclusivamente por procedimento seguro no servidor, nunca por cadastro público.
 - Confirmação por e-mail depende de confirmar a configuração do Supabase Auth, URLs de retorno e template de e-mail.
 
@@ -47,7 +48,7 @@
 1. Confirmar no Supabase Auth a confirmação de e-mail, o modelo da mensagem e a lista de URLs de retorno permitidas; o teste transacional do banco confirmou que conta não verificada fica pendente e que a confirmação de e-mail a ativa.
 2. Definir a URL definitiva de publicação e configurar os redirecionamentos de autenticação.
 3. Homologar em duas contas reais o salvamento, carregamento após novo login, isolamento entre usuários, revogação e exclusão dos registros de saúde.
-4. Implantar a Edge Function administrativa somente quando o painel de gestão estiver pronto e criar o primeiro administrador por procedimento seguro.
+4. Publicar a Edge Function administrativa com a origem pública configurada e criar o primeiro administrador por procedimento seguro.
 5. Realizar testes reais com duas contas: cadastro, confirmação de e-mail, recuperação, suspensão, exclusão e isolamento dos dados.
 6. Revisão jurídica da LGPD, Termos e Política; definir contato do controlador, retenção, exclusão e direitos dos titulares.
 7. Revisão clínica e editorial por profissionais habilitados antes de uso público.

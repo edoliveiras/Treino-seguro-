@@ -67,13 +67,13 @@ export default function AuthGate() {
       return;
     }
     let alive = true;
-    supabase.auth.getSession().then(async ({ data }) => {
+    supabase!.auth.getSession().then(async ({ data }) => {
       if (!alive) return;
       setSession(data.session);
       await loadProfile(data.session?.user ?? null);
       if (alive) setLoading(false);
     });
-    const { data: listener } = supabase.auth.onAuthStateChange((event, nextSession) => {
+    const { data: listener } = supabase!.auth.onAuthStateChange((event, nextSession) => {
       if (event === "PASSWORD_RECOVERY") setMode("recovery");
       setSession(nextSession);
       window.setTimeout(() => {
@@ -115,7 +115,7 @@ export default function AuthGate() {
     const normalizedPhone = normalizePhone(phone);
     if (!/^\+55[1-9][0-9]{9,10}$/.test(normalizedPhone)) throw new Error("Informe um WhatsApp brasileiro com DDD e número válido.");
     if (password.length < 10) throw new Error("Use uma senha com pelo menos 10 caracteres.");
-    const { error: signupError } = await supabase.auth.signUp({
+    const { error: signupError } = await supabase!.auth.signUp({
       email: normalizedEmail,
       password,
       options: {
@@ -143,13 +143,13 @@ export default function AuthGate() {
 
   const signIn = async () => {
     if (!supabase) return;
-    const { error: loginError } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
+    const { error: loginError } = await supabase!.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
     if (loginError) throw loginError;
   };
 
   const sendOtp = async () => {
     if (!supabase) return;
-    const { data, error: invokeError } = await supabase.functions.invoke("phone-otp", { body: { action: "send" } });
+    const { data, error: invokeError } = await supabase!.functions.invoke("phone-otp", { body: { action: "send" } });
     if (invokeError) throw invokeError;
     if (data?.error) throw new Error(data.message || "Não foi possível enviar o código. Tente mais tarde.");
     setNotice(data?.message || "Se a solicitação puder ser atendida, você receberá as instruções.");
@@ -157,7 +157,7 @@ export default function AuthGate() {
 
   const verifyOtp = async () => {
     if (!supabase) return;
-    const { data, error: invokeError } = await supabase.functions.invoke("phone-otp", { body: { action: "verify", code: code.trim() } });
+    const { data, error: invokeError } = await supabase!.functions.invoke("phone-otp", { body: { action: "verify", code: code.trim() } });
     if (invokeError) throw invokeError;
     if (data?.error) throw new Error(data.message || "Código inválido ou expirado.");
     await loadProfile(session?.user ?? null);
@@ -166,7 +166,7 @@ export default function AuthGate() {
 
   const sendRecovery = async () => {
     if (!supabase) return;
-    const { error: recoveryError } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: window.location.origin });
+    const { error: recoveryError } = await supabase!.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: window.location.origin });
     if (recoveryError) throw recoveryError;
     setNotice("Se houver uma conta para esse e-mail, enviaremos um link de recuperação.");
   };
@@ -174,23 +174,23 @@ export default function AuthGate() {
   const updatePassword = async () => {
     if (!supabase) return;
     if (newPassword.length < 10) throw new Error("Use uma senha com pelo menos 10 caracteres.");
-    const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+    const { error: updateError } = await supabase!.auth.updateUser({ password: newPassword });
     if (updateError) throw updateError;
     setMode("login");
     setNotice("Senha atualizada. Entre novamente.");
-    await supabase.auth.signOut();
+    await supabase!.auth.signOut();
   };
 
   if (!supabaseConfigured || !supabase) return <main className="auth-shell"><section className="auth-card"><div className="auth-brand">Treino Seguro</div><h1>Estamos preparando seu acesso</h1><p>O aplicativo ainda precisa da configuração segura de conexão para liberar cadastro e login. Nenhum dado pessoal será solicitado nesta etapa.</p></section></main>;
   if (loading) return <main className="auth-shell"><section className="auth-card"><h1>Treino Seguro</h1><p>Verificando seu acesso com segurança…</p></section></main>;
 
-  if (session && profile?.account_status === "suspended") return <main className="auth-shell"><section className="auth-card"><h1>Conta temporariamente suspensa</h1><p>O acesso está bloqueado. Entre em contato com o suporte para receber orientação.</p><button className="auth-button secondary" onClick={() => void supabase.auth.signOut()}>Sair</button></section></main>;
+  if (session && profile?.account_status === "suspended") return <main className="auth-shell"><section className="auth-card"><h1>Conta temporariamente suspensa</h1><p>O acesso está bloqueado. Entre em contato com o suporte para receber orientação.</p><button className="auth-button secondary" onClick={() => void supabase!.auth.signOut()}>Sair</button></section></main>;
 
-  if (session && profile?.email_verified_at && profile.whatsapp_verified_at && profile.account_status === "active") return <><div className="account-bar"><span>Olá, {profile.full_name}</span><button onClick={() => void supabase.auth.signOut()}>Sair da conta</button></div><App /></>;
+  if (session && profile?.email_verified_at && profile.whatsapp_verified_at && profile.account_status === "active") return <><div className="account-bar"><span>Olá, {profile.full_name}</span><button onClick={() => void supabase!.auth.signOut()}>Sair da conta</button></div><App /></>;
 
-  if (session && !profile) return <main className="auth-shell"><section className="auth-card"><h1>Conferindo cadastro</h1><p>Não foi possível carregar o perfil cadastral. Atualize a página ou tente entrar novamente.</p><button className="auth-button secondary" onClick={() => void loadProfile(session.user)}>Tentar novamente</button><button className="auth-link" onClick={() => void supabase.auth.signOut()}>Sair</button></section></main>;
+  if (session && !profile) return <main className="auth-shell"><section className="auth-card"><h1>Conferindo cadastro</h1><p>Não foi possível carregar o perfil cadastral. Atualize a página ou tente entrar novamente.</p><button className="auth-button secondary" onClick={() => void loadProfile(session.user)}>Tentar novamente</button><button className="auth-link" onClick={() => void supabase!.auth.signOut()}>Sair</button></section></main>;
 
-  if (session && profile) return <main className="auth-shell"><section className="auth-card"><div className="auth-brand">Treino Seguro</div><h1>Falta confirmar sua conta</h1><p className="auth-muted">Por segurança, o conteúdo fica bloqueado até confirmar o e-mail e o WhatsApp.</p><div className="verification-row"><b>E-mail</b><span>{profile.email_verified_at ? "Confirmado" : "Aguardando confirmação"}</span></div><div className="verification-row"><b>WhatsApp</b><span>{profile.whatsapp_verified_at ? "Confirmado" : "Pendente"}</span></div>{!profile.email_verified_at && <p>Abra o link enviado ao seu e-mail. Depois volte e entre novamente.</p>}{profile.email_verified_at && !profile.whatsapp_verified_at && <><button className="auth-button" disabled={busy} onClick={(e) => void run(e, sendOtp)}>Enviar código pelo WhatsApp</button><form onSubmit={(e) => void run(e, verifyOtp)}><label>Código de 6 dígitos<input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,""))} required /></label><button className="auth-button" disabled={busy || code.length!==6}>Confirmar WhatsApp</button></form></>}{error&&<p className="auth-error">{error}</p>}{notice&&<p className="auth-success">{notice}</p>}<button className="auth-link" onClick={() => void supabase.auth.signOut()}>Sair</button></section></main>;
+  if (session && profile) return <main className="auth-shell"><section className="auth-card"><div className="auth-brand">Treino Seguro</div><h1>Falta confirmar sua conta</h1><p className="auth-muted">Por segurança, o conteúdo fica bloqueado até confirmar o e-mail e o WhatsApp.</p><div className="verification-row"><b>E-mail</b><span>{profile.email_verified_at ? "Confirmado" : "Aguardando confirmação"}</span></div><div className="verification-row"><b>WhatsApp</b><span>{profile.whatsapp_verified_at ? "Confirmado" : "Pendente"}</span></div>{!profile.email_verified_at && <p>Abra o link enviado ao seu e-mail. Depois volte e entre novamente.</p>}{profile.email_verified_at && !profile.whatsapp_verified_at && <><button className="auth-button" disabled={busy} onClick={(e) => void run(e, sendOtp)}>Enviar código pelo WhatsApp</button><form onSubmit={(e) => void run(e, verifyOtp)}><label>Código de 6 dígitos<input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,""))} required /></label><button className="auth-button" disabled={busy || code.length!==6}>Confirmar WhatsApp</button></form></>}{error&&<p className="auth-error">{error}</p>}{notice&&<p className="auth-success">{notice}</p>}<button className="auth-link" onClick={() => void supabase!.auth.signOut()}>Sair</button></section></main>;
 
   const title = mode === "signup" ? "Criar sua conta" : mode === "forgot" ? "Recuperar acesso" : mode === "recovery" ? "Criar nova senha" : "Entre na sua conta";
   return <main className="auth-shell"><section className="auth-card"><div className="auth-brand">Treino Seguro</div><span className="auth-eyebrow">SAÚDE EM MOVIMENTO</span><h1>{title}</h1><p className="auth-muted">Um espaço de orientação para adultos, com cuidado e respeito ao seu ritmo.</p>

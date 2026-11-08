@@ -47,3 +47,11 @@ describe("fluxos de segurança da interface", () => {
     expect(screen.queryByText("Caminhada confortável")).toBeNull();
   });
 });
+
+  it("oferece navegação móvel para todas as áreas do aplicativo", () => {
+    render(<App />);
+    const mobileNavigation = screen.getByRole("navigation", { name: "Navegação móvel" });
+    ["Início", "Avaliação", "Treino", "Exercícios", "Nutrição", "Evolução", "Ciência", "Privacidade"].forEach((name) => {
+      expect(mobileNavigation.querySelector('button[aria-label="Abrir ' + name + '"]')).toBeTruthy();
+    });
+  });

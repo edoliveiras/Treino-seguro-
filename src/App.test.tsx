@@ -25,7 +25,7 @@ describe("fluxos de segurança da interface", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
     completeBasicAssessment();
-    expect(screen.getByText("Movimento da semana")).toBeTruthy();
+    expect(screen.getByText("Monte um treino com seu objetivo")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
     fireEvent.change(screen.getByLabelText("Objetivo"), { target: { value: "Força" } });
@@ -109,7 +109,7 @@ describe("fluxos de segurança da interface", () => {
   it("oferece navegação móvel para todas as áreas do aplicativo", () => {
     render(<App />);
     const mobileNavigation = screen.getByRole("navigation", { name: "Navegação móvel" });
-    ["Início", "Avaliação", "Treino", "Exercícios", "Nutrição", "Evolução", "Ciência", "Privacidade"].forEach((name) => {
+    ["Início", "Avaliação", "Treino", "Montar treino", "Exercícios", "Nutrição", "Evolução", "Ciência", "Privacidade"].forEach((name) => {
       expect(mobileNavigation.querySelector('button[aria-label="Abrir ' + name + '"]')).toBeTruthy();
     });
   });

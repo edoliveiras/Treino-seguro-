@@ -25,7 +25,7 @@
 - A chave publishable do projeto está configurada no cliente; nenhuma chave service_role ou segredo de provedor está no navegador ou no repositório.
 
 ## 4. Cadastro e autenticação implementados no código
-- Tela de cadastro: nome, e-mail, WhatsApp com DDD e senha.
+- Tela de cadastro: nome, e-mail, telefone com DDD e senha.
 - Declaração de 18 anos, aceite obrigatório dos Termos e da Política; consentimento opcional para dados de saúde. Fotos e notificações não são solicitadas porque ainda não estão disponíveis.
 - Login por e-mail e senha, reenvio do link de confirmação, recuperação e redefinição de senha.
 - Confirmação do e-mail via Supabase Auth. O telefone é coletado apenas como contato, sem integração com aplicativos de mensagens ou envio de mensagens.

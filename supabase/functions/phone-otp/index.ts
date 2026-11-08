@@ -63,10 +63,18 @@ async function sendMetaWhatsApp(phoneE164: string, code: string): Promise<void> 
       template: {
         name: templateName,
         language: { code: language },
-        components: [{
-          type: "body",
-          parameters: [{ type: "text", text: code }],
-        }],
+        components: [
+          {
+            type: "body",
+            parameters: [{ type: "text", text: code }],
+          },
+          {
+            type: "button",
+            sub_type: "url",
+            index: "0",
+            parameters: [{ type: "text", text: code }],
+          },
+        ],
       },
     }),
   });
@@ -83,7 +91,8 @@ Deno.serve(async (request) => {
 
   const origin = request.headers.get("origin");
   const allowedOrigin = Deno.env.get("APP_ORIGIN");
-  if (allowedOrigin && origin !== allowedOrigin) return json(403, { error: "origin_not_allowed" });
+  if (!allowedOrigin) return json(503, { error: "service_not_configured" });
+  if (origin !== allowedOrigin) return json(403, { error: "origin_not_allowed" });
 
   const authorization = request.headers.get("Authorization");
   if (!authorization?.startsWith("Bearer ")) return json(401, { error: "authentication_required" });

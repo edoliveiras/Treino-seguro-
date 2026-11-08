@@ -120,13 +120,23 @@ export function useHealthDataPersistence(
   const deleteCloudData = useCallback(async () => {
     const client = supabase;
     if (!userId || !client) return false;
-    const { error } = await client.from("health_data_records").delete().eq("user_id", userId);
-    if (error) {
-      setStatus("Não foi possível apagar os registros salvos.");
+    const { error: consentError } = await client.from("account_consent_events").insert({
+      user_id: userId,
+      consent_type: "health_data",
+      action: "withdrawn",
+      policy_version: "2026-11-08",
+    });
+    if (consentError) {
+      setStatus("Não foi possível pausar a sincronização. Os registros não foram apagados.");
       return false;
     }
     setConsent(false);
-    setStatus("Os registros salvos foram apagados. A sincronização foi pausada para evitar que dados desta sessão sejam enviados novamente.");
+    const { error } = await client.from("health_data_records").delete().eq("user_id", userId);
+    if (error) {
+      setStatus("A autorização foi retirada, mas não foi possível apagar os registros. Tente novamente.");
+      return false;
+    }
+    setStatus("Os registros salvos foram apagados e a autorização foi retirada.");
     return true;
   }, [userId]);
 

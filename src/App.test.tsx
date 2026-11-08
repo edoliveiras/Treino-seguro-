@@ -25,7 +25,7 @@ describe("fluxos de segurança da interface", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
     completeBasicAssessment();
-    expect(screen.getByText("Monte um treino com seu objetivo")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Antes de montar seu treino" })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
     fireEvent.change(screen.getByLabelText("Objetivo"), { target: { value: "Força" } });

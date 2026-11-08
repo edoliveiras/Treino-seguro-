@@ -1,6 +1,7 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import App from "./App";
+import AdminPanel from "./AdminPanel";
 import LegalPage from "./LegalPage";
 import { supabase, supabaseConfigured } from "./lib/supabase";
 
@@ -22,6 +23,7 @@ const normalizePhone = (raw: string) => {
 export default function AuthGate() {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [adminOpen, setAdminOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState<"login" | "signup" | "forgot" | "recovery">("login");
   const [notice, setNotice] = useState("");
@@ -168,7 +170,16 @@ export default function AuthGate() {
 
   if (session && profile?.account_status === "suspended") return <main className="auth-shell"><section className="auth-card"><h1>Conta temporariamente suspensa</h1><p>O acesso está bloqueado. Entre em contato com o suporte para receber orientação.</p><button className="auth-button secondary" onClick={() => void supabase!.auth.signOut()}>Sair</button></section></main>;
 
-  if (session && profile?.email_verified_at && profile.account_status === "active") return <><div className="account-bar"><span>Olá, {profile.full_name}</span><button onClick={() => void supabase!.auth.signOut()}>Sair da conta</button></div><App userId={profile.id} /></>;
+  if (session && profile?.email_verified_at && profile.account_status === "active") {
+    const isAdmin = session.user.app_metadata?.role === "admin";
+    return <>
+      <div className="account-bar"><span>Olá, {profile.full_name}</span><div className="account-actions">
+        {isAdmin && <button type="button" onClick={() => setAdminOpen(value => !value)}>{adminOpen ? "Voltar ao aplicativo" : "Administração"}</button>}
+        <button onClick={() => void supabase!.auth.signOut()}>Sair da conta</button>
+      </div></div>
+      {isAdmin && adminOpen ? <AdminPanel /> : <App userId={profile.id} />}
+    </>;
+  }
 
   if (session && !profile) return <main className="auth-shell"><section className="auth-card"><h1>Conferindo cadastro</h1><p>Não foi possível carregar o perfil cadastral. Atualize a página ou tente entrar novamente.</p><button className="auth-button secondary" onClick={() => void loadProfile(session.user)}>Tentar novamente</button><button className="auth-link" onClick={() => void supabase!.auth.signOut()}>Sair</button></section></main>;
 

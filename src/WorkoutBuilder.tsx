@@ -63,6 +63,26 @@ const split: Record<number, Focus[][]> = {
  4:[["Glúteos","Pernas","Abdômen"],["Costas","Peito","Braços"],["Glúteos","Pernas"],["Costas","Peito","Braços","Abdômen"]],
  5:[["Glúteos","Pernas","Abdômen"],["Costas","Peito","Braços"],["Glúteos","Pernas"],["Costas","Peito","Braços","Abdômen"],["Glúteos","Abdômen"]]
 };
+function buildConjugatePairs(items: Exercise[]) {
+ const remaining = [...items];
+ const pairs: Exercise[][] = [];
+ while (remaining.length > 1) {
+  const first = remaining.shift()!;
+  const firstFocus = first.focus.filter(x => x !== "Corpo inteiro");
+  let bestIndex = 0;
+  let bestScore = Number.POSITIVE_INFINITY;
+  remaining.forEach((candidate, index) => {
+   const candidateFocus = candidate.focus.filter(x => x !== "Corpo inteiro");
+   const overlap = firstFocus.filter(x => candidateFocus.includes(x)).length;
+   const sameRegionPenalty = overlap > 0 ? 10 : 0;
+   const score = sameRegionPenalty + overlap * 5 + (candidateFocus.length === 0 ? 1 : 0);
+   if (score < bestScore) { bestScore = score; bestIndex = index; }
+  });
+  pairs.push([first, remaining.splice(bestIndex, 1)[0]]);
+ }
+ if (remaining.length) pairs.push([remaining[0]]);
+ return pairs;
+}
 export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa", initialLevel = "Iniciante", initialGoal = "Condicionamento", initialBmi = 0 }: { initialDays?: string; initialPlace?: string; initialLevel?: string; initialGoal?: string; initialBmi?: number }) {
  const goalFocus: Focus = initialGoal === "Força" ? "Corpo inteiro" : initialGoal === "Mobilidade e bem-estar" ? "Corpo inteiro" : initialGoal === "Emagrecer" ? "Corpo inteiro" : "Corpo inteiro";
  const goalStyle: Style = initialGoal === "Começar a correr" ? "Corrida" : initialGoal === "Força" ? "Musculação" : initialGoal === "Mobilidade e bem-estar" ? "Funcional" : "Full body";
@@ -84,7 +104,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    const limit=Number(duration)>=60?10:Number(duration)>=50?8:6;
    const rotated=ordered.length>0?[...ordered.slice(index%ordered.length),...ordered.slice(0,index%ordered.length)]:[];
    const selected=rotated.slice(0,limit);
-   return {title:`Treino ${String.fromCharCode(65+index)}`,groups,items:selected};
+   return {title:`Treino ${String.fromCharCode(65+index)}`,groups,items:selected,pairs:buildConjugatePairs(selected)};
   });
  },[days,place,level,duration,focus,style]);
  return <section className="panel workout-builder">
@@ -101,7 +121,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    <label>Dias por semana<select value={days} onChange={e=>setDays(Number(e.target.value))}>{[2,3,4,5].map(x=><option key={x} value={x}>{x} dias</option>)}</select></label>
    <label>Duração desejada<select value={duration} onChange={e=>setDuration(e.target.value)}><option value="40">40 minutos</option><option value="50">50 minutos</option><option value="60">60 minutos</option></select></label>
   </div>
-  <div className="bmi"><Target/><div><b>Foco selecionado: {focus}</b><p>O treino distribui o foco em mais de uma sessão, conforme os dias disponíveis. Exercícios abdominais fortalecem o core, mas não eliminam gordura localizada.</p></div></div>
+  <div className="bmi"><Target/><div><b>Foco selecionado: {focus}</b><p>Os pares conjugados alternam exercícios de grupos musculares diferentes: faça uma série de A, depois uma série de B, descanse e repita a sequência. Exercícios abdominais fortalecem o core, mas não eliminam gordura localizada.</p></div></div>
   {style==="Corrida"&&<div className="safety-alert"><b>Plano progressivo para corrida de rua — {runningDistance}</b><p>Treino educativo para quem já consegue caminhar sem desconforto e não apresenta contraindicação. Faça três sessões não consecutivas por semana, com ritmo leve em que consiga conversar. Se estiver começando do zero, alterne corrida leve e caminhada; não tente cumprir os tempos correndo sem pausas.</p><p><b>Semana 1:</b> 1 min de trote + 2 min caminhando, repetir 8 vezes.</p><p><b>Semana 2:</b> 2 min de trote + 2 min caminhando, repetir 7 vezes.</p><p><b>Semana 3:</b> 3 min de trote + 2 min caminhando, repetir 6 vezes.</p><p><b>Semana 4:</b> 5 min de trote + 2 min caminhando, repetir 5 vezes.</p><p><b>Semana 5:</b> 8 min de trote + 2 min caminhando, repetir 4 vezes.</p><p><b>Semana 6:</b> 10 min de trote + 2 min caminhando, repetir 3 vezes.</p><p><b>Semana 7:</b> 15 min de corrida leve + 2 min caminhando, repetir 2 vezes.</p><p><b>Semana 8:</b> corrida leve contínua de até 30 min, somente se as semanas anteriores foram confortáveis.</p><p><b>Meta escolhida:</b> {runningDistance}. Para 5 km, consolide as 8 semanas acima e só avance quando conseguir correr 30 minutos confortavelmente. Para 10 km, depois dessa base, faça mais 4 semanas: longão leve de 35, 40, 45 e 50 minutos, respectivamente. Para 15 km, depois da base de 5 km, faça mais 8 semanas: longão leve de 40, 45, 50, 55, 60, 65, 70 e 55 minutos, respectivamente; a última semana reduz o volume para recuperação. Aumente apenas se estiver recuperado e sem dor; não há prazo garantido para completar a distância.</p><p><b>Fortalecimento conjugado 2 vezes por semana:</b> faça 2–3 voltas de agachamento até a cadeira + elevação de panturrilhas; ponte de glúteos + bird dog; step-up baixo + prancha inclinada. Faça os movimentos em sequência com técnica confortável e descanse 60–90 segundos após cada dupla.</p><p><b>Distribuição sugerida:</b> Dia 1 intervalos corrida/caminhada; Dia 2 caminhada confortável e fortalecimento; Dia 3 corrida leve mais longa. Deixe ao menos um dia de recuperação entre corridas.</p><p>Interrompa se houver dor que altere a passada, tontura, dor no peito ou falta de ar fora do esperado. Procure avaliação profissional antes de iniciar se houver doença, lesão, dor persistente, gravidez ou longo período de sedentarismo.</p></div>}
   <h3>Seu planejamento semanal</h3>
   <p className="muted">{style==="Full body"?"Full body: cada sessão trabalha os principais grupos musculares, com alternância de exercícios e recuperação entre dias.":style==="Calistenia"?"Calistenia: exercícios com o peso do corpo, com progressões e regressões conforme o nível.":style==="Funcional"?"Funcional: movimentos integrados para força, estabilidade e coordenação.":style==="HIIT"?"HIIT: blocos curtos de esforço alternados com recuperação; ajuste a intensidade ao condicionamento.":"Musculação: foco em força e hipertrofia com exercícios de resistência."}</p>
@@ -110,12 +130,12 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    <button type="button" className="secondary workout-day-toggle" aria-expanded={expanded===index} onClick={()=>setExpanded(expanded===index?null:index)}><span><b>{session.title} · Dia {index+1}</b><small>{session.groups.join(" · ")}</small></span><span>{expanded===index?"−":"+"}</span></button>
    {expanded===index&&<div className="workout-day-content">
     <p><b>Aquecimento:</b> 8–10 minutos de caminhada/bicicleta leve e mobilidade dinâmica confortável. Não pule esta etapa.</p>
-    {Array.from({length:Math.ceil(session.items.length/2)},(_,pairIndex)=>session.items.slice(pairIndex*2,pairIndex*2+2)).map((pair,pairIndex)=><div className="conjugate-block" key={pairIndex}><b>Bloco conjugado {pairIndex+1} · séries conjugadas</b>{pair.map((e,i)=><div className="planned-exercise" key={e.name}><div><b>{pairIndex*2+i+1}. {e.name}</b><p>{e.cue}</p><small>{Math.min(5,Number.parseInt(e.sets,10)+(level==="Iniciante"?0:level==="Intermediário"?1:2))} séries · {e.reps} repetições/tempo · descanso {e.rest}</small><a className="exercise-demo-link" href={`https://www.youtube.com/results?search_query=${encodeURIComponent(e.name+" execução correta")}`} target="_blank" rel="noreferrer">▶ Ver execução em vídeo</a></div></div>)}<p className="muted">Alterne A e B e complete o número de séries indicado em cada exercício. Descanse 60–90 segundos após cada volta da dupla. Se a técnica cair, aumente a pausa ou faça as séries separadamente.</p></div>)}
+    {session.pairs.map((pair,pairIndex)=><div className="conjugate-block" key={pairIndex}><b>{pair.length===2?`Bloco conjugado ${pairIndex+1} · alternância A/B`:`Exercício complementar ${pairIndex+1}`}</b>{pair.map((e,i)=><div className="planned-exercise" key={e.name}><div><b>{pair.length===2?`Exercício ${i===0?"A":"B"}: ${e.name}`:`Exercício: ${e.name}`}</b><p>{e.cue}</p><small>{Math.min(5,Number.parseInt(e.sets,10)+(level==="Iniciante"?0:level==="Intermediário"?1:2))} séries · {e.reps} repetições/tempo · descanso {e.rest}</small><a className="exercise-demo-link" href={`https://www.youtube.com/results?search_query=${encodeURIComponent(e.name+" execução correta")}`} target="_blank" rel="noreferrer">▶ Ver execução em vídeo</a></div></div>)}<p className="muted">{pair.length===2?"Faça 1 série do exercício A e, logo em seguida, 1 série do exercício B. Isso completa uma volta. Descanse 60–90 segundos e repita a sequência até completar as séries prescritas dos dois exercícios. Exemplo: rosca bíceps → agachamento → descanso → repetir.":"Faça as séries deste exercício com a pausa indicada."} Se a técnica cair, aumente a pausa ou reduza a carga.</p></div>)}
     <p><b>Finalização:</b> 5–8 minutos de caminhada leve, respiração e mobilidade suave. Registre cargas e repetições.</p>
    </div>}
   </article>)}
   <div className="safety-alert"><b>Como progredir ao longo de 7 semanas</b><p><b>Semanas 1–2:</b> aprenda a técnica e termine as séries sentindo que conseguiria fazer mais 3 repetições.</p><p><b>Semanas 3–5:</b> quando completar o topo da faixa de repetições com boa técnica, aumente um pouco a carga ou a dificuldade; não aumente tudo ao mesmo tempo.</p><p><b>Semana 6:</b> consolide a execução sem treinar até a falha.</p><p><b>Semana 7:</b> reduza cerca de 20–30% das séries e reavalie conforto, técnica e recuperação. Depois, ajuste o próximo bloco.</p></div>
-  <p className="muted"><Clock3 size={15}/> O tempo total inclui 8–10 min de aquecimento, 3 voltas completas de cada bloco com pausas entre voltas e 5–8 min de finalização. Para 40/50/60 min, o plano agora seleciona até 6/8/10 exercícios principais; o tempo real varia conforme ritmo, carga e pausas. Não acelere a execução para caber no relógio.</p>
+  <p className="muted"><Clock3 size={15}/> O tempo total inclui 8–10 min de aquecimento, as séries conjugadas de cada bloco, alternando A e B com pausas entre voltas e 5–8 min de finalização. Para 40/50/60 min, o plano agora seleciona até 6/8/10 exercícios principais; o tempo real varia conforme ritmo, carga e pausas. Não acelere a execução para caber no relógio.</p>
   {initialBmi >= 35 && <div className="safety-alert"><b>Adaptação importante</b><p>Como o IMC informado está na faixa de 35 ou mais, este plano não inclui corrida nem saltos como recomendação automática. Priorize movimentos confortáveis e obtenha orientação profissional individual antes de aumentar a intensidade.</p></div>}
   <p className="muted">Este é um plano educativo inicial baseado nas respostas da avaliação, não uma prescrição clínica. Se houver dor, limitação, condição clínica ou dúvida sobre a execução, suspenda o exercício e procure avaliação individual de profissional de Educação Física e/ou saúde. A seleção automática não substitui avaliação presencial.</p>
   <button type="button" className="secondary" onClick={()=>{setFocus("Glúteos");setStyle("Musculação");setDays(3);setPlace("Casa");setLevel("Iniciante");setDuration("50");setRunningDistance("5 km");setExpanded(0)}}><RotateCcw size={16}/> Restaurar opções iniciais</button>

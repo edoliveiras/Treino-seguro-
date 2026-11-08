@@ -3,7 +3,7 @@ import { generateOtp, hmacOtp, isValidOtp } from "./otp.ts";
 
 Deno.test("generateOtp always returns six decimal digits", () => {
   for (let i = 0; i < 500; i++) {
-    assertMatch(generateOtp(), /^\\d{6}$/);
+    assertMatch(generateOtp(), /^\d{6}$/);
   }
 });
 

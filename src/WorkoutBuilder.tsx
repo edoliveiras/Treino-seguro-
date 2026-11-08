@@ -144,7 +144,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   else if(/em casa|na minha casa|sem academia|peso do corpo|sem equipamento/.test(q))setPlace("Casa");
   const dayMatch=q.match(/([2-5])\s*(?:dias|vezes)\s*(?:por semana|na semana)?/);
   if(dayMatch)setDays(Number(dayMatch[1]));
-  const timeMatch=q.match(/(30|40|50|60)\\s*(?:min|minutos)/);
+  const timeMatch=q.match(/(30|40|50|60)\s*(?:min|minutos)/);
   if(timeMatch)setDuration(timeMatch[1]==="30"?"40":timeMatch[1]);
   else if(/meia hora/.test(q))setDuration("40");
   else if(/quarenta/.test(q))setDuration("40");

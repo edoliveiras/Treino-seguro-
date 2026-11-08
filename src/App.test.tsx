@@ -84,6 +84,28 @@ describe("fluxos de segurança da interface", () => {
     expect((screen.getAllByLabelText("Nenhuma")[0] as HTMLInputElement).checked).toBe(true);
   });
 
+  it("invalida o treino quando peso, altura, dias, local, nível ou confirmações mudam", () => {
+    const changes = [
+      () => fireEvent.change(screen.getByLabelText("Peso atual (kg)"), { target: { value: "91" } }),
+      () => fireEvent.change(screen.getByLabelText("Altura (cm)"), { target: { value: "171" } }),
+      () => fireEvent.change(screen.getByLabelText("Dias disponíveis"), { target: { value: "4" } }),
+      () => fireEvent.change(screen.getByLabelText("Local"), { target: { value: "Academia" } }),
+      () => fireEvent.change(screen.getByLabelText("Nível"), { target: { value: "Intermediário" } }),
+      () => fireEvent.click(screen.getByText("Confirmo que tenho 18 anos ou mais.").previousElementSibling as HTMLInputElement),
+      () => fireEvent.click(screen.getByText(/Compreendo que o app é educativo/).previousElementSibling as HTMLInputElement),
+    ];
+    for (const change of changes) {
+      cleanup();
+      render(<App />);
+      fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
+      completeBasicAssessment();
+      fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
+      change();
+      fireEvent.click(screen.getByRole("button", { name: "Treino" }));
+      expect(screen.getByText("Comece com segurança")).toBeTruthy();
+    }
+  });
+
   it("oferece navegação móvel para todas as áreas do aplicativo", () => {
     render(<App />);
     const mobileNavigation = screen.getByRole("navigation", { name: "Navegação móvel" });

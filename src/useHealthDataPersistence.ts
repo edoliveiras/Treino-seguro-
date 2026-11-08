@@ -92,7 +92,7 @@ export function useHealthDataPersistence(
     const { error } = await supabase.from("account_consent_events").insert({
       user_id: userId,
       consent_type: "health_data",
-      action: "revoked",
+      action: "withdrawn",
       policy_version: "2026-11-08",
     });
     if (error) {

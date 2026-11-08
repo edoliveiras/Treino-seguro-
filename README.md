@@ -8,10 +8,13 @@ npm install
 npm run dev
 ```
 
-## Testar build
+## Testes automatizados
 ```bash
+npm test
 npm run build
 ```
+
+O CI também verifica a função de OTP com Deno e executa as migrações de contas/OTP em um PostgreSQL temporário, com stubs mínimos de Supabase Auth. Essa simulação verifica regras SQL, mas não substitui homologação em um projeto Supabase real.
 
 ## Segurança e limites
 - Não diagnostica nem substitui médico, nutricionista ou profissional de Educação Física.
@@ -20,7 +23,7 @@ npm run build
 - IMC é apenas triagem. IMC ≥ 35 não gera recomendação automática para corrida.
 - Dor no peito, falta de ar intensa/incomum, tontura, desmaio, fraqueza/formigamento novo ou dor forte/piorando exigem interrupção e avaliação.
 - Esta versão é demonstração: sem autenticação, banco de dados, sincronização, upload de fotos, cálculo nutricional por imagem ou histórico persistente.
-- Dados digitados ficam apenas na memória da página e desaparecem ao atualizar/fechar. Não insira dados sensíveis reais nesta demonstração.
+- Dados digitados ficam apenas na memória da página e desaparecem ao atualizar/fechar. A área Privacidade oferece um comando para apagar imediatamente os dados da sessão. Não insira dados sensíveis reais nesta demonstração.
 
 ## Fontes
 - Bull FC et al. WHO 2020 guidelines. https://bjsm.bmj.com/content/54/24/1451

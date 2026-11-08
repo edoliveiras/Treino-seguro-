@@ -11,7 +11,7 @@ export function generateOtp(): string {
 }
 
 export function isValidOtp(value: unknown): value is string {
-  return typeof value === "string" && /^\\d{6}$/.test(value);
+  return typeof value === "string" && /^\d{6}$/.test(value);
 }
 
 export async function hmacOtp(code: string, secret: string): Promise<string> {

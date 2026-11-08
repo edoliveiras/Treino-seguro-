@@ -4,7 +4,7 @@
 ## 1. Projeto
 - Aplicativo web em português, responsivo e mobile-first, destinado a adultos (18+).
 - Código React + TypeScript + Vite; repositório GitHub na branch main. Lovable permanece apenas como visualizador.
-- O workspace Lovable consultado não possui um projeto Treino Seguro cadastrado; por isso ainda não existe prévia ou URL publicada do aplicativo nessa plataforma.
+- O workspace Lovable consultado não possui um projeto Treino Seguro cadastrado. A configuração `vercel.json` foi adicionada, mas o projeto ainda não foi conectado a um serviço de hospedagem e não existe URL pública.
 - Banco Supabase dedicado ao Treino Seguro. O projeto Empório EdTudo não foi acessado nem alterado.
 
 ## 2. Aplicativo existente
@@ -40,7 +40,7 @@
 
 ## 6. Testes e validação
 - Testes de interface, persistência com consentimento, regras de segurança, build, verificação estática das Edge Functions, testes dos componentes OTP e testes SQL das migrações em PostgreSQL temporário.
-- A execução CI #195 concluiu com sucesso: testes do aplicativo, compilação, tipos das Edge Functions, testes OTP e migrações SQL passaram. A execução seguinte, após ajustes de texto legal e cadastro, está em validação.
+- A execução CI #201 concluiu com sucesso: testes do aplicativo (incluindo consentimento e persistência), compilação, tipos das Edge Functions, testes OTP e migrações SQL passaram.
 - Testes automatizados não substituem teste real de cadastro, confirmação de e-mail, recuperação de senha, RLS e suspensão em ambiente de homologação.
 
 ## 7. Pendências para disponibilização pública

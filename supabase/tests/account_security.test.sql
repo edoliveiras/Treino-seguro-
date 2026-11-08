@@ -33,6 +33,7 @@ $$;
 \ir ../migrations/20261108153447_health_records_policy_and_index_tuning.sql
 \ir ../migrations/20261108154504_rls_performance_and_fk_indexes.sql
 \ir ../migrations/20261108154727_health_records_delete_for_suspended_accounts.sql
+\ir ../migrations/20261108155740_secure_first_admin_bootstrap.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),
@@ -65,7 +66,29 @@ begin
   if (select count(*) from public.account_consent_events where user_id='00000000-0000-4000-8000-000000000001') <> 2 then
     raise exception 'required_consents_not_recorded';
   end if;
-end $$;
+end $;
+
+do $bootstrap_permissions$
+begin
+  if has_function_privilege('authenticated','public.bootstrap_first_admin(uuid)','EXECUTE') then
+    raise exception 'authenticated_can_bootstrap_admin';
+  end if;
+  if not has_function_privilege('service_role','public.bootstrap_first_admin(uuid)','EXECUTE') then
+    raise exception 'service_role_cannot_bootstrap_admin';
+  end if;
+end
+$bootstrap_permissions$;
+set role service_role;
+set request.jwt.claim.role = 'service_role';
+select public.bootstrap_first_admin('00000000-0000-4000-8000-000000000005');
+reset role;
+do $bootstrap_result$
+begin
+  if (select raw_app_meta_data ->> 'role' from auth.users where id='00000000-0000-4000-8000-000000000005') <> 'admin' then
+    raise exception 'first_admin_bootstrap_failed';
+  end if;
+end
+$bootstrap_result$;
 
 update auth.users set raw_app_meta_data='{"role":"admin"}'::jsonb
 where id='00000000-0000-4000-8000-000000000001';

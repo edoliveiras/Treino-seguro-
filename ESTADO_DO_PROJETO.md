@@ -1,5 +1,5 @@
 # ESTADO_DO_PROJETO — Treino Seguro
-Última atualização: 2026-11-08
+Última atualização: 2026-11-08 (etapa: handoff persistente + exclusividade de triagem)
 
 ## A. Funções já prontas no código (protótipo)
 - Aplicação React + TypeScript + Vite, interface em português e responsiva/mobile-first.
@@ -51,7 +51,7 @@
 - ESTADO_DO_PROJETO.md não existia no repositório até esta atualização.
 - A compilação e a execução no navegador não foram comprovadas; workflow CI está presente, status não consultado.
 - Campos e listas de avaliação usam estado local; atualizar/fechar página perde os dados.
-- Controles de dores/condições permitem marcar simultaneamente “Nenhuma” e outras opções; precisa corrigir.
+- Seleção “Nenhuma” nos grupos de dores/condições agora é mutuamente exclusiva com as demais opções.
 - A confirmação de liberação médica é autodeclarada e não verificada.
 - O cálculo do IMC não valida todos os limites clínicos e não deve ser usado para prescrição.
 - Diário alimentar não calcula calorias nem reconhece fotos.
@@ -59,4 +59,4 @@
 - Fontes constam no código com links; auditoria de metadados e adequação de cada alegação ainda pendente.
 
 ## F. Próximo passo exato
-Consultar o último workflow GitHub Actions do branch main e obter o resultado de `npm run build`. Se falhar, corrigir os erros no código e repetir até três abordagens. Depois corrigir a seleção mutuamente exclusiva de “Nenhuma” na avaliação e atualizar este arquivo ao fim da etapa.
+Consultar o workflow GitHub Actions acionado pelo commit de correção c7b9b7af5a7b0e575c5570c2717818d87471adfa e obter o resultado de `npm run build`. Se falhar, corrigir os erros no código e repetir até três abordagens. Depois revisar os bloqueios de segurança da avaliação e atualizar este arquivo ao fim da etapa.

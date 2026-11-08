@@ -71,22 +71,23 @@ function metadata(e:Entry){
  return {level,place:gym&&home?"Academia ou casa":gym?"Academia":"Casa",alert,regression:regress,progression:progress};
 }
 const imageUrl="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=720&q=75";
-export default function ExerciseLibrary(){
+export default function ExerciseLibrary({ pains=[] }: { pains?: string[] }){
  const [query,setQuery]=useState(""),[segment,setSegment]=useState("Todos"),[activity,setActivity]=useState("Todos"),[risk,setRisk]=useState("Todos");
  const segments=useMemo(()=>["Todos",...Array.from(new Set(all.map(x=>x.segment)))],[ ]);
  const activities=["Todos","Musculação","Calistenia","Isometria","Funcional","Cardio","Propriocepção","Alongamento","Treinos especiais"];
- const filtered=useMemo(()=>all.filter(e=>(segment==="Todos"||e.segment===segment)&&(activity==="Todos"||e.activity===activity)&&(risk==="Todos"||metadata(e).alert===risk)&&(!query||[e.name,e.segment,e.activity].join(" ").toLowerCase().includes(query.toLowerCase()))),[query,segment,activity,risk]);
+ const hiddenByPain=(e:Entry)=>{const a=metadata(e).alert;return (pains.includes("Joelho")&&a==="Atenção joelho")||(pains.includes("Lombar")&&a==="Atenção lombar");};
+ const filtered=useMemo(()=>all.filter(e=>!hiddenByPain(e)&&(segment==="Todos"||e.segment===segment)&&(activity==="Todos"||e.activity===activity)&&(risk==="Todos"||metadata(e).alert===risk)&&(!query||[e.name,e.segment,e.activity].join(" ").toLowerCase().includes(query.toLowerCase()))),[query,segment,activity,risk,pains]);
  const count=filtered.length;
  return <section className="panel exercise-library">
   <span className="eyebrow">BIBLIOTECA COMPLETA · {all.length} EXERCÍCIOS E VARIAÇÕES</span><h2>Exercícios por segmento muscular</h2>
-  <p>Consulte cada movimento, veja uma imagem ilustrativa e abra uma busca de demonstrações em vídeo. Os níveis e alertas são classificações educativas iniciais, não liberação clínica individual.</p>
+  <p>Consulte cada movimento, veja uma imagem ilustrativa e abra uma busca de demonstrações em vídeo. Os níveis e alertas são classificações educativas iniciais, não liberação clínica individual. Exercícios sinalizados para joelho ou lombar são ocultados quando a respectiva queixa foi informada na avaliação.</p>
   <div className="library-filters">
    <label className="library-search"><Search size={17}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Buscar exercício ou músculo"/></label>
    <label>Segmento<select value={segment} onChange={e=>setSegment(e.target.value)}>{segments.map(s=><option key={s}>{s}</option>)}</select></label>
    <label>Tipo de atividade<select value={activity} onChange={e=>setActivity(e.target.value)}>{activities.map(s=><option key={s}>{s}</option>)}</select></label>
    <label>Alerta<select value={risk} onChange={e=>setRisk(e.target.value)}>{["Todos","Baixo impacto","Atenção joelho","Atenção lombar"].map(s=><option key={s}>{s}</option>)}</select></label>
   </div>
-  <p className="library-count">Exibindo {count} de {all.length} exercícios</p>
+  <p className="library-count">Exibindo {count} de {all.length} exercícios{pains.length>0?" · itens com alerta compatível com suas queixas foram ocultados":""}</p>
   {filtered.map((e,i)=>{const m=metadata(e);return <article className="library-card" key={e.segment+e.activity+e.name+i}>
    <img src={imageUrl} alt={"Foto ilustrativa de exercício físico: "+e.name} loading="lazy"/>
    <div className="library-card-body"><div className="library-tags"><span>{e.segment}</span><span>{e.activity}</span></div><h3>{e.name}</h3>

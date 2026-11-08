@@ -32,6 +32,7 @@ $$;
 \ir ../migrations/20261108153254_user_health_records_with_consent.sql
 \ir ../migrations/20261108153447_health_records_policy_and_index_tuning.sql
 \ir ../migrations/20261108154504_rls_performance_and_fk_indexes.sql
+\ir ../migrations/20261108154727_health_records_delete_for_suspended_accounts.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),
@@ -270,6 +271,8 @@ $health_rls$;
 reset role;
 insert into public.account_consent_events(user_id,consent_type,action,policy_version)
 values ('00000000-0000-4000-8000-000000000001','health_data','withdrawn','test-v1');
+update public.profiles set account_status='suspended'
+where id='00000000-0000-4000-8000-000000000001';
 set role authenticated;
 set request.jwt.claim.role = 'authenticated';
 set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
@@ -292,6 +295,8 @@ begin
 end
 $health_revoke$;
 reset role;
+update public.profiles set account_status='active'
+where id='00000000-0000-4000-8000-000000000001';
 
 -- Privileged actions are performed only through service_role after server-side
 -- verification of the admin caller stored in auth.users.raw_app_meta_data.

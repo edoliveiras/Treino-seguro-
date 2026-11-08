@@ -92,7 +92,8 @@ $$;
 
 create or replace function public.record_phone_otp_delivery(
   p_challenge_id uuid,
-  p_outcome text
+  p_outcome text,
+  p_provider text
 ) returns void
 language plpgsql
 security definer
@@ -103,9 +104,10 @@ begin
     raise exception 'not_authorized' using errcode = '42501';
   end if;
   if p_outcome not in ('sent','failed') then raise exception 'invalid_outcome'; end if;
+  if p_provider not in ('meta_whatsapp','twilio_sms') then raise exception 'invalid_provider'; end if;
 
   update public.phone_otp_send_log
-    set outcome = p_outcome
+    set outcome = p_outcome, provider = p_provider
     where challenge_id = p_challenge_id and outcome = 'queued';
 
   if not found then raise exception 'challenge_not_found'; end if;
@@ -171,13 +173,15 @@ end;
 $$;
 
 revoke all on function public.create_phone_otp_challenge(uuid,text) from public, anon, authenticated;
-revoke all on function public.record_phone_otp_delivery(uuid,text) from public, anon, authenticated;
+revoke all on function public.record_phone_otp_delivery(uuid,text,text) from public, anon, authenticated;
 revoke all on function public.verify_phone_otp_challenge(uuid,text) from public, anon, authenticated;
 grant execute on function public.create_phone_otp_challenge(uuid,text) to service_role;
-grant execute on function public.record_phone_otp_delivery(uuid,text) to service_role;
+grant execute on function public.record_phone_otp_delivery(uuid,text,text) to service_role;
 grant execute on function public.verify_phone_otp_challenge(uuid,text) to service_role;
 
 comment on function public.create_phone_otp_challenge(uuid,text) is
   'Cria OTP de cadastro com limite de 3 envios/hora, 60s entre envios e expiração de 10 min.';
+comment on function public.record_phone_otp_delivery(uuid,text,text) is
+  'Registra resultado e canal efetivamente utilizado (Meta WhatsApp ou Twilio SMS).';
 comment on function public.verify_phone_otp_challenge(uuid,text) is
   'Valida OTP uma única vez; máximo de 5 tentativas e bloqueio de 15 minutos após falhas.';

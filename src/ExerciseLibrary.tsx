@@ -70,6 +70,10 @@ function metadata(e:Entry){
  const progress=/Avançado/.test(level)?"maior controle, amplitude ou carga apenas com técnica consolidada":"aumentar gradualmente resistência, amplitude ou tempo";
  return {level,place:gym&&home?"Academia ou casa":gym?"Academia":"Casa",alert,regression:regress,progression:progress};
 }
+export type WorkoutCatalogEntry = { name:string; segment:string; activity:string; level:string; place:string; alert:string };
+export function getWorkoutCatalog(): WorkoutCatalogEntry[] {
+ return all.map(entry=>({ ...entry, ...metadata(entry) }));
+}
 const imageUrl="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=720&q=75";
 export default function ExerciseLibrary({ pains=[] }: { pains?: string[] }){
  const [query,setQuery]=useState(""),[segment,setSegment]=useState("Todos"),[activity,setActivity]=useState("Todos"),[risk,setRisk]=useState("Todos");

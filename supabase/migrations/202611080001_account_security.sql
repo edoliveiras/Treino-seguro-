@@ -16,7 +16,7 @@ create table if not exists public.profiles (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   check (email = lower(email)),
-  check (whatsapp_e164 ~ '^\\+[1-9][0-9]{7,14}$')
+  check (whatsapp_e164 ~ '^\+[1-9][0-9]{7,14}$')
 );
 
 create table if not exists public.account_consent_events (
@@ -46,7 +46,7 @@ create table if not exists public.phone_otp_challenges (
   verified_at timestamptz,
   consumed_at timestamptz,
   created_at timestamptz not null default now(),
-  check (phone_e164 ~ '^\\+[1-9][0-9]{7,14}$')
+  check (phone_e164 ~ '^\+[1-9][0-9]{7,14}$')
 );
 create index if not exists phone_otp_challenges_phone_created_idx
   on public.phone_otp_challenges(phone_e164, created_at desc);
@@ -108,9 +108,9 @@ begin
   v_name := nullif(trim(new.raw_user_meta_data ->> 'full_name'), '');
   v_phone := nullif(new.raw_user_meta_data ->> 'whatsapp_e164', '');
   if tg_op = 'INSERT' then
-    if new.raw_user_meta_data ->> 'adult_confirmed' <> 'true'
-       or new.raw_user_meta_data ->> 'terms_accepted' <> 'true'
-       or new.raw_user_meta_data ->> 'privacy_accepted' <> 'true' then
+    if coalesce(new.raw_user_meta_data ->> 'adult_confirmed','') <> 'true'
+       or coalesce(new.raw_user_meta_data ->> 'terms_accepted','') <> 'true'
+       or coalesce(new.raw_user_meta_data ->> 'privacy_accepted','') <> 'true' then
       raise exception 'required_signup_acknowledgements_missing';
     end if;
     if v_name is not null and v_phone is not null then

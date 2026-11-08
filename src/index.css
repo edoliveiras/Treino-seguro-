@@ -171,3 +171,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .calorie-log-row span{overflow-wrap:anywhere}.calorie-log-row>b{white-space:nowrap;color:#315b3d}
 .calorie-log-row button{border:0;border-radius:50%;width:27px;height:27px;background:#fff0ee;color:#91372f;font-size:19px;cursor:pointer}
 @media(max-width:600px){.calorie-summary{grid-template-columns:1fr}.calorie-summary>div{display:flex;align-items:center;justify-content:space-between;gap:10px}.calorie-summary b{font-size:16px}.calorie-preview b{font-size:16px}}
+
+
+/* Diário alimentar: fotos opcionais dos alimentos */
+.photo-upload { display: grid; gap: 8px; margin: 14px 0; font-weight: 600; }
+.photo-upload input { width: 100%; padding: 12px; border: 1px dashed var(--border, #cbd5e1); border-radius: 12px; background: var(--surface, #fff); }
+.food-photo-preview { display: flex; align-items: center; gap: 12px; margin: 10px 0 16px; flex-wrap: wrap; }
+.food-photo-preview img { width: 112px; height: 112px; object-fit: cover; border-radius: 12px; }
+.food-log-photo { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; flex: 0 0 auto; }

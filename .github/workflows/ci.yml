@@ -33,6 +33,9 @@ jobs:
       - run: npm run build
       - name: Type-check Supabase Edge Functions
         run: deno check --no-lock supabase/functions/phone-otp/index.ts
+        # Keep the admin endpoint type-checked with the OTP function.
+      - name: Type-check admin account Edge Function
+        run: deno check --no-lock supabase/functions/admin-account/index.ts
       - name: Test OTP security primitives
         run: deno test --no-lock supabase/functions/phone-otp/otp_test.ts
       - name: Test account and OTP database migrations

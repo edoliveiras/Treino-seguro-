@@ -115,7 +115,7 @@ describe("persistência de dados pessoais de saúde", () => {
     await waitFor(() => expect(screen.getByTestId("consent").textContent).toBe("ativo"));
     fireEvent.click(screen.getByRole("button", { name: "Revogar" }));
     await waitFor(() => expect(screen.getByTestId("consent").textContent).toBe("inativo"));
-    expect(state.consentWrites.at(-1)?.action).toBe("withdrawn");
+    expect(state.consentWrites[state.consentWrites.length - 1]?.action).toBe("withdrawn");
   });
 
   it("retira o consentimento antes de apagar os registros armazenados", async () => {

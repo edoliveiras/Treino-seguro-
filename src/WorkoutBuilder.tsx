@@ -56,6 +56,10 @@ const library: Exercise[] = [
  {name:"Elevação alternada de joelhos",focus:["Abdômen","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["HIIT","Funcional"],sets:"3",reps:"40 s",rest:"30–40 s",cue:"Eleve um joelho de cada vez em ritmo constante, sem inclinar o tronco."},
  {name:"Toque de calcanhar em pé",focus:["Pernas","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["HIIT","Funcional"],sets:"3",reps:"40 s",rest:"30–40 s",cue:"Alterne o toque do calcanhar à frente, movimentando os braços naturalmente."},
  {name:"Abdominal em pé com joelho cruzado",focus:["Abdômen","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["HIIT","Funcional"],sets:"3",reps:"30–40 s",rest:"30–40 s",cue:"Aproxime cotovelo e joelho opostos sem puxar o pescoço e sem acelerar demais."}
+ {name:"Hip thrust com barra",focus:["Glúteos","Pernas"],home:false,gym:true,beginner:false,styles:["Musculação"],sets:"4",reps:"6–10",rest:"150 s",cue:"Apoie as costas no banco, mantenha o queixo recolhido e termine estendendo o quadril sem arquear a lombar."},
+ {name:"Agachamento búlgaro",focus:["Glúteos","Pernas"],home:true,gym:true,beginner:false,styles:["Musculação"],sets:"3",reps:"8–10 por lado",rest:"120 s",cue:"Use apoio se necessário, incline levemente o tronco e desça apenas mantendo equilíbrio e joelho alinhado."},
+ {name:"Coice de glúteo na polia",focus:["Glúteos"],home:false,gym:true,beginner:true,styles:["Musculação"],sets:"3",reps:"12–15 por lado",rest:"60–75 s",cue:"Mantenha o tronco estável e mova a perna pelo quadril, sem compensar com a lombar."},
+ {name:"Leg press",focus:["Pernas","Glúteos"],home:false,gym:true,beginner:true,styles:["Musculação"],sets:"3",reps:"10–12",rest:"120 s",cue:"Ajuste a amplitude sem tirar o quadril do encosto; mantenha joelhos acompanhando os pés."},
 ];
 const split: Record<number, Focus[][]> = {
  2:[["Glúteos","Pernas","Abdômen"],["Costas","Peito","Braços","Abdômen"]],
@@ -93,23 +97,49 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
  const [level,setLevel]=useState(initialLevel);
  const [duration,setDuration]=useState("50");
  const [runningDistance,setRunningDistance]=useState("5 km");
+ const [aiRequest,setAiRequest]=useState("");
+ const [generatedRequest,setGeneratedRequest]=useState("");
  const [expanded,setExpanded]=useState<number|null>(0);
+ const generateFromRequest=()=>{
+  const q=aiRequest.trim().toLowerCase();
+  if(!q)return;
+  setGeneratedRequest(aiRequest.trim());
+  if(/gl[uú]te|bumbum|perna|inferior|posterior|quadr[ií]ceps/.test(q)){setFocus(/perna|inferior|quadr[ií]ceps/.test(q)&&!/gl[uú]te|bumbum/.test(q)?"Pernas":"Glúteos");setStyle("Musculação");setDuration(/40|quarenta/.test(q)?"40":/50|cinquenta/.test(q)?"50":"60");}
+  else if(/abd[oô]men|core/.test(q))setFocus("Abdômen");
+  else if(/bra[cç]o|b[ií]ceps|tr[ií]ceps/.test(q))setFocus("Braços");
+  else if(/costas/.test(q))setFocus("Costas");
+  else if(/corrida|correr|5\s?km|10\s?km|15\s?km/.test(q)){setStyle("Corrida");setRunningDistance(/15\s?km/.test(q)?"15 km":/10\s?km/.test(q)?"10 km":"5 km");}
+  else if(/calistenia/.test(q))setStyle("Calistenia");
+  else if(/hiit/.test(q))setStyle("HIIT");
+  else if(/funcional/.test(q))setStyle("Funcional");
+  else if(/full.?body|corpo inteiro/.test(q))setStyle("Full body");
+  setExpanded(0);
+ };
+ const glutePriority=/gl[uú]te|bumbum|perna|inferior|posterior|quadr[ií]ceps/.test(generatedRequest.toLowerCase());
  const sessions=useMemo(()=>{
   const templates=style==="Full body"||style==="Corrida"?Array.from({length:days},()=>["Glúteos","Pernas","Costas","Peito","Braços","Abdômen","Corpo inteiro"] as Focus[]):split[days];
   return templates.map((groups,index)=>{
    const candidates=library.filter(e=>(e.home&&place==="Casa"||e.gym&&place==="Academia")&&e.styles.includes(style)&&groups.some(g=>e.focus.includes(g))&&(level!=="Iniciante"||e.beginner||e.focus.includes("Glúteos")&&e.name==="Elevação pélvica"));
    const unique=candidates.filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i);
    const preferred=unique.filter(e=>e.focus.includes(focus));
-   const ordered=[...preferred,...unique.filter(e=>!preferred.includes(e))];
+   const gluteOrder=["Hip thrust com barra","Elevação pélvica","Agachamento búlgaro","Levantamento terra romeno com halteres","Agachamento goblet","Leg press","Coice de glúteo na polia","Abdução de quadril com faixa","Mesa flexora","Agachamento sumô","Afundo apoiado"];
+   const glutePreferred=glutePriority&&focus==="Glúteos"&&style==="Musculação"?gluteOrder.map(n=>unique.find(e=>e.name===n)).filter((e):e is Exercise=>Boolean(e)):[];
+   const ordered=[...glutePreferred,...preferred.filter(e=>!glutePreferred.includes(e)),...unique.filter(e=>!preferred.includes(e)&&!glutePreferred.includes(e))];
    const limit=Number(duration)>=60?10:Number(duration)>=50?8:6;
    const rotated=ordered.length>0?[...ordered.slice(index%ordered.length),...ordered.slice(0,index%ordered.length)]:[];
    const selected=rotated.slice(0,Math.floor(Math.min(rotated.length,limit)/2)*2);
    return {title:`Treino ${String.fromCharCode(65+index)}`,groups,items:selected,pairs:buildConjugatePairs(selected)};
   });
- },[days,place,level,duration,focus,style]);
+ },[days,place,level,duration,focus,style,glutePriority]);
  return <section className="panel workout-builder">
-  <span className="eyebrow">MONTADOR DE TREINO · PLANO PERSONALIZÁVEL</span>
-  <h2>Seu treino, a partir da sua avaliação</h2>
+  <span className="eyebrow">ASSISTENTE DE TREINO · PLANO PERSONALIZÁVEL</span>
+  <h2>Seu treino, do seu jeito</h2>
+  <div className="ai-workout-box">
+   <label htmlFor="ai-workout-request"><b>Peça seu treino ao assistente</b><small>Escreva com suas palavras o que deseja treinar. Ex.: “Quero um treino pesado de pernas e glúteos na academia, com ênfase em hipertrofia”.</small></label>
+   <textarea id="ai-workout-request" value={aiRequest} onChange={e=>setAiRequest(e.target.value)} rows={3} placeholder="Descreva o treino que você quer..." />
+   <button type="button" className="home-primary" onClick={generateFromRequest} disabled={!aiRequest.trim()}>✦ Montar meu treino</button>
+   {generatedRequest&&<p className="muted" role="status">Pedido interpretado: “{generatedRequest}”. Ajustamos o foco e as opções do plano abaixo. Revise o treino e adapte cargas e pausas ao seu nível.</p>}
+  </div>
   <p>Plano inicial considerando seu objetivo ({initialGoal.toLowerCase()}), nível {initialLevel.toLowerCase()}, {initialDays} dias por semana e treino em {initialPlace.toLowerCase()}. Você pode ajustar as preferências abaixo.</p>
   <div className="bmi"><Target/><div><b>Objetivo considerado: {initialGoal}</b><p>{initialGoal === "Emagrecer" ? "Prioridade em sessões de corpo inteiro, força e condicionamento progressivo. O treino não promete perda localizada nem substitui orientação nutricional." : initialGoal === "Força" ? "Prioridade em exercícios de resistência, técnica controlada e progressão gradual de carga." : initialGoal === "Mobilidade e bem-estar" ? "Prioridade em movimentos funcionais confortáveis, controle corporal e mobilidade sem forçar amplitudes." : initialGoal === "Começar a correr" ? "A preparação começa com condicionamento geral e baixo impacto. A corrida não é liberada automaticamente; siga avaliação profissional antes de iniciar." : "Prioridade em desenvolver condicionamento geral e força de forma gradual."}</p></div></div>
   <div className="form-grid">

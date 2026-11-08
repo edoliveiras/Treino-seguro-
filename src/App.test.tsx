@@ -119,7 +119,7 @@ describe("fluxos de segurança da interface", () => {
     fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
     completeBasicAssessment();
     fireEvent.click(screen.getByRole("button", { name: "Privacidade" }));
-    expect(screen.getByText("Registros de saúde ainda sem sincronização")).toBeTruthy();
+    expect(screen.getByText("Proteção e controle dos seus dados pessoais")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Apagar dados desta sessão" }));
     expect(screen.getByRole("status").textContent).toContain("apagados");
     fireEvent.click(screen.getByRole("button", { name: "Treino" }));

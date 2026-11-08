@@ -43,9 +43,11 @@ const split: Record<number, Focus[][]> = {
  4:[["Glúteos","Pernas","Abdômen"],["Costas","Peito","Braços"],["Glúteos","Pernas"],["Costas","Peito","Braços","Abdômen"]],
  5:[["Glúteos","Pernas","Abdômen"],["Costas","Peito","Braços"],["Glúteos","Pernas"],["Costas","Peito","Braços","Abdômen"],["Glúteos","Abdômen"]]
 };
-export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa", initialLevel = "Iniciante" }: { initialDays?: string; initialPlace?: string; initialLevel?: string }) {
- const [focus,setFocus]=useState<Focus>("Glúteos");
- const [style,setStyle]=useState<Style>("Musculação");
+export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa", initialLevel = "Iniciante", initialGoal = "Condicionamento", initialBmi = 0 }: { initialDays?: string; initialPlace?: string; initialLevel?: string; initialGoal?: string; initialBmi?: number }) {
+ const goalFocus: Focus = initialGoal === "Força" ? "Corpo inteiro" : initialGoal === "Mobilidade e bem-estar" ? "Corpo inteiro" : initialGoal === "Emagrecer" ? "Corpo inteiro" : "Corpo inteiro";
+ const goalStyle: Style = initialGoal === "Força" ? "Musculação" : initialGoal === "Mobilidade e bem-estar" ? "Funcional" : "Full body";
+ const [focus,setFocus]=useState<Focus>(goalFocus);
+ const [style,setStyle]=useState<Style>(goalStyle);
  const [days,setDays]=useState(Math.min(5,Math.max(2,Number(initialDays)||3)));
  const [place,setPlace]=useState(initialPlace==="Academia"?"Academia":"Casa");
  const [level,setLevel]=useState(initialLevel);
@@ -66,8 +68,9 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
  },[days,place,level,duration,focus]);
  return <section className="panel workout-builder">
   <span className="eyebrow">MONTADOR DE TREINO · PLANO PERSONALIZÁVEL</span>
-  <h2>Monte um treino com seu objetivo</h2>
-  <p>Escolha o foco e veja uma divisão semanal com exercícios, séries, repetições, intervalos e instruções. O foco prioriza o grupo escolhido, sem abandonar o equilíbrio muscular.</p>
+  <h2>Seu treino, a partir da sua avaliação</h2>
+  <p>Plano inicial considerando seu objetivo ({initialGoal.toLowerCase()}), nível {initialLevel.toLowerCase()}, {initialDays} dias por semana e treino em {initialPlace.toLowerCase()}. Você pode ajustar as preferências abaixo.</p>
+  <div className="bmi"><Target/><div><b>Objetivo considerado: {initialGoal}</b><p>{initialGoal === "Emagrecer" ? "Prioridade em sessões de corpo inteiro, força e condicionamento progressivo. O treino não promete perda localizada nem substitui orientação nutricional." : initialGoal === "Força" ? "Prioridade em exercícios de resistência, técnica controlada e progressão gradual de carga." : initialGoal === "Mobilidade e bem-estar" ? "Prioridade em movimentos funcionais confortáveis, controle corporal e mobilidade sem forçar amplitudes." : initialGoal === "Começar a correr" ? "A preparação começa com condicionamento geral e baixo impacto. A corrida não é liberada automaticamente; siga avaliação profissional antes de iniciar." : "Prioridade em desenvolver condicionamento geral e força de forma gradual."}</p></div></div>
   <div className="form-grid">
    <label>Modalidade<select value={style} onChange={e=>setStyle(e.target.value as Style)}>{["Musculação","Full body","Calistenia","Funcional","HIIT"].map(x=><option key={x}>{x}</option>)}</select></label>
    <label>Meu foco principal<select value={focus} onChange={e=>setFocus(e.target.value as Focus)}>{["Glúteos","Abdômen","Pernas","Braços","Costas","Peito","Corpo inteiro"].map(x=><option key={x}>{x}</option>)}</select></label>
@@ -90,7 +93,8 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   </article>)}
   <div className="safety-alert"><b>Como progredir ao longo de 7 semanas</b><p><b>Semanas 1–2:</b> aprenda a técnica e termine as séries sentindo que conseguiria fazer mais 3 repetições.</p><p><b>Semanas 3–5:</b> quando completar o topo da faixa de repetições com boa técnica, aumente um pouco a carga ou a dificuldade; não aumente tudo ao mesmo tempo.</p><p><b>Semana 6:</b> consolide a execução sem treinar até a falha.</p><p><b>Semana 7:</b> reduza cerca de 20–30% das séries e reavalie conforto, técnica e recuperação. Depois, ajuste o próximo bloco.</p></div>
   <p className="muted"><Clock3 size={15}/> A duração é uma estimativa, não uma meta obrigatória. Descanse mais se precisar. Não é necessário treinar até a falha para progredir.</p>
-  <p className="muted">Este é um modelo educativo geral. Se houver dor, limitação, condição clínica ou dúvida sobre a execução, suspenda o exercício e procure avaliação individual de profissional de Educação Física e/ou saúde. A seleção automática não substitui avaliação presencial.</p>
+  {initialBmi >= 35 && <div className="safety-alert"><b>Adaptação importante</b><p>Como o IMC informado está na faixa de 35 ou mais, este plano não inclui corrida nem saltos como recomendação automática. Priorize movimentos confortáveis e obtenha orientação profissional individual antes de aumentar a intensidade.</p></div>}
+  <p className="muted">Este é um plano educativo inicial baseado nas respostas da avaliação, não uma prescrição clínica. Se houver dor, limitação, condição clínica ou dúvida sobre a execução, suspenda o exercício e procure avaliação individual de profissional de Educação Física e/ou saúde. A seleção automática não substitui avaliação presencial.</p>
   <button type="button" className="secondary" onClick={()=>{setFocus("Glúteos");setStyle("Musculação");setDays(3);setPlace("Casa");setLevel("Iniciante");setDuration("50");setExpanded(0)}}><RotateCcw size={16}/> Restaurar opções iniciais</button>
  </section>;
 }

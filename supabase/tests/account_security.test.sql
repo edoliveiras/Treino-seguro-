@@ -30,6 +30,7 @@ $$;
 \ir ../migrations/202611080006_restrict_admin_account_rpcs.sql
 \ir ../migrations/202611080007_email_only_account_activation.sql
 \ir ../migrations/202611080008_user_health_records_with_consent.sql
+\ir ../migrations/202611080009_health_records_policy_and_index_tuning.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),

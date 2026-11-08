@@ -15,7 +15,7 @@
 - Tela Ciência com referências e resumos informativos.
 - Workflow GitHub Actions em .github/workflows/ci.yml configurado para npm install, npm test e npm run build em push/PR para main.
 - Regras de triagem isoladas em src/safety.ts e usadas pelo app: exclusividade de “Nenhuma”, validação de peso/altura, revisão médica, revisão por dor/limitação e bloqueio de corrida com IMC ≥ 35.
-- Testes automatizados Vitest em src/safety.test.ts: 5 testes iniciais aprovados; conjunto ampliado inclui critérios de conclusão da avaliação e aguarda CI do commit 7fb6521.
+- Testes automatizados Vitest em src/safety.test.ts: 6 testes automatizados cobrindo as regras iniciais e os critérios de conclusão da avaliação; commit 7fb6521 validado com sucesso.
 - Elegibilidade para concluir a avaliação centralizada em canCompleteAssessment; o treino volta a exigir saved e canStart simultaneamente.
 - Alterações em objetivo, dias, local, nível, liberação médica, maioridade ou aviso educativo invalidam a avaliação concluída.
 - Triagem corrigida: “Nenhuma” é mutuamente exclusiva das demais opções em cada grupo.
@@ -26,7 +26,7 @@
 - Tipos de React adicionados como dependências de desenvolvimento e declaração de tipos do Vite criada em src/vite-env.d.ts.
 
 ## B. Pendências (prioridade)
-1. **P0 — Validar CI do commit 7fb652189efb50c1aa9d6c878c440802ae2db0be.** O commit anterior falhou por uma quebra de linha literal no import do teste; correção já enviada, aguardando workflow 42479447651.
+1. **P0 — Confirmar CI do commit de documentação 7b73fe963d7c06dd219e5ac48c19ca98c4100c05.** O código e os 6 testes passaram no workflow 42479447651; o commit de documentação mais recente está com workflow 42479491233 pendente.
 2. **P0 — Testes de interface:** cobrir navegação direta para Treino/Exercícios e mudança de dados após conclusão, preferencialmente com React Testing Library.
 3. **P1 — Revisão técnica externa:** validar arquitetura, base legal, política de privacidade e controles de dados sensíveis antes de qualquer persistência.
 4. **P0 — Revisar triagem de segurança:** impedir combinações contraditórias como “Nenhuma” + condição/dor; garantir que liberação declarada não seja tratada como validação clínica; revisar fluxo para menores e estados de avaliação.
@@ -74,4 +74,4 @@
 - Metadados de Bull et al. (2020), Donnelly et al. (2009), Hayden et al. (2021), Guia Alimentar (2014) e TACO (2011) conferidos em fontes bibliográficas/organizacionais; a TACO continua como referência de composição, não reconhecimento automático de refeições.
 
 ## F. Próximo passo exato
-Revalidar workflow 42479447651 do commit 7fb6521 e corrigir se necessário. Depois adicionar testes de interface para revalidação da avaliação e bloqueio de telas. A especificação inicial de arquitetura e LGPD está em docs/ARQUITETURA_BACKEND_LGPD.md; não há backend implementado. Manter fotos e persistência desativadas até implementação, testes de autorização e revisão jurídica/de segurança.
+Confirmar workflow 42479491233 do commit 7b73fe9. Depois adicionar testes de interface para revalidação da avaliação e bloqueio de telas. A especificação inicial de arquitetura e LGPD está em docs/ARQUITETURA_BACKEND_LGPD.md; não há backend implementado. Manter fotos e persistência desativadas até implementação, testes de autorização e revisão jurídica/de segurança.

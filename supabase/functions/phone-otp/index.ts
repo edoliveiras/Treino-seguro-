@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { generateOtp, hmacOtp } from "./otp.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": Deno.env.get("APP_ORIGIN") ?? "null",
@@ -14,29 +15,10 @@ function json(status: number, body: Record<string, unknown>) {
   });
 }
 
-function makeCode(): string {
-  const limit = Math.floor(0x1_0000_0000 / 1_000_000) * 1_000_000;
-  const buffer = new Uint32Array(1);
-  let value: number;
-  do {
-    crypto.getRandomValues(buffer);
-    value = buffer[0];
-  } while (value >= limit);
-  return String(value % 1_000_000).padStart(6, "0");
-}
-
 async function hmacCode(code: string): Promise<string> {
   const secret = Deno.env.get("OTP_HMAC_SECRET");
   if (!secret || secret.length < 32) throw new Error("server_not_configured");
-  const key = await crypto.subtle.importKey(
-    "raw",
-    new TextEncoder().encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"],
-  );
-  const signature = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(code));
-  return Array.from(new Uint8Array(signature), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return await hmacOtp(code, secret);
 }
 
 async function sendTwilioSms(phoneE164: string, code: string): Promise<void> {
@@ -160,7 +142,7 @@ Deno.serve(async (request) => {
         return json(200, { ok: true, message: "Se a solicitação puder ser atendida, você receberá as instruções." });
       }
 
-      const code = makeCode();
+      const code = generateOtp();
       const digest = await hmacCode(code);
       const { data: challengeId, error: challengeError } = await adminClient.rpc(
         "create_phone_otp_challenge",

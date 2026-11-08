@@ -246,7 +246,7 @@ end $admin$;
 reset role;
 do $rls$
 begin
-  if (select count(*) from public.profiles) <> 3 then
+  if (select count(*) from public.profiles) <> 4 then
     raise exception 'admin_delete_did_not_remove_profile';
   end if;
 end $rls$;

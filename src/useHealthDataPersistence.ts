@@ -83,13 +83,17 @@ export function useHealthDataPersistence(
       setStatus("Não foi possível registrar sua autorização. Tente novamente.");
       return false;
     }
-    setConsent(true);
-    const { data } = await client
+    const { data, error: loadError } = await client
       .from("health_data_records")
       .select("payload")
       .eq("user_id", userId)
       .maybeSingle();
+    if (loadError) {
+      setStatus("A autorização foi registrada, mas não foi possível carregar registros anteriores.");
+      return false;
+    }
     if (data?.payload && typeof data.payload === "object") onLoad(data.payload as HealthPayload);
+    setConsent(true);
     setStatus("Autorização registrada. Seus registros serão sincronizados.");
     return true;
   }, [userId, onLoad]);

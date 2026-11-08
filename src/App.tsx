@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { blocksRunningRecommendation, isValidMeasurement, requiresMedicalReview, requiresPainReview, toggleExclusiveOption } from "./safety";
 import { Activity, BookOpen, Camera, CheckCircle2, ClipboardList, Dumbbell, HeartPulse, Home, Leaf, Scale, ShieldCheck, Target, Utensils, AlertTriangle, Footprints, CalendarDays, Lock } from "lucide-react";
 
 type Tab = "Início" | "Avaliação" | "Treino" | "Exercícios" | "Nutrição" | "Evolução" | "Ciência" | "Privacidade";
@@ -28,14 +29,14 @@ export default function App(){
  const [pains,setPains]=useState<string[]>([]),[conditions,setConditions]=useState<string[]>([]),[clearance,setClearance]=useState(false),[adult,setAdult]=useState(false),[understood,setUnderstood]=useState(false),[saved,setSaved]=useState(false);
  const [done,setDone]=useState<string[]>([]),[meal,setMeal]=useState(""),[mealEntries,setMealEntries]=useState<string[]>([]),[newWeight,setNewWeight]=useState(""),[weights,setWeights]=useState<string[]>([]),[waist,setWaist]=useState(""),[waists,setWaists]=useState<string[]>([]);
  const [photoNote,setPhotoNote]=useState(false);
- const toggle=(v:string,arr:string[],setter:(v:string[])=>void)=>setter(arr.includes(v)?arr.filter(x=>x!==v):v==="Nenhuma"?[v]:[...arr.filter(x=>x!=="Nenhuma"),v]);
+ const toggle=(v:string,arr:string[],setter:(v:string[])=>void)=>setter(toggleExclusiveOption(v,arr));
  const bmi=useMemo(()=>{const w=Number(weight),h=Number(height)/100;return w>0&&h>0?w/(h*h):0},[weight,height]);
  const bmiClass=bmi===0?"—":bmi<18.5?"Abaixo do peso":bmi<25?"Faixa adequada":bmi<30?"Sobrepeso":bmi<35?"Obesidade grau I":bmi<40?"Obesidade grau II":"Obesidade grau III";
- const medicalNeeded=conditions.some(x=>x!=="Nenhuma");
+ const medicalNeeded=requiresMedicalReview(conditions);
  const highBmi=bmi>=35;
- const painNeedsReview=pains.some(x=>x!=="Nenhuma");
- const blockedRunning=highBmi&&goal==="Começar a correr";
- const canStart=adult&&understood&&Number(weight)>=1&&Number(weight)<=500&&Number(height)>=80&&Number(height)<=250&&(!medicalNeeded||clearance)&&!blockedRunning;
+ const painNeedsReview=requiresPainReview(pains);
+ const blockedRunning=blocksRunningRecommendation(bmi,goal);
+ const canStart=adult&&understood&&isValidMeasurement(Number(weight),Number(height))&&(!medicalNeeded||clearance)&&!blockedRunning;
  const safetyBanner=<div className="notice"><ShieldCheck size={18}/><span>{safety}</span></div>;
  const renderExercise=(e:typeof exercises[number])=><article className="exercise" key={e.name}><div className="exercise-icon"><Dumbbell/></div><div className="exercise-copy"><b>{e.name}</b><small>{e.group}</small><p>{e.how}</p><p><strong>Adaptação:</strong> {e.adapt}</p><p><strong>Cuidado:</strong> {e.avoid}</p></div><button className={done.includes(e.name)?"round done":"round"} aria-label="Marcar exercício" onClick={()=>setDone(old=>old.includes(e.name)?old.filter(x=>x!==e.name):[...old,e.name])}>{done.includes(e.name)?<CheckCircle2/>:"✓"}</button></article>;
  return <div className="app"><aside className="sidebar"><div className="brand"><div className="brand-icon"><HeartPulse/></div><div><b>treino seguro</b><small>SAÚDE EM MOVIMENTO</small></div></div><div className="side-label">MENU PRINCIPAL</div>{tabs.map(({name,icon:Icon})=><button key={name} className={tab===name?"nav active":"nav"} onClick={()=>setTab(name)}><Icon size={19}/>{name}</button>)}<div className="side-note"><ShieldCheck/><b>Seu cuidado vem primeiro</b><p>Orientações educativas, adaptadas e baseadas em evidências.</p></div></aside>

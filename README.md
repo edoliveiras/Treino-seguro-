@@ -26,8 +26,9 @@ O CI também verifica a função de OTP com Deno e executa as migrações de con
 - Condições de saúde informadas exigem orientação/liberação médica antes de iniciar.
 - IMC é apenas triagem. IMC ≥ 35 não gera recomendação automática para corrida.
 - Dor no peito, falta de ar intensa/incomum, tontura, desmaio, fraqueza/formigamento novo ou dor forte/piorando exigem interrupção e avaliação.
-- Esta versão é demonstração: sem autenticação, banco de dados, sincronização, upload de fotos, cálculo nutricional por imagem ou histórico persistente.
-- Dados digitados ficam apenas na memória da página e desaparecem ao atualizar/fechar. A área Privacidade oferece um comando para apagar imediatamente os dados da sessão. Não insira dados sensíveis reais nesta demonstração.
+- Cadastro e login estão ligados ao projeto Supabase dedicado, com confirmação de e-mail e WhatsApp exigida no fluxo do aplicativo. O envio real de OTP ainda depende de implantar as Edge Functions e configurar credenciais da Meta/Twilio.
+- Dados de treino, alimentação, peso e medidas continuam apenas na memória da página e desaparecem ao atualizar/fechar. Ainda não existe histórico clínico persistido nem upload de fotos.
+- As telas iniciais de Termos e Política exigem revisão jurídica antes da publicação. Não use o aplicativo como serviço clínico ou para inserir dados sensíveis reais até concluir homologação e revisão.
 
 ## Fontes
 - Bull FC et al. WHO 2020 guidelines. https://bjsm.bmj.com/content/54/24/1451

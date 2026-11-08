@@ -1,141 +1,62 @@
 # ESTADO_DO_PROJETO — Treino Seguro
-Última atualização: 2026-11-08 (base de cadastro e segurança de contas preparada; ainda não implantada)
+Última atualização: 08/11/2026
 
-## 1. Repositório e fluxo
-- Repositório: https://github.com/edoliveiras/Treino-seguro-
-- Branch: `main`
-- Código mantido diretamente no GitHub; Lovable será somente visualizador.
-- Aplicação: React + TypeScript + Vite, em português, responsiva e mobile-first.
-- CI em `.github/workflows/ci.yml`: `npm install`, `npm test` e `npm run build` em push/PR.
+## 1. Projeto
+- Aplicativo web em português, responsivo e mobile-first, destinado a adultos (18+).
+- Código React + TypeScript + Vite; repositório GitHub na branch main. Lovable permanece apenas como visualizador.
+- Banco Supabase dedicado ao Treino Seguro. O projeto Empório EdTudo não foi acessado nem alterado.
 
-## 2. O que já está implementado
-- Navegação para Início, Avaliação, Treino, Exercícios, Nutrição, Evolução, Ciência e Privacidade.
-- Menu lateral em telas grandes e navegação horizontal compacta em telas menores.
-- Indicador de foco visível para botões, campos e links; contraste de textos auxiliares reforçado.
-- Avaliação local com peso, altura, IMC aproximado, objetivo, disponibilidade, local, nível, dores/limitações, condições de saúde, declaração de maioridade e aviso educativo.
-- IMC apresentado como triagem, nunca diagnóstico nem critério único de prescrição.
-- Condições de saúde exigem orientação/liberação médica declarada pelo usuário; isso é autodeclaração e não comprovação clínica.
-- Mudança de condição de saúde reinicia a declaração de liberação e invalida avaliação concluída.
-- Opção “Nenhuma” mutuamente exclusiva das outras opções nos grupos de dor e condição.
-- IMC estimado >= 35 com objetivo “Começar a correr” bloqueia conclusão da avaliação e mostra cautela.
-- Dor/limitação informada oculta a biblioteca de movimentos e orienta avaliação individual.
-- Acesso ao treino exige avaliação válida; alterações nos parâmetros invalidam conclusão anterior.
-- Seis movimentos educativos com instruções, adaptações e cuidados; marcação concluída só na sessão.
-- Diário alimentar textual, sem reconhecimento de imagens nem estimativa de calorias.
-- Evolução com registros temporários de peso e cintura; sem persistência nem gráficos longitudinais.
-- Fotos desativadas; interface explica que só devem ser ativadas com armazenamento privado, consentimento e exclusão segura.
-- Tela de privacidade deixa claro que não existe envio nem persistência em servidor.
-- Tela Ciência com OMS, ACSM, Cochrane, Guia Alimentar brasileiro e TACO.
-- Sinais de alerta para interromper atividade e procurar atendimento.
+## 2. Aplicativo existente
+- Áreas: Início, Avaliação, Treino, Exercícios, Nutrição, Evolução, Ciência e Privacidade.
+- Avaliação educativa com peso, altura, IMC aproximado, objetivo, disponibilidade, local, nível, dores/limitações, condições de saúde e declarações.
+- IMC é triagem, não diagnóstico. IMC estimado ≥ 35 bloqueia recomendação automática de corrida.
+- Dores/limitações ocultam a biblioteca de movimentos até avaliação individual; condições específicas exigem orientação/liberação médica declarada.
+- Conteúdo de exercícios é demonstrativo e inclui adaptações, cuidados e sinais de alerta.
+- Diário alimentar não estima calorias nem reconhece alimentos por foto.
+- Dados de treino, alimentação, peso e medidas continuam somente na sessão do navegador; ainda não são salvos no banco.
+- Fotos de evolução ainda não estão habilitadas.
 
-## 3. Testes e estado de CI
-- `src/safety.test.ts`: 6 testes de regras puras.
-- `src/App.test.tsx`: 8 testes de interface.
-- Total: **14 testes aprovados**.
-- Commit dos testes: `33fbdf65f407d931e7f8eb3f91b18f828235ef7a`; workflow 42479956704: 14 testes e build aprovados.
-- Commit do ajuste de contraste: `da1785b36022bfa6dc43635e168910c2fc514f8e`; workflow 42479881418: testes e build aprovados.
-- Os testes atuais cobrem: bloqueio de acesso direto ao treino, revalidação após mudanças de objetivo/peso/altura/dias/local/nível/maioridade/aviso educativo, ocultação de exercícios após relato de dor, navegação móvel, reinício da declaração médica, bloqueio de corrida no cenário definido e exclusividade de “Nenhuma”.
+## 3. Banco e segurança de contas
+- Projeto Supabase dedicado ativo e saudável; tabelas de cadastro, consentimentos, preferências, OTP e auditoria criadas e com RLS habilitado.
+- Migrações 001 a 006 aplicadas no banco: perfil cadastral, consentimentos separados, preferências opcionais, OTP, auditoria, proteção da função de sincronização, políticas explícitas de negação de acesso direto às tabelas internas e RPCs administrativas exclusivas da service_role.
+- As tabelas estão vazias; não há contas ou dados clínicos cadastrados.
+- Verificação de segurança do Supabase: sem alertas ativos após as últimas correções. Operações administrativas são verificadas na Edge Function e novamente no banco, consultando o papel de administrador em app_metadata.
+- A chave publishable do projeto está configurada no cliente; nenhuma chave service_role ou segredo de provedor está no navegador ou no repositório.
 
-## 4. Arquitetura, privacidade e limitações
-- Documento de proposta: `docs/ARQUITETURA_BACKEND_LGPD.md`.
-- Requisitos de conta: `docs/CADASTRO_E_VERIFICACAO.md`.
-- Migração inicial de contas: `supabase/migrations/202611080001_account_security.sql` (criada no GitHub, **não aplicada**).
-- **Não existe backend implantado, autenticação ativa no app, banco conectado, sincronização ou upload de fotos implementado.** Há apenas uma migração SQL preparada para futura aplicação.
-- Os dados digitados ficam apenas na memória da página e são perdidos ao atualizar/fechar.
-- O documento LGPD é uma proposta técnica; não é implementação nem comprovação de conformidade.
-- A migração de contas prepara perfil cadastral separado, unicidade de e-mail/WhatsApp, eventos de consentimento, preferências de notificações, tabelas privadas para OTP, RLS e auditoria de ações administrativas. Ela não implementa o envio nem a validação do OTP, nem a tela de cadastro.
-- Não habilitar persistência ou fotos antes de revisão jurídica/de segurança, consentimento adequado, controles de acesso, testes de autorização, exportação e exclusão.
-- Público-alvo definido: adultos 18+; a idade é autodeclarada, não verificada.
-- O app é educativo e não substitui médico, nutricionista ou profissional de Educação Física.
-- O bloco de sete semanas é organização didática, não protocolo clínico validado.
+## 4. Cadastro e autenticação implementados no código
+- Tela de cadastro: nome, e-mail, WhatsApp com DDD e senha.
+- Declaração de 18 anos, aceite obrigatório dos Termos e da Política; consentimentos de saúde e fotos opcionais e separados; notificações opcionais desligadas por padrão.
+- Login por e-mail e senha, reenvio do link de confirmação, recuperação e redefinição de senha.
+- Confirmação do e-mail via Supabase Auth e confirmação do WhatsApp por OTP de 6 dígitos.
+- O app só libera as áreas após e-mail e WhatsApp confirmados e conta com status ativo.
+- Páginas iniciais de Termos e Política incluídas; ainda precisam de revisão jurídica, dados de contato do controlador e definição final de retenção.
 
-## 5. Fontes bibliográficas usadas no protótipo
-- Bull FC et al. (2020), diretrizes OMS de atividade física: https://bjsm.bmj.com/content/54/24/1451
+## 5. Envio e funções administrativas — ainda não ativados
+- Edge Function de OTP está versionada no repositório, com HMAC, expiração de 10 minutos, até 5 tentativas, bloqueio temporário, 60 segundos entre reenvios e máximo de 3 envios por número/hora.
+- A função tenta WhatsApp Cloud API da Meta e usa SMS Twilio como fallback.
+- Edge Functions de OTP e administração ainda não foram implantadas no projeto. Faltam secrets de produção, template de autenticação aprovado da Meta e/ou configuração de SMS Twilio.
+- Ainda não foi criado um usuário administrador. O primeiro administrador deverá receber o papel exclusivamente por procedimento seguro no servidor, nunca por cadastro público.
+- Confirmação por e-mail depende de confirmar a configuração do Supabase Auth, URLs de retorno e template de e-mail.
+
+## 6. Testes e validação
+- Testes de interface e regras de segurança existentes; CI executa testes, build, verificação estática das Edge Functions, testes dos componentes OTP e testes SQL das migrações em PostgreSQL temporário.
+- Uma correção de TypeScript do fluxo de autenticação foi aprovada pelo CI. As alterações mais recentes nas migrações e nos testes SQL estão em nova execução de CI.
+- Testes automatizados não substituem teste real de cadastro, confirmação de e-mail, entrega de WhatsApp/SMS, recuperação de senha, RLS e suspensão em ambiente de homologação.
+
+## 7. Pendências para disponibilização pública
+1. Concluir e aprovar a execução atual de CI, corrigindo qualquer falha encontrada.
+2. Configurar Supabase Auth: confirmação de e-mail, modelos de mensagem e URLs de retorno.
+3. Definir URL definitiva de publicação e configurar APP_ORIGIN.
+4. Configurar secrets das Edge Functions (service role, HMAC e credenciais Meta/Twilio) e implantá-las.
+5. Criar o primeiro administrador por procedimento seguro.
+6. Realizar testes reais com duas contas, e-mail, WhatsApp/SMS, recuperação, suspensão, exclusão e isolamento de dados.
+7. Revisão jurídica da LGPD, Termos e Política; definir contato do controlador, retenção, exclusão e direitos dos titulares.
+8. Revisão clínica e editorial por profissionais habilitados antes de uso público.
+9. Planejar publicação e testar em celulares reais. Não declarar produto pronto, clinicamente validado ou em conformidade legal antes dessas etapas.
+
+## 8. Fontes bibliográficas do protótipo
+- Bull FC et al. (2020), diretrizes OMS: https://bjsm.bmj.com/content/54/24/1451
 - Donnelly JE et al. (2009), ACSM: https://pubmed.ncbi.nlm.nih.gov/19127177/
-- Hayden JA et al. (2021), Cochrane sobre exercício e dor lombar crônica: https://pubmed.ncbi.nlm.nih.gov/34580864/
+- Hayden JA et al. (2021), Cochrane: https://pubmed.ncbi.nlm.nih.gov/34580864/
 - Ministério da Saúde (2014), Guia Alimentar: https://bvsms.saude.gov.br/bvs/publicacoes/guia_alimentar_populacao_brasileira_2ed.pdf
-- NEPA/UNICAMP (2011), TACO 4ª edição: https://www.fao.org/food-composition/tables-and-databases/detail/%28brazil--2011%29-tabela-brasileira-de-composi%C3%A7%C3%A3o-de-alimentos-%28taco%29/en
-
-## 6. Pendências prioritárias
-1. **P0 — Ampliar cobertura de segurança:** testar alterações de todos os campos após avaliação, estado de avaliação após alternar telas, combinações de condições e fluxo completo com liberação autodeclarada.
-2. **P0 — Acessibilidade:** auditoria de contraste de toda a interface, leitor de tela, nomes acessíveis, ordem de foco e testes em viewport estreita.
-3. **P1 — Revisão clínica/editorial:** revisão por profissionais habilitados das orientações, triagem e exercícios antes de uso público.
-4. **P1 — Revisão jurídica e segurança:** política de privacidade, termos, base legal, consentimento específico, retenção e direitos dos titulares.
-5. **P1 — Backend seguro:** aplicar e revisar a migração; implementar Supabase Auth, confirmação de e-mail, Edge Functions para OTP Meta/Twilio, recuperação/troca de contato, bloqueio de suspensos, exclusão administrativa e testes RLS antes de ativar autenticação.
-6. **P2 — Personalização de treinos:** considerar dias, nível, local e limitações sem prescrição automática em cenários de risco.
-7. **P2 — Conteúdo multimídia licenciado:** imagens/vídeos profissionais, erros comuns e contraindicações revisadas.
-8. **P2 — Nutrição:** integração confiável com TACO/Guia Alimentar; não habilitar reconhecimento por foto ou calorias sem método validado.
-9. **P3 — Configurar Lovable como visualizador e planejar publicação após as revisões e serviços externos necessários.**
-
-## 7. Próximo passo exato
-CI validado no commit `33fbdf65f407d931e7f8eb3f91b18f828235ef7a` (workflow 42479956704: 14 testes e build aprovados). A migração de contas foi criada, mas não foi executada nem testada contra Supabase. Próximo passo: implementar Edge Functions de OTP e fluxo de cadastro/login, com configuração por secrets e testes negativos; depois integrar a interface. Manter autenticação, backend, persistência clínica e fotos desativados até configuração e validação real. Manter backend, persistência e fotos desativados. Não declarar o produto publicado, clinicamente validado ou LGPD-compliant.
-
-## 8. Atualização de execução — 08/11/2026
-- A migração inicial de contas e o documento de cadastro/OTP estão versionados na branch main. Commit mais recente da migração: `abda0c71da26c85bb04351c29815065b9e780fd0`.
-- CI desse commit: workflow 42480280197 concluído com sucesso. Isso valida somente os comandos automatizados já configurados (`npm install`, testes do app e build); **não executa nem valida a migração SQL em um banco Supabase**.
-- O esquema SQL continua como rascunho técnico não implantado. A criação de Edge Functions, envio real de OTP, cadastro/login integrado, recuperação, gestão administrativa e testes SQL/RLS continuam pendentes.
-- Não ativar autenticação nem prometer confirmação por e-mail/WhatsApp enquanto o projeto Supabase não estiver conectado e configurado com os secrets do provedor. Não colocar chaves no repositório ou no frontend.
-
-
-## 9. Continuação — OTP WhatsApp e validação estática
-- Criada a Edge Function `supabase/functions/phone-otp/index.ts`: exige usuário autenticado e e-mail confirmado, gera código de 6 dígitos com Web Crypto, armazena somente HMAC-SHA-256 e envia por template de autenticação da Meta. A ação `verify` valida o código sem expô-lo em resposta ou logs.
-- Criada a migração `supabase/migrations/202611080002_phone_otp_rpc.sql`: RPCs restritas à service_role, expiração de 10 minutos, 5 tentativas, bloqueio de 15 minutos, 60 segundos entre envios e máximo de 3 solicitações por número/hora. O WhatsApp só é reservado após verificação, reduzindo risco de bloqueio por cadastro falso.
-- A função Meta requer template de autenticação aprovado com parâmetro no corpo e botão de copiar código. O fallback Twilio SMS ainda não foi implementado.
-- CI ampliado para instalar Deno e executar `deno check` da Edge Function. A primeira execução falhou por configuração de dependências npm; foi adicionado `deno.json` com resolução automática. A nova execução do workflow 42481004788 estava em andamento no momento desta atualização.
-- As migrações continuam sem validação em PostgreSQL/Supabase e não foram aplicadas. A Edge Function não foi implantada nem testada com credenciais/provedor reais. Não existe envio de OTP em produção.
-- Próximas tarefas: confirmar CI com Deno; validar migrações em banco de homologação; adicionar testes de integração/abuso; implementar adaptador Twilio Verify; concluir cadastro/login, recuperação, troca de contato e painel administrativo; somente então integrar ao frontend.
-
-
-## 10. Validação adicional
-- Deno foi incluído no CI com `deno check` para a Edge Function. Workflow 42481004788 (commit `f231aadb74bf76e3e7ca58b3ed4608a677a2041c`) concluiu com sucesso: 14 testes do app, build e verificação estática da Edge Function.
-- Migração RPC endurecida para exigir claim `service_role`; números de WhatsApp são únicos somente após verificação.
-- Respostas da solicitação de envio foram uniformizadas para reduzir enumeração de contas/telefones.
-- Último commit funcional registrado nesta atualização: `1ccfd563b64d74c07eb25ae39417d174983cbe9d`. CI correspondente: workflow 42481048682 em execução no momento do registro.
-- A aprovação de CI não substitui teste SQL em PostgreSQL/Supabase, teste de entrega real da Meta, revisão de segurança ou implantação.
-
-
-## 11. Continuação — fallback SMS Twilio (08/11/2026)
-- A Edge Function `supabase/functions/phone-otp/index.ts` agora tenta primeiro enviar OTP pelo template oficial da Meta WhatsApp Cloud API e, se houver falha, tenta Twilio Programmable Messaging por SMS. O mesmo código permanece controlado pelo banco, com HMAC, expiração e limite de tentativas.
-- O registro de entrega agora identifica o provedor efetivamente usado (`meta_whatsapp` ou `twilio_sms`) sem armazenar o OTP.
-- Secrets necessários para o fallback: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` e `TWILIO_MESSAGING_SERVICE_SID`. A documentação foi atualizada em `docs/CADASTRO_E_VERIFICACAO.md`.
-- Commits desta etapa: função SMS `6966898ef36a83fefc58196251c2a8b5930b2df5`; RPC de registro do provedor `1942ae7856979a53ee6060be8af22ea1c8f58e18`; documentação `afab482e3cf9b13f2e737b50dab58ed8e929f046`.
-- CI dos commits de código `42481144741` e `42481152231` estava em execução no momento do registro; não declarar aprovação até conclusão.
-- O envio Meta/Twilio ainda não foi testado com contas e credenciais reais. Não há implantação Supabase, tela de cadastro/login, recuperação ou troca de contato conectadas ao frontend. A migração SQL segue sem execução e sem validação PostgreSQL.
-- Próxima etapa: verificar os dois workflows, adicionar testes unitários para geração/validação de payload e testar as RPCs/migrações em PostgreSQL/Supabase de homologação; depois implementar cadastro/login e recuperação no app, mantendo dados de saúde/fotos desativados.
-
-
-## 12. Testes unitários OTP e correção de compatibilidade SQL — 08/11/2026
-- Extraídas as primitivas de OTP para `supabase/functions/phone-otp/otp.ts`: geração criptograficamente segura de código de seis dígitos, validação estrita do formato e HMAC-SHA-256.
-- Adicionados quatro testes Deno em `supabase/functions/phone-otp/otp_test.ts`, cobrindo formato/quantidade de códigos, aceitação/rejeição de entradas, determinismo/tamanho do HMAC e rejeição de segredo curto/código malformado.
-- CI atualizado para executar `deno test --no-lock supabase/functions/phone-otp/otp_test.ts` além do type-check existente.
-- Uma execução inicial dos novos testes falhou porque o padrão de dígitos foi gravado com escape duplicado. O log do workflow confirmou a causa; o padrão foi corrigido e a execução 42481535444 concluiu com sucesso. A execução 42481532789 ainda corresponde à versão intermediária com o defeito, não ao estado final.
-- Revisão da migração encontrou incompatibilidade entre o CHECK antigo do campo `provider` (que não aceitava `twilio_sms`) e a nova RPC de registro de entrega. A migração `202611080002_phone_otp_rpc.sql` agora atualiza essa constraint para aceitar o identificador efetivo do fallback SMS.
-- A correção SQL está versionada, mas **ainda não foi aplicada nem testada em PostgreSQL/Supabase**. A aprovação do CI não valida migrações, RLS, autenticação, Meta ou Twilio.
-- Próximo passo: validar migrações/RPCs em banco Supabase de homologação, com casos de sucesso, expiração, tentativas, bloqueio, rate limit e unicidade; depois implementar telas de cadastro/login/recuperação e bloqueio de contas suspensas. Manter o fluxo de contas desativado até essa validação.
-
-
-## 13. Proteção de dados na sessão e testes SQL automatizados — 08/11/2026
-- A área Privacidade agora oferece o comando “Apagar dados desta sessão”, que limpa peso, altura, objetivo, disponibilidade, nível, dores/condições, autodeclarações, marcações de exercícios, diário alimentar e registros de evolução mantidos em memória.
-- Botões de conclusão de exercícios agora expõem nome individual acessível e estado marcado/desmarcado por `aria-pressed`.
-- Adicionados testes de interface para apagar os dados e verificar os nomes/estados acessíveis dos exercícios; ampliados os testes puros para entradas inválidas, cenários combinados e limiar de corrida.
-- CI agora inicia PostgreSQL 16 temporário, cria um stub mínimo de Supabase Auth e executa as duas migrações com `supabase/tests/account_security.test.sql`. A primeira execução completa com a nova etapa aprovou: testes do app, build, type-check Deno, testes OTP e testes SQL de sincronização de perfil, consentimentos, OTP válido, registro do fallback SMS, ativação após dupla verificação, limite de tentativas/bloqueio, expiração e proteção contra reutilização de WhatsApp já verificado.
-- Importante: PostgreSQL temporário + stub valida sintaxe e comportamento básico das migrações/RPCs, mas não equivale a um projeto Supabase real. Ainda faltam testes de RLS com usuários reais/roles, Auth real, implantação de Edge Function, confirmação de e-mail, envio Meta/Twilio e teste de recuperação.
-- Os dados de avaliação, peso, refeições e evolução seguem somente em memória e são apagados ao atualizar/fechar ou pelo novo comando de limpeza. Não foi habilitada persistência nem fotos.
-- Próxima etapa técnica: ampliar testes de autorização/RLS e corrigir quaisquer problemas encontrados; depois preparar a integração Auth com variáveis de ambiente, mantendo o fluxo desligado até a configuração real de Supabase e provedores. A revisão clínica, jurídica e de segurança independente continua necessária antes de uso público.
-
-
-## 14. Administração segura de contas — 08/11/2026
-- Criada a migração `202611080003_admin_delete.sql` com RPC de exclusão administrativa. Ela exige papel `admin` em `app_metadata`, impede autoexclusão, apaga a conta Auth e os dados cadastrais dependentes, limpa logs de OTP vinculados ao telefone e registra auditoria sem conteúdo clínico.
-- Criada a Edge Function `supabase/functions/admin-account/index.ts`, que aceita somente POST, valida origem, JWT e papel administrativo, e delega suspensão, reativação e exclusão às RPCs protegidas do banco. A checagem de autorização também ocorre no SQL.
-- A suíte PostgreSQL temporária foi ampliada para testar RLS de perfil (cada usuário vê apenas o próprio), bloqueio de leitura direta das tabelas OTP, negação de ações administrativas para usuário comum, diretório limitado para admin, suspensão/reativação auditadas, exclusão em cascata e limpeza dos logs do telefone.
-- Execução CI 42482287325 concluiu com sucesso nos testes do app, build, type-check da função OTP, testes unitários OTP e integração PostgreSQL incluindo a migração de exclusão. A checagem específica da nova Edge Function administrativa e o último ajuste de CORS ainda precisam de confirmação na execução mais recente.
-- A simulação usa PostgreSQL e stub de Supabase Auth; não comprova implantação, configuração de Auth, e-mail, WhatsApp, SMS ou permissões de um projeto Supabase real.
-- O endpoint administrativo e a migração estão versionados, mas ainda não implantados. Não há tela de administração no frontend. Não habilitar a função antes de configurar projeto Supabase, criar admin de forma segura e testar em homologação.
-
-
-## 15. Validação final da etapa de código — 08/11/2026
-- Execução CI 42482360627 concluída com sucesso no commit de documentação atual: testes React/Vitest, compilação TypeScript/Vite, type-check das Edge Functions OTP e admin, testes unitários Deno de OTP e integração PostgreSQL das três migrações.
-- A suíte PostgreSQL confirmou também o endpoint administrativo por RPC: acesso negado a usuário comum, diretório cadastral restrito a admin, suspensão/reativação com auditoria, exclusão em cascata e limpeza dos logs OTP do telefone.
-- O conjunto de alterações desta etapa está aprovado em CI. Isso é validação de código e simulação PostgreSQL, **não publicação nem homologação em Supabase real**.
-- Bloqueios para considerar o produto pronto para uso público: criar/conectar projeto Supabase próprio para Treino Seguro; aplicar as migrações em homologação e produção após revisão; configurar confirmação de e-mail, template Meta aprovado, credenciais Twilio e secrets; criar conta admin por processo seguro; implantar Edge Functions; implementar e testar telas de cadastro/login/recuperação/troca de contato e gestão administrativa; validar autorização com duas contas reais e testar envio real; obter revisão clínica, jurídica e de segurança.
-- Até esses passos, manter a aplicação como demonstração sem conta, sem persistência de dados pessoais/de saúde e sem fotos. Não afirmar que o aplicativo está concluído ou disponível para cadastro público.
+- NEPA/UNICAMP (2011), TACO: https://nepa.unicamp.br/tabela-brasileira-de-composicao-de-alimentos-4a-edicao/

@@ -147,6 +147,7 @@ begin
     v_denied := true;
   end;
   if not v_denied then raise exception 'authenticated_user_can_read_otp_table'; end if;
+  v_denied := false;
   begin
     perform public.admin_set_account_status('00000000-0000-4000-8000-000000000003','suspend');
   exception when insufficient_privilege then
@@ -166,13 +167,16 @@ begin
     raise exception 'admin_suspend_failed';
   end if;
   perform public.admin_set_account_status('00000000-0000-4000-8000-000000000002','reactivate');
+end $;
+reset role;
+do $
+begin
   if (select count(*) from public.account_admin_audit
       where target_user_id='00000000-0000-4000-8000-000000000002'
         and action in ('suspend','reactivate')) <> 2 then
     raise exception 'admin_actions_not_audited';
   end if;
 end $;
-reset role;
 reset request.jwt.claim.role;
 reset request.jwt.claim.sub;
 reset request.jwt.claims;

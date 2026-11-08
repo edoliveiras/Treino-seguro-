@@ -27,28 +27,27 @@
 - Tela de cadastro: nome, e-mail, WhatsApp com DDD e senha.
 - Declaração de 18 anos, aceite obrigatório dos Termos e da Política; consentimentos de saúde e fotos opcionais e separados; notificações opcionais desligadas por padrão.
 - Login por e-mail e senha, reenvio do link de confirmação, recuperação e redefinição de senha.
-- Confirmação do e-mail via Supabase Auth. O telefone/WhatsApp é coletado apenas como contato, sem integração ou envio de mensagens.
+- Confirmação do e-mail via Supabase Auth. O telefone é coletado apenas como contato, sem integração com aplicativos de mensagens ou envio de mensagens.
 - O app libera as áreas após confirmação do e-mail e status ativo.
 - Páginas iniciais de Termos e Política incluídas; ainda precisam de revisão jurídica, dados de contato do controlador e definição final de retenção.
 
 ## 5. Envio e funções administrativas — ainda não ativados
-- O fluxo público não utiliza WhatsApp, Facebook, Meta, SMS ou OTP por telefone. O código antigo de OTP permanece no repositório, mas não é chamado pelo aplicativo e não deve ser implantado.
+- O fluxo público não utiliza Facebook, Meta, WhatsApp, SMS ou OTP por telefone. O código e as tabelas antigas de OTP permanecem apenas como legado de testes; não são chamados pelo aplicativo e não devem ser implantados.
 - A Edge Function administrativa ainda não foi implantada no projeto.
 - Ainda não foi criado um usuário administrador. O primeiro administrador deverá receber o papel exclusivamente por procedimento seguro no servidor, nunca por cadastro público.
 - Confirmação por e-mail depende de confirmar a configuração do Supabase Auth, URLs de retorno e template de e-mail.
 
 ## 6. Testes e validação
 - Testes de interface e regras de segurança existentes; CI executa testes, build, verificação estática das Edge Functions, testes dos componentes OTP e testes SQL das migrações em PostgreSQL temporário.
-- A última execução completa aprovada antes da mudança de autenticação validou instalação, testes do aplicativo, compilação, verificação das duas Edge Functions, testes dos componentes OTP e testes SQL das seis migrações. A nova execução que inclui o fluxo de ativação somente por e-mail está em andamento.
+- A execução mais recente de CI após a mudança para ativação somente por e-mail foi concluída com sucesso: instalação, testes do aplicativo, compilação, verificação de tipos das Edge Functions, testes dos componentes OTP e testes SQL das migrações.
 - Testes automatizados não substituem teste real de cadastro, confirmação de e-mail, recuperação de senha, RLS e suspensão em ambiente de homologação.
 
 ## 7. Pendências para disponibilização pública
-1. Concluir e aprovar a execução atual de CI, corrigindo qualquer falha encontrada.
-2. Confirmar no Supabase Auth a confirmação de e-mail, o modelo da mensagem e a lista de URLs de retorno permitidas.
-3. Definir a URL definitiva de publicação e configurar os redirecionamentos de autenticação.
-4. Implementar persistência segura para treino, alimentação e evolução, com RLS e consentimentos apropriados; hoje esses registros existem apenas na sessão do navegador.
-5. Implantar a Edge Function administrativa somente quando o painel de gestão estiver pronto e criar o primeiro administrador por procedimento seguro.
-6. Realizar testes reais com duas contas: cadastro, confirmação de e-mail, recuperação, suspensão, exclusão e isolamento dos dados.
+1. Confirmar no Supabase Auth a confirmação de e-mail, o modelo da mensagem e a lista de URLs de retorno permitidas; o teste transacional do banco confirmou que conta não verificada fica pendente e que a confirmação de e-mail a ativa.
+2. Definir a URL definitiva de publicação e configurar os redirecionamentos de autenticação.
+3. Implementar persistência segura para treino, alimentação e evolução, com RLS e consentimentos apropriados; hoje esses registros existem apenas na sessão do navegador.
+4. Implantar a Edge Function administrativa somente quando o painel de gestão estiver pronto e criar o primeiro administrador por procedimento seguro.
+5. Realizar testes reais com duas contas: cadastro, confirmação de e-mail, recuperação, suspensão, exclusão e isolamento dos dados.
 7. Revisão jurídica da LGPD, Termos e Política; definir contato do controlador, retenção, exclusão e direitos dos titulares.
 8. Revisão clínica e editorial por profissionais habilitados antes de uso público.
 9. Planejar publicação e testar em celulares reais. Não declarar produto pronto, clinicamente validado ou em conformidade legal antes dessas etapas.

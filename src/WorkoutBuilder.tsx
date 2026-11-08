@@ -78,19 +78,39 @@ const split: Record<number, Focus[][]> = {
  4:[["Glúteos","Pernas","Abdômen"],["Costas","Peito","Braços"],["Glúteos","Pernas"],["Costas","Peito","Braços","Abdômen"]],
  5:[["Glúteos","Pernas","Abdômen"],["Costas","Peito","Braços"],["Glúteos","Pernas"],["Costas","Peito","Braços","Abdômen"],["Glúteos","Abdômen"]]
 };
-function buildConjugatePairs(items: Exercise[]) {
+function movementPattern(e: Exercise): "push" | "pull" | "squat" | "hinge" | "core" | "arm" | "other" {
+ const n = e.name.toLowerCase();
+ if (/flexão|supino|mergulho|dips|desenvolvimento|pike/.test(n)) return "push";
+ if (/barra fixa|remada|puxada/.test(n)) return "pull";
+ if (/agachamento|afundo|avanço|passada|step-up|leg press|extensora/.test(n)) return "squat";
+ if (/terra|ponte|elevação pélvica|hip thrust|mesa flexora|coice/.test(n)) return "hinge";
+ if (/prancha|abdominal|crunch|dead bug|bird dog|pallof|mountain climber/.test(n)) return "core";
+ if (/rosca|tríceps|bíceps|elevação lateral|face pull/.test(n)) return "arm";
+ return "other";
+}
+function buildConjugatePairs(items: Exercise[], seed = 0) {
  const remaining = [...items];
  const pairs: Exercise[][] = [];
  while (remaining.length > 1) {
-  const first = remaining.shift()!;
+  const firstIndex = seed % remaining.length;
+  const first = remaining.splice(firstIndex, 1)[0];
   const firstFocus = first.focus.filter(x => x !== "Corpo inteiro");
+  const firstPattern = movementPattern(first);
   let bestIndex = 0;
   let bestScore = Number.POSITIVE_INFINITY;
   remaining.forEach((candidate, index) => {
    const candidateFocus = candidate.focus.filter(x => x !== "Corpo inteiro");
+   const candidatePattern = movementPattern(candidate);
    const overlap = firstFocus.filter(x => candidateFocus.includes(x)).length;
-   const sameRegionPenalty = overlap > 0 ? 10 : 0;
-   const score = sameRegionPenalty + overlap * 5 + (candidateFocus.length === 0 ? 1 : 0);
+   let score = overlap * 14;
+   if (firstPattern === candidatePattern) score += 12;
+   if ((firstPattern === "squat" || firstPattern === "hinge") && (candidatePattern === "squat" || candidatePattern === "hinge")) score += 14;
+   if ((firstPattern === "push" && candidatePattern === "pull") || (firstPattern === "pull" && candidatePattern === "push")) score -= 9;
+   if ((firstPattern === "core" && ["push","pull","squat","hinge","arm"].includes(candidatePattern)) || (candidatePattern === "core" && ["push","pull","squat","hinge","arm"].includes(firstPattern))) score -= 7;
+   if ((firstPattern === "arm" && ["squat","hinge"].includes(candidatePattern)) || (candidatePattern === "arm" && ["squat","hinge"].includes(firstPattern))) score -= 8;
+   if (candidateFocus.length === 0) score += 2;
+   // Desempate alternado entre sessões para não repetir sempre a mesma combinação.
+   score += ((index + seed) % Math.max(1, remaining.length)) * 0.015;
    if (score < bestScore) { bestScore = score; bestIndex = index; }
   });
   pairs.push([first, remaining.splice(bestIndex, 1)[0]]);
@@ -137,9 +157,15 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    const glutePreferred=glutePriority&&focus==="Glúteos"&&style==="Musculação"?gluteOrder.map(n=>unique.find(e=>e.name===n)).filter((e):e is Exercise=>Boolean(e)):[];
    const ordered=[...glutePreferred,...preferred.filter(e=>!glutePreferred.includes(e)),...unique.filter(e=>!preferred.includes(e)&&!glutePreferred.includes(e))];
    const limit=Number(duration)>=60?10:Number(duration)>=50?8:6;
-   const rotated=ordered.length>0?[...ordered.slice(index%ordered.length),...ordered.slice(0,index%ordered.length)]:[];
-   const selected=rotated.slice(0,Math.floor(Math.min(rotated.length,limit)/2)*2);
-   return {title:`Treino ${String.fromCharCode(65+index)}`,groups,items:selected,pairs:buildConjugatePairs(selected)};
+   const targetCount=Math.floor(Math.min(ordered.length,limit)/2)*2;
+   const rotated=ordered.length>0?[...ordered.slice((index*2)%ordered.length),...ordered.slice(0,(index*2)%ordered.length)]:[];
+   const selected: Exercise[]=[];
+   const used=new Set<number>();
+   for(let step=0;selected.length<targetCount&&step<rotated.length*2;step++){
+    const pick=(step*3)%rotated.length;
+    if(!used.has(pick)){used.add(pick);selected.push(rotated[pick]);}
+   }
+   return {title:`Treino ${String.fromCharCode(65+index)}`,groups,items:selected,pairs:buildConjugatePairs(selected,index)};
   });
  },[days,place,level,duration,focus,style,glutePriority]);
  return <section className="panel workout-builder">

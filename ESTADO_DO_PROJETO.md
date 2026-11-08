@@ -18,7 +18,7 @@
 
 ## 3. Banco e segurança de contas
 - Projeto Supabase dedicado ativo e saudável; tabelas de cadastro, consentimentos, preferências, OTP e auditoria criadas e com RLS habilitado.
-- Migrações 001 a 006 aplicadas no banco: perfil cadastral, consentimentos separados, preferências opcionais, OTP, auditoria, proteção da função de sincronização, políticas explícitas de negação de acesso direto às tabelas internas e RPCs administrativas exclusivas da service_role.
+- Migrações 001 a 007 aplicadas no banco: perfil cadastral, consentimentos separados, preferências opcionais, OTP, auditoria, proteção da função de sincronização, políticas explícitas de negação de acesso direto às tabelas internas e RPCs administrativas exclusivas da service_role.
 - As tabelas estão vazias; não há contas ou dados clínicos cadastrados.
 - Verificação de segurança do Supabase: sem alertas ativos após as últimas correções. Operações administrativas são verificadas na Edge Function e novamente no banco, consultando o papel de administrador em app_metadata.
 - A chave publishable do projeto está configurada no cliente; nenhuma chave service_role ou segredo de provedor está no navegador ou no repositório.
@@ -39,16 +39,16 @@
 
 ## 6. Testes e validação
 - Testes de interface e regras de segurança existentes; CI executa testes, build, verificação estática das Edge Functions, testes dos componentes OTP e testes SQL das migrações em PostgreSQL temporário.
-- A última execução completa aprovada do CI validou instalação, testes do aplicativo, compilação, verificação das duas Edge Functions, testes dos componentes OTP e testes SQL das seis migrações. Os dois ajustes finais de navegação das telas legais estão em nova execução de CI.
-- Testes automatizados não substituem teste real de cadastro, confirmação de e-mail, confirmação de e-mail, recuperação de senha, RLS e suspensão em ambiente de homologação.
+- A última execução completa aprovada antes da mudança de autenticação validou instalação, testes do aplicativo, compilação, verificação das duas Edge Functions, testes dos componentes OTP e testes SQL das seis migrações. A nova execução que inclui o fluxo de ativação somente por e-mail está em andamento.
+- Testes automatizados não substituem teste real de cadastro, confirmação de e-mail, recuperação de senha, RLS e suspensão em ambiente de homologação.
 
 ## 7. Pendências para disponibilização pública
 1. Concluir e aprovar a execução atual de CI, corrigindo qualquer falha encontrada.
-2. Configurar Supabase Auth: confirmação de e-mail, modelos de mensagem e URLs de retorno.
-3. Definir URL definitiva de publicação e configurar APP_ORIGIN.
-4. Configurar e testar a confirmação de e-mail no Supabase Auth, com URL definitiva e template de mensagem.
-5. Implantar apenas a Edge Function administrativa quando o painel de gestão estiver pronto e criar o primeiro administrador por procedimento seguro.
-6. Realizar testes reais com duas contas, e-mail, WhatsApp/SMS, recuperação, suspensão, exclusão e isolamento de dados.
+2. Confirmar no Supabase Auth a confirmação de e-mail, o modelo da mensagem e a lista de URLs de retorno permitidas.
+3. Definir a URL definitiva de publicação e configurar os redirecionamentos de autenticação.
+4. Implementar persistência segura para treino, alimentação e evolução, com RLS e consentimentos apropriados; hoje esses registros existem apenas na sessão do navegador.
+5. Implantar a Edge Function administrativa somente quando o painel de gestão estiver pronto e criar o primeiro administrador por procedimento seguro.
+6. Realizar testes reais com duas contas: cadastro, confirmação de e-mail, recuperação, suspensão, exclusão e isolamento dos dados.
 7. Revisão jurídica da LGPD, Termos e Política; definir contato do controlador, retenção, exclusão e direitos dos titulares.
 8. Revisão clínica e editorial por profissionais habilitados antes de uso público.
 9. Planejar publicação e testar em celulares reais. Não declarar produto pronto, clinicamente validado ou em conformidade legal antes dessas etapas.

@@ -243,6 +243,10 @@ end $rls$;
 reset role;
 
 -- User 1 can only read/write their own records.
+set role authenticated;
+set request.jwt.claim.role = 'authenticated';
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
 insert into public.health_data_records(user_id,payload)
 values ('00000000-0000-4000-8000-000000000001','{"weight":"90","meals":["feijao"]}');
 do $health_rls$

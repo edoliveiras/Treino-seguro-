@@ -14,9 +14,11 @@
 - Tela de privacidade explica que não existe persistência ou envio a servidor.
 - Tela Ciência com referências e resumos informativos.
 - Workflow GitHub Actions em .github/workflows/ci.yml configurado para npm install e npm run build em push/PR para main.
+- Triagem corrigida: “Nenhuma” agora é mutuamente exclusiva das demais opções em cada grupo.
+- Tipos de React adicionados como dependências de desenvolvimento e declaração de tipos do Vite criada em src/vite-env.d.ts.
 
 ## B. Pendências (prioridade)
-1. **P0 — Verificar build real e corrigir erros TypeScript/JSX.** O workflow existe, mas seu resultado não foi consultado nesta etapa.
+1. **P0 — Verificar novo build real e corrigir erros TypeScript/JSX.** Primeiro CI falhou por ausência de @types/react, @types/react-dom e declaração vite/client; correção foi commitada, aguarda CI.
 2. **P0 — Revisar triagem de segurança:** impedir combinações contraditórias como “Nenhuma” + condição/dor; garantir que liberação declarada não seja tratada como validação clínica; revisar fluxo para menores e estados de avaliação.
 3. **P1 — Persistência segura:** definir backend, autenticação, autorização por usuário, RLS, minimização de dados e consentimentos LGPD antes de armazenar dados de saúde.
 4. **P1 — Persistência de avaliações, treinos, refeições e histórico**, com exportação e exclusão.
@@ -49,7 +51,7 @@
 
 ## E. Erros conhecidos / riscos
 - ESTADO_DO_PROJETO.md não existia no repositório até esta atualização.
-- A compilação e a execução no navegador não foram comprovadas; workflow CI está presente, status não consultado.
+- Primeiro CI falhou em TypeScript por ausência de definições de tipos de React e Vite; correção enviada, novo resultado ainda não confirmado.
 - Campos e listas de avaliação usam estado local; atualizar/fechar página perde os dados.
 - Seleção “Nenhuma” nos grupos de dores/condições agora é mutuamente exclusiva com as demais opções.
 - A confirmação de liberação médica é autodeclarada e não verificada.
@@ -59,4 +61,4 @@
 - Fontes constam no código com links; auditoria de metadados e adequação de cada alegação ainda pendente.
 
 ## F. Próximo passo exato
-Consultar o workflow GitHub Actions acionado pelo commit de correção c7b9b7af5a7b0e575c5570c2717818d87471adfa e obter o resultado de `npm run build`. Se falhar, corrigir os erros no código e repetir até três abordagens. Depois revisar os bloqueios de segurança da avaliação e atualizar este arquivo ao fim da etapa.
+Consultar o workflow GitHub Actions acionado pelos commits f543b383d85b68af892b1f6868588ed75ae839e4 e 28c78c5631c881d7f51d4670bf1eff343a720710 e obter o resultado de `npm run build`. Se falhar, corrigir os erros restantes (até três abordagens). Depois revisar os bloqueios de segurança da avaliação e atualizar este arquivo ao fim da etapa.

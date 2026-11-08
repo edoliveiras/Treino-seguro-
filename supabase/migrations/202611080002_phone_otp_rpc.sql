@@ -36,7 +36,7 @@ declare
   v_send_count integer;
   v_last_send timestamptz;
 begin
-  if auth.role() <> 'service_role' then
+  if coalesce(auth.role(), '') <> 'service_role' then
     raise exception 'not_authorized' using errcode = '42501';
   end if;
   if p_user_id is null or p_code_hmac is null
@@ -99,7 +99,7 @@ security definer
 set search_path = public, auth, pg_temp
 as $$
 begin
-  if auth.role() <> 'service_role' then
+  if coalesce(auth.role(), '') <> 'service_role' then
     raise exception 'not_authorized' using errcode = '42501';
   end if;
   if p_outcome not in ('sent','failed') then raise exception 'invalid_outcome'; end if;
@@ -123,7 +123,7 @@ as $$
 declare
   v_challenge public.phone_otp_challenges%rowtype;
 begin
-  if auth.role() <> 'service_role' then
+  if coalesce(auth.role(), '') <> 'service_role' then
     raise exception 'not_authorized' using errcode = '42501';
   end if;
   if p_user_id is null or p_code_hmac is null

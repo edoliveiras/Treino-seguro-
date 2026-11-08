@@ -10,7 +10,7 @@ Status: **base de banco e especificação preparadas; não implantadas nem conec
 4. Preferências de lembretes de treino, lembrete de foto a cada 3 semanas e novidades em escolhas separadas, todas desligadas por padrão.
 5. Supabase Auth envia confirmação real por e-mail. Confirm Email deve permanecer habilitado. O app só libera conteúdo privado após email_confirmed_at e profiles.whatsapp_verified_at existirem e account_status='active'.
 6. OTP do WhatsApp: 6 dígitos, expiração de 10 minutos, máximo de 5 tentativas, intervalo mínimo de 60 segundos entre reenvios e no máximo 3 envios por telefone em janela móvel de 60 minutos. Bloqueio temporário depois de tentativas esgotadas. Erros não revelam se e-mail/telefone já pertence a uma conta.
-7. WhatsApp oficial: Meta WhatsApp Business Platform / Cloud API, com modelo de mensagem de autenticação aprovado. Token e Phone Number ID somente em secrets de Edge Functions. Se o provedor Meta não estiver configurado, fallback explícito para SMS via Twilio; não simular envio.
+7. WhatsApp oficial: Meta WhatsApp Business Platform / Cloud API, com modelo de mensagem de autenticação aprovado. Token e Phone Number ID somente em secrets de Edge Functions. Nesta primeira versão, se a Meta não estiver configurada, o envio falha de forma explícita; fallback SMS via Twilio ainda não foi implementado.
 8. Troca de e-mail: Supabase Auth updateUser e confirmação do novo endereço antes de atualizar o estado verificado. Troca de WhatsApp: novo OTP e só substituir o telefone após sucesso, mantendo o antigo até então.
 9. Recuperação: link de recuperação Supabase Auth por e-mail. Recuperação por WhatsApp deve verificar OTP e então emitir fluxo seguro de recuperação, sem enviar senha nem permitir redefinição apenas com número não verificado.
 10. Exclusão, suspensão e reativação: endpoints administrativos no servidor, role verificada em app_metadata (nunca metadata editável pelo usuário), confirmação reforçada, auditoria sem dados clínicos e exclusão coordenada.
@@ -47,7 +47,7 @@ Status: **base de banco e especificação preparadas; não implantadas nem conec
 Secrets de produção: `APP_ORIGIN`, `OTP_HMAC_SECRET` (mínimo 32 caracteres), `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_API_VERSION`, `WHATSAPP_OTP_TEMPLATE_NAME` e `WHATSAPP_OTP_TEMPLATE_LANGUAGE`. O template de autenticação precisa estar aprovado no WhatsApp Manager e ter corpo com variável e botão de copiar código compatíveis com o payload. Token e service role nunca vão para React, Vite, GitHub ou navegador.
 
 ### Fallback SMS
-Secrets: OTP_FALLBACK_PROVIDER=twilio, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN e TWILIO_VERIFY_SERVICE_SID. O fallback precisa ser configurado e testado antes de habilitado. Provedor não configurado significa que cadastro não conclui verificação.
+O fallback via Twilio ainda não está disponível nesta versão. Não configure nem anuncie SMS como alternativa funcional até a implementação e os testes do adaptador Verify.
 
 ### Supabase
 - VITE_SUPABASE_URL e chave publishable/anon no frontend; nunca chave secret/service-role.

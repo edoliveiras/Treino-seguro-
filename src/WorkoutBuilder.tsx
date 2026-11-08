@@ -171,20 +171,27 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
  };
  const glutePriority=/gl[uú]te|bumbum|perna|inferior|posterior|quadr[ií]ceps/.test(generatedRequest.toLowerCase());
  const sessions=useMemo(()=>{
-  const templates=style==="Full body"||style==="Corrida"?Array.from({length:days},()=>["Glúteos","Pernas","Costas","Peito","Braços","Abdômen","Corpo inteiro"] as Focus[]):split[days];
+  const fullBodyGroups: Focus[]=["Glúteos","Pernas","Costas","Peito","Braços","Abdômen","Corpo inteiro"];
+  const templates: Focus[][] = style==="Musculação" ? split[days] :
+    style==="Corrida" ? Array.from({length:days},()=>fullBodyGroups) :
+    Array.from({length:days},()=>fullBodyGroups);
   return templates.map((groups,index)=>{
-   const candidates=library.filter(e=>(e.home&&place==="Casa"||e.gym&&place==="Academia")&&e.styles.includes(style)&&groups.some(g=>e.focus.includes(g))&&(level==="Iniciante" ? (e.beginner||e.focus.includes("Glúteos")&&e.name==="Elevação pélvica") : level==="Intermediário" ? !e.beginner : true));
+   const candidates=library.filter(e=>(place==="Casa"?e.home:e.gym)&&e.styles.includes(style)&&groups.some(g=>e.focus.includes(g))&&(level==="Iniciante" ? e.beginner : level==="Intermediário" ? !e.beginner : true));
    const unique=candidates.filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i);
    const preferred=unique.filter(e=>e.focus.includes(focus));
    const gluteOrder=["Hip thrust com barra","Elevação pélvica","Agachamento búlgaro","Levantamento terra romeno com halteres","Agachamento goblet","Leg press","Coice de glúteo na polia","Abdução de quadril com faixa","Mesa flexora","Agachamento sumô","Afundo apoiado"];
    const glutePreferred=glutePriority&&focus==="Glúteos"&&style==="Musculação"?gluteOrder.map(n=>unique.find(e=>e.name===n)).filter((e):e is Exercise=>Boolean(e)):[];
-   const ordered=[...glutePreferred,...preferred.filter(e=>!glutePreferred.includes(e)),...unique.filter(e=>!preferred.includes(e)&&!glutePreferred.includes(e))];
+   // A prioridade escolhida nunca é retirada pela rotação: primeiro entram os exercícios do foco,
+   // depois os complementares. A variação acontece dentro de cada grupo, sem descaracterizar o pedido.
+   const priority=glutePreferred.length?glutePreferred:preferred;
+   const secondary=unique.filter(e=>!priority.includes(e));
+   const rotate=(items:Exercise[],offset:number)=>items.length?[...items.slice(offset%items.length),...items.slice(0,offset%items.length)]:[];
+   const priorityRotated=rotate(priority,index+variation);
+   const secondaryRotated=rotate(secondary,index*2+variation);
+   const ordered=[...priorityRotated,...secondaryRotated];
    const limit=Number(duration)>=60?10:Number(duration)>=50?8:6;
    const targetCount=Math.min(ordered.length,limit);
-   // Rotação real entre dias e a cada nova geração; evita o padrão fixo e a seleção por saltos repetidos.
-   const offset=ordered.length?(index*3+variation*2)%ordered.length:0;
-   const rotated=ordered.length?[...ordered.slice(offset),...ordered.slice(0,offset)]:[];
-   const selected=rotated.slice(0,targetCount);
+   const selected=ordered.slice(0,targetCount);
    return {title:`Treino ${String.fromCharCode(65+index)}`,groups,items:selected,pairs:buildConjugatePairs(selected,index+variation)};
   });
  },[days,place,level,duration,focus,style,glutePriority,variation]);

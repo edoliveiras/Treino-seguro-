@@ -128,6 +128,55 @@ begin
   if not v_rejected then raise exception 'verified_phone_was_not_protected'; end if;
 end $$;
 
+-- Verify the 60-second resend cooldown and three-send hourly limit.
+do $
+declare
+  v_rejected boolean := false;
+begin
+  -- Age the earlier challenge log so this test is independent of execution speed.
+  update public.phone_otp_send_log
+    set sent_at = now() - interval '61 seconds'
+    where phone_e164 = '+5511999990003';
+
+  perform public.create_phone_otp_challenge(
+    '00000000-0000-4000-8000-000000000003', repeat('f',64)
+  );
+
+  begin
+    perform public.create_phone_otp_challenge(
+      '00000000-0000-4000-8000-000000000003', repeat('1',64)
+    );
+  exception when others then
+    if sqlerrm = 'request_not_allowed' then v_rejected := true;
+    else raise; end if;
+  end;
+  if not v_rejected then raise exception 'otp_resend_cooldown_not_applied'; end if;
+
+  -- Move the successful sends outside the cooldown while keeping them in the hour.
+  update public.phone_otp_send_log
+    set sent_at = now() - interval '61 seconds'
+    where phone_e164 = '+5511999990003';
+
+  perform public.create_phone_otp_challenge(
+    '00000000-0000-4000-8000-000000000003', repeat('2',64)
+  );
+
+  update public.phone_otp_send_log
+    set sent_at = now() - interval '61 seconds'
+    where phone_e164 = '+5511999990003';
+
+  v_rejected := false;
+  begin
+    perform public.create_phone_otp_challenge(
+      '00000000-0000-4000-8000-000000000003', repeat('3',64)
+    );
+  exception when others then
+    if sqlerrm = 'request_not_allowed' then v_rejected := true;
+    else raise; end if;
+  end;
+  if not v_rejected then raise exception 'otp_hourly_send_limit_not_applied'; end if;
+end $;
+
 -- Verify row-level access and audited admin-only status changes.
 grant select on public.profiles to authenticated, anon;
 grant select on public.admin_account_directory to authenticated;

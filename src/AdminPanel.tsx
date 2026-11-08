@@ -27,17 +27,23 @@ export default function AdminPanel({ currentUserId }: { currentUserId: string })
     }
     setLoading(true);
     setError("");
-    const { data, error: queryError } = await supabase
-      .from("admin_account_directory")
-      .select("id,full_name,email,whatsapp_e164,account_status,email_verified_at,created_at")
-      .order("created_at", { ascending: false });
-    if (queryError) {
-      setError("Não foi possível carregar as contas. Confira se seu perfil tem permissão de administrador.");
+    try {
+      const { data, error: queryError } = await supabase
+        .from("admin_account_directory")
+        .select("id,full_name,email,whatsapp_e164,account_status,email_verified_at,created_at")
+        .order("created_at", { ascending: false });
+      if (queryError) {
+        setError("Não foi possível carregar as contas. Confira se seu perfil tem permissão de administrador.");
+        setAccounts([]);
+      } else {
+        setAccounts((data ?? []) as Account[]);
+      }
+    } catch {
+      setError("Não foi possível carregar as contas. Verifique sua conexão.");
       setAccounts([]);
-    } else {
-      setAccounts((data ?? []) as Account[]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   useEffect(() => { void loadAccounts(); }, [loadAccounts]);
@@ -48,16 +54,21 @@ export default function AdminPanel({ currentUserId }: { currentUserId: string })
     setBusyId(account.id);
     setError("");
     setNotice("");
-    const { data, error: invokeError } = await supabase.functions.invoke("admin-account", {
-      body: { action, targetUserId: account.id },
-    });
-    if (invokeError || !data?.success) {
-      setError("Não foi possível concluir a ação administrativa. Verifique a implantação do serviço e tente novamente.");
-    } else {
-      setNotice(action === "delete" ? "Conta excluída." : action === "suspend" ? "Conta suspensa." : "Conta reativada.");
-      await loadAccounts();
+    try {
+      const { data, error: invokeError } = await supabase.functions.invoke("admin-account", {
+        body: { action, targetUserId: account.id },
+      });
+      if (invokeError || !data?.success) {
+        setError("Não foi possível concluir a ação administrativa. Verifique a implantação do serviço e tente novamente.");
+      } else {
+        setNotice(action === "delete" ? "Conta excluída." : action === "suspend" ? "Conta suspensa." : "Conta reativada.");
+        await loadAccounts();
+      }
+    } catch {
+      setError("Não foi possível concluir a ação administrativa. Verifique sua conexão e tente novamente.");
+    } finally {
+      setBusyId("");
     }
-    setBusyId("");
   };
 
   return <main className="admin-main"><section className="panel admin-panel">

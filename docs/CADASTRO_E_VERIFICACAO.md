@@ -10,7 +10,7 @@ Status: **base de banco e especificação preparadas; não implantadas nem conec
 4. Preferências de lembretes de treino, lembrete de foto a cada 3 semanas e novidades em escolhas separadas, todas desligadas por padrão.
 5. Supabase Auth envia confirmação real por e-mail. Confirm Email deve permanecer habilitado. O app só libera conteúdo privado após email_confirmed_at e profiles.whatsapp_verified_at existirem e account_status='active'.
 6. OTP do WhatsApp: 6 dígitos, expiração de 10 minutos, máximo de 5 tentativas, intervalo mínimo de 60 segundos entre reenvios e no máximo 3 envios por telefone em janela móvel de 60 minutos. Bloqueio temporário depois de tentativas esgotadas. Erros não revelam se e-mail/telefone já pertence a uma conta.
-7. WhatsApp oficial: Meta WhatsApp Business Platform / Cloud API, com modelo de mensagem de autenticação aprovado. Token e Phone Number ID somente em secrets de Edge Functions. Nesta primeira versão, se a Meta não estiver configurada, o envio falha de forma explícita; fallback SMS via Twilio ainda não foi implementado.
+7. WhatsApp oficial: Meta WhatsApp Business Platform / Cloud API, com modelo de mensagem de autenticação aprovado. Se a Meta falhar, a Edge Function tenta enviar o mesmo código por SMS usando Twilio Programmable Messaging. Tokens e identificadores ficam somente em secrets de Edge Functions. O fallback só funciona depois da configuração e de testes reais.
 8. Troca de e-mail: Supabase Auth updateUser e confirmação do novo endereço antes de atualizar o estado verificado. Troca de WhatsApp: novo OTP e só substituir o telefone após sucesso, mantendo o antigo até então.
 9. Recuperação: link de recuperação Supabase Auth por e-mail. Recuperação por WhatsApp deve verificar OTP e então emitir fluxo seguro de recuperação, sem enviar senha nem permitir redefinição apenas com número não verificado.
 10. Exclusão, suspensão e reativação: endpoints administrativos no servidor, role verificada em app_metadata (nunca metadata editável pelo usuário), confirmação reforçada, auditoria sem dados clínicos e exclusão coordenada.
@@ -46,8 +46,12 @@ Status: **base de banco e especificação preparadas; não implantadas nem conec
 ### Meta WhatsApp Cloud API
 Secrets de produção: `APP_ORIGIN`, `OTP_HMAC_SECRET` (mínimo 32 caracteres), `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_API_VERSION`, `WHATSAPP_OTP_TEMPLATE_NAME` e `WHATSAPP_OTP_TEMPLATE_LANGUAGE`. O template de autenticação precisa estar aprovado no WhatsApp Manager e ter corpo com variável e botão de copiar código compatíveis com o payload. Token e service role nunca vão para React, Vite, GitHub ou navegador.
 
-### Fallback SMS
-O fallback via Twilio ainda não está disponível nesta versão. Não configure nem anuncie SMS como alternativa funcional até a implementação e os testes do adaptador Verify.
+### Fallback SMS via Twilio
+- A Edge Function tenta primeiro a Meta Cloud API e, em caso de falha, tenta Twilio Programmable Messaging com o mesmo OTP e a mesma expiração/tentativas controladas pelo banco.
+- Secrets adicionais: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` e `TWILIO_MESSAGING_SERVICE_SID`.
+- A função registra o provedor efetivamente utilizado (Meta ou Twilio) sem guardar o código.
+- Este é envio via Twilio Messaging Service, não Twilio Verify. É necessário configurar remetente/Messaging Service, habilitar destinos brasileiros, saldo e conformidade do provedor.
+- Se ambos os provedores falharem, o desafio fica inválido para uso prático e a resposta informa indisponibilidade sem expor detalhes do provedor. O fallback está versionado, mas ainda não foi testado com credenciais reais.
 
 ### Supabase
 - VITE_SUPABASE_URL e chave publishable/anon no frontend; nunca chave secret/service-role.
@@ -68,5 +72,5 @@ O fallback via Twilio ainda não está disponível nesta versão. Não configure
 
 - A migração supabase/migrations/202611080001_account_security.sql prepara tabelas, unicidade, RLS, status e trilha administrativa.
 - A Edge Function inicial de OTP Meta e as RPCs transacionais foram adicionadas ao repositório, mas **não foram implantadas nem testadas em projeto Supabase**.
-- Ainda faltam fallback Twilio, endpoints administrativos completos, tela de cadastro/login/consentimentos, recuperação e troca de contato, testes SQL/RLS e testes de integração, além da configuração do projeto/provedores.
+- O fallback Twilio SMS foi acrescentado à Edge Function; ainda falta configurá-lo e testá-lo com credenciais reais. Também faltam endpoints administrativos completos, tela de cadastro/login/consentimentos, recuperação e troca de contato, testes SQL/RLS e testes de integração, além da configuração do projeto/provedores.
 - As migrações não foram executadas. Não há envio real de e-mail, WhatsApp ou SMS.

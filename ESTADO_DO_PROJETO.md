@@ -1,80 +1,68 @@
 # ESTADO_DO_PROJETO — Treino Seguro
-Última atualização: 2026-11-08 (etapa: navegação móvel e acessibilidade básica + CI aprovado)
+Última atualização: 2026-11-08 (testes de segurança ampliados, contraste ajustado e CI aprovado)
 
-## A. Funções já prontas no código (protótipo)
-- Aplicação React + TypeScript + Vite, interface em português e responsiva/mobile-first.
-- Navegação: Início, Avaliação, Treino, Exercícios, Nutrição, Evolução, Ciência e Privacidade.
-- Avaliação em memória: peso, altura, IMC e classificação aproximada, objetivo, dias disponíveis, local, nível, dores/limitações e condições de saúde.
-- Exige confirmação de maioridade (18+) e leitura do aviso educativo; exige declaração de orientação/liberação médica quando uma condição de saúde é marcada.
-- Aviso de segurança fixo e sinais de alerta para interromper exercício.
-- Mensagem de cautela para IMC >= 35 e prioridade de baixo impacto; sem plano de corrida automático.
-- Seis exercícios demonstrativos com instruções, adaptações e cuidados; marcação de conclusão apenas na sessão.
-- Diário alimentar textual e registros de peso/cintura apenas na sessão.
-- Fotos desativadas; interface explica a razão de segurança.
-- Tela de privacidade explica que não existe persistência ou envio a servidor.
-- Tela Ciência com referências e resumos informativos.
-- Workflow GitHub Actions em .github/workflows/ci.yml configurado para npm install, npm test e npm run build em push/PR para main.
-- Testes React Testing Library em src/App.test.tsx: acesso direto ao Treino sem avaliação é bloqueado; mudanças após avaliação exigem nova conclusão; biblioteca é ocultada após relato de dor/limitação; todas as oito áreas são acessíveis pela navegação móvel.
-- Navegação horizontal compacta adicionada para tablets e celulares (até 850px), corrigindo ausência de navegação quando a barra lateral ficava oculta.
-- Indicador de foco visível adicionado a botões, campos e links para navegação por teclado.
-- Regras de triagem isoladas em src/safety.ts e usadas pelo app: exclusividade de “Nenhuma”, validação de peso/altura, revisão médica, revisão por dor/limitação e bloqueio de corrida com IMC ≥ 35.
-- Testes automatizados Vitest em src/safety.test.ts: 6 testes de regras puras em src/safety.test.ts e 4 testes de interface em src/App.test.tsx; total de 10 testes aprovados no workflow 42479710744.
-- Elegibilidade para concluir a avaliação centralizada em canCompleteAssessment; o treino volta a exigir saved e canStart simultaneamente.
-- Alterações em objetivo, dias, local, nível, liberação médica, maioridade ou aviso educativo invalidam a avaliação concluída.
-- Triagem corrigida: “Nenhuma” é mutuamente exclusiva das demais opções em cada grupo.
-- Mudanças na avaliação invalidam a conclusão anterior; ao alterar condições de saúde, a autodeclaração de liberação é reiniciada.
-- Campos de peso/altura agora validam faixas plausíveis de entrada antes de concluir a avaliação.
-- Se IMC ≥ 35 e o objetivo selecionado for começar a correr, a conclusão da avaliação fica bloqueada e o app explica a restrição.
-- Se o usuário informa dor/limitação, o app oculta os exercícios demonstrativos e orienta avaliação profissional individual antes de exibir movimentos.
-- Tipos de React adicionados como dependências de desenvolvimento e declaração de tipos do Vite criada em src/vite-env.d.ts.
+## 1. Repositório e fluxo
+- Repositório: https://github.com/edoliveiras/Treino-seguro-
+- Branch: `main`
+- Código mantido diretamente no GitHub; Lovable será somente visualizador.
+- Aplicação: React + TypeScript + Vite, em português, responsiva e mobile-first.
+- CI em `.github/workflows/ci.yml`: `npm install`, `npm test` e `npm run build` em push/PR.
 
-## B. Pendências (prioridade)
-1. **P0 — Expandir testes de segurança de ponta a ponta:** cobrir seleção de condição de saúde, reinício da confirmação médica, bloqueio de corrida por IMC e alterações de cada campo depois da conclusão.
-2. **P0 — Acessibilidade e experiência móvel:** testar contraste, leitores de tela, ordem de foco e layout em viewport estreita.
-3. **P1 — Revisão técnica externa:** validar arquitetura, base legal, política de privacidade e controles de dados sensíveis antes de qualquer persistência.
-4. **P0 — Revisar triagem de segurança:** impedir combinações contraditórias como “Nenhuma” + condição/dor; garantir que liberação declarada não seja tratada como validação clínica; revisar fluxo para menores e estados de avaliação.
-5. **P1 — Persistência segura:** implementar somente após revisão jurídica e de segurança, seguindo docs/ARQUITETURA_BACKEND_LGPD.md.
-6. **P1 — Persistência de avaliações, treinos, refeições e histórico**, com exportação e exclusão.
-7. **P1 — Política de privacidade, termos, consentimento explícito para dados sensíveis e fotos, retenção e canal de direitos.**
-8. **P2 — Fotos privadas:** armazenamento privado, URLs assinadas, controles de acesso, exclusão verificável e consentimento separado; manter desativado até isso existir.
-9. **P2 — Progressão de treino individualizada:** dias 2–5, nível, limitações, condições, baixo impacto; sem prescrição automática para casos de risco.
-10. **P2 — Biblioteca multimídia:** imagens e vídeos profissionais licenciados, erros comuns e contraindicações revisadas.
-11. **P2 — Nutrição:** integração confiável com TACO e Guia Alimentar; reconhecimento por foto e calorias somente com metodologia validada, estimativas rotuladas e orientação profissional.
-12. **P3 — Gráficos, metas e indicadores longitudinais; testes automatizados e acessibilidade.**
-13. **P3 — Configurar visualização no Lovable (somente visualizador) e publicação após testes e serviços externos.**
+## 2. O que já está implementado
+- Navegação para Início, Avaliação, Treino, Exercícios, Nutrição, Evolução, Ciência e Privacidade.
+- Menu lateral em telas grandes e navegação horizontal compacta em telas menores.
+- Indicador de foco visível para botões, campos e links; contraste de textos auxiliares reforçado.
+- Avaliação local com peso, altura, IMC aproximado, objetivo, disponibilidade, local, nível, dores/limitações, condições de saúde, declaração de maioridade e aviso educativo.
+- IMC apresentado como triagem, nunca diagnóstico nem critério único de prescrição.
+- Condições de saúde exigem orientação/liberação médica declarada pelo usuário; isso é autodeclaração e não comprovação clínica.
+- Mudança de condição de saúde reinicia a declaração de liberação e invalida avaliação concluída.
+- Opção “Nenhuma” mutuamente exclusiva das outras opções nos grupos de dor e condição.
+- IMC estimado >= 35 com objetivo “Começar a correr” bloqueia conclusão da avaliação e mostra cautela.
+- Dor/limitação informada oculta a biblioteca de movimentos e orienta avaliação individual.
+- Acesso ao treino exige avaliação válida; alterações nos parâmetros invalidam conclusão anterior.
+- Seis movimentos educativos com instruções, adaptações e cuidados; marcação concluída só na sessão.
+- Diário alimentar textual, sem reconhecimento de imagens nem estimativa de calorias.
+- Evolução com registros temporários de peso e cintura; sem persistência nem gráficos longitudinais.
+- Fotos desativadas; interface explica que só devem ser ativadas com armazenamento privado, consentimento e exclusão segura.
+- Tela de privacidade deixa claro que não existe envio nem persistência em servidor.
+- Tela Ciência com OMS, ACSM, Cochrane, Guia Alimentar brasileiro e TACO.
+- Sinais de alerta para interromper atividade e procurar atendimento.
 
-## C. Decisões e suposições
-- Público-alvo: adultos 18+; interface brasileira em português.
-- Aplicativo educativo, não diagnóstico nem substituto de médico, nutricionista ou profissional de Educação Física.
-- Sem banco de dados, autenticação, upload de fotos ou sincronização neste momento; todos os registros atuais são temporários na memória da página.
-- Não coletar nem armazenar dados sensíveis até controles de segurança, consentimento e governança estarem implementados.
-- IMC é triagem e não deve definir sozinho saúde ou treino.
-- IMC >= 35 aciona cautela e baixo impacto; não se apresenta corrida como recomendação automática.
-- Condição de saúde marcada exige avaliação/orientação médica antes de iniciar. A caixa de confirmação do usuário é apenas autodeclaração, não comprovação de liberação.
-- Bloco de 7 semanas é organização didática, não protocolo clínico validado.
-- Lovable será usado apenas como visualizador; código no GitHub.
-- Repositório: https://github.com/edoliveiras/Treino-seguro- ; branch main.
+## 3. Testes e estado de CI
+- `src/safety.test.ts`: 6 testes de regras puras.
+- `src/App.test.tsx`: 7 testes de interface.
+- Total: **13 testes aprovados**.
+- Commit dos testes: `4f34a4049402b9244f7b57ecc179e598808636d0`; workflow 42479872555: testes e build aprovados.
+- Commit do ajuste de contraste: `da1785b36022bfa6dc43635e168910c2fc514f8e`; workflow 42479881418: testes e build aprovados.
+- Os testes atuais cobrem: bloqueio de acesso direto ao treino, revalidação após mudanças, ocultação de exercícios após relato de dor, navegação móvel, reinício da declaração médica, bloqueio de corrida no cenário definido e exclusividade de “Nenhuma”.
 
-## D. Arquitetura e fontes
-- Especificação inicial de backend, autenticação, RLS, consentimento, retenção, direitos e critérios de liberação documentada em docs/ARQUITETURA_BACKEND_LGPD.md. Não é implementação, não comprova conformidade LGPD e não ativa armazenamento.
+## 4. Arquitetura, privacidade e limitações
+- Documento de proposta: `docs/ARQUITETURA_BACKEND_LGPD.md`.
+- **Não existe backend, autenticação, banco de dados, sincronização ou upload de fotos implementado.**
+- Os dados digitados ficam apenas na memória da página e são perdidos ao atualizar/fechar.
+- O documento LGPD é uma proposta técnica; não é implementação nem comprovação de conformidade.
+- Não habilitar persistência ou fotos antes de revisão jurídica/de segurança, consentimento adequado, controles de acesso, testes de autorização, exportação e exclusão.
+- Público-alvo definido: adultos 18+; a idade é autodeclarada, não verificada.
+- O app é educativo e não substitui médico, nutricionista ou profissional de Educação Física.
+- O bloco de sete semanas é organização didática, não protocolo clínico validado.
 
-### Fontes científicas incluídas no protótipo (verificação bibliográfica ainda precisa ser auditada)
-- Bull FC et al. (2020), WHO 2020 guidelines on physical activity and sedentary behaviour, British Journal of Sports Medicine 54:1451–1462. https://bjsm.bmj.com/content/54/24/1451
-- Donnelly JE et al. (2009), Appropriate physical activity intervention strategies for weight loss and prevention of weight regain for adults, Medicine & Science in Sports & Exercise 41(2):459–471; PMID 19127177. https://pubmed.ncbi.nlm.nih.gov/19127177/
-- Hayden JA et al. (2021), Exercise therapy for chronic low back pain, Cochrane Database of Systematic Reviews 9:CD009790; PMID 34580864. https://pubmed.ncbi.nlm.nih.gov/34580864/
-- Ministério da Saúde (2014), Guia Alimentar para a População Brasileira, 2ª edição. https://bvsms.saude.gov.br/bvs/publicacoes/guia_alimentar_populacao_brasileira_2ed.pdf
-- NEPA/UNICAMP (2011), Tabela Brasileira de Composição de Alimentos (TACO), 4ª edição. https://nepa.unicamp.br/tabela-brasileira-de-composicao-de-alimentos-4a-edicao/
+## 5. Fontes bibliográficas usadas no protótipo
+- Bull FC et al. (2020), diretrizes OMS de atividade física: https://bjsm.bmj.com/content/54/24/1451
+- Donnelly JE et al. (2009), ACSM: https://pubmed.ncbi.nlm.nih.gov/19127177/
+- Hayden JA et al. (2021), Cochrane sobre exercício e dor lombar crônica: https://pubmed.ncbi.nlm.nih.gov/34580864/
+- Ministério da Saúde (2014), Guia Alimentar: https://bvsms.saude.gov.br/bvs/publicacoes/guia_alimentar_populacao_brasileira_2ed.pdf
+- NEPA/UNICAMP (2011), TACO 4ª edição: https://www.fao.org/food-composition/tables-and-databases/detail/%28brazil--2011%29-tabela-brasileira-de-composi%C3%A7%C3%A3o-de-alimentos-%28taco%29/en
 
-## E. Erros conhecidos / riscos
-- ESTADO_DO_PROJETO.md não existia no repositório até esta atualização.
-- CI do commit 975ee7319d8fe8519ad9c78bc2a1d8b18c187391 passou `npm test` e `npm run build` no workflow 42479288776. O commit 0f03da5 falhou em `npm test` devido a `\\n` literal inserido no import de safety.test.ts; corrigido no commit 7fb652189efb50c1aa9d6c878c440802ae2db0be. Workflow 42479447651 estava em andamento na última consulta.
-- Campos e listas de avaliação usam estado local; atualizar/fechar página perde os dados.
-- Seleção “Nenhuma” nos grupos de dores/condições agora é mutuamente exclusiva com as demais opções.
-- A confirmação de liberação médica é autodeclarada e não verificada.
-- O cálculo do IMC não valida todos os limites clínicos e não deve ser usado para prescrição.
-- Diário alimentar não calcula calorias nem reconhece fotos.
-- Sem fotos, gráficos reais, banco de dados, autenticação ou sincronização.
-- Metadados de Bull et al. (2020), Donnelly et al. (2009), Hayden et al. (2021), Guia Alimentar (2014) e TACO (2011) conferidos em fontes bibliográficas/organizacionais; a TACO continua como referência de composição, não reconhecimento automático de refeições.
+## 6. Pendências prioritárias
+1. **P0 — Ampliar cobertura de segurança:** testar alterações de todos os campos após avaliação, estado de avaliação após alternar telas, combinações de condições e fluxo completo com liberação autodeclarada.
+2. **P0 — Acessibilidade:** auditoria de contraste de toda a interface, leitor de tela, nomes acessíveis, ordem de foco e testes em viewport estreita.
+3. **P1 — Revisão clínica/editorial:** revisão por profissionais habilitados das orientações, triagem e exercícios antes de uso público.
+4. **P1 — Revisão jurídica e segurança:** política de privacidade, termos, base legal, consentimento específico, retenção e direitos dos titulares.
+5. **P1 — Backend seguro:** somente após decisões e revisão; autenticação, RLS, segregação por usuário, exportação e exclusão.
+6. **P2 — Personalização de treinos:** considerar dias, nível, local e limitações sem prescrição automática em cenários de risco.
+7. **P2 — Conteúdo multimídia licenciado:** imagens/vídeos profissionais, erros comuns e contraindicações revisadas.
+8. **P2 — Nutrição:** integração confiável com TACO/Guia Alimentar; não habilitar reconhecimento por foto ou calorias sem método validado.
+9. **P3 — Configurar Lovable como visualizador e planejar publicação após as revisões e serviços externos necessários.**
 
-## F. Próximo passo exato
-CI validado no commit 7f8cf42 (workflow 42479710744: 10 testes e build aprovados). Próximo passo: ampliar os testes para condições médicas, reinício de liberação autodeclarada e bloqueio de corrida; revisar contraste, leitores de tela e ordem de foco. A especificação inicial de arquitetura e LGPD está em docs/ARQUITETURA_BACKEND_LGPD.md; não há backend implementado. Manter fotos e persistência desativadas até implementação, testes de autorização e revisão jurídica/de segurança. A especificação inicial de arquitetura e LGPD está em docs/ARQUITETURA_BACKEND_LGPD.md; não há backend implementado. Manter fotos e persistência desativadas até implementação, testes de autorização e revisão jurídica/de segurança.
+## 7. Próximo passo exato
+Continuar pela cobertura de segurança e acessibilidade: ampliar testes de alteração de cada campo e estados de navegação; depois revisar nomes acessíveis, ordem de foco e layout móvel. Manter backend, persistência e fotos desativados. Não declarar o produto publicado, clinicamente validado ou LGPD-compliant.

@@ -69,3 +69,9 @@
 
 ## 7. Próximo passo exato
 CI validado no commit `33fbdf65f407d931e7f8eb3f91b18f828235ef7a` (workflow 42479956704: 14 testes e build aprovados). A migração de contas foi criada, mas não foi executada nem testada contra Supabase. Próximo passo: implementar Edge Functions de OTP e fluxo de cadastro/login, com configuração por secrets e testes negativos; depois integrar a interface. Manter autenticação, backend, persistência clínica e fotos desativados até configuração e validação real. Manter backend, persistência e fotos desativados. Não declarar o produto publicado, clinicamente validado ou LGPD-compliant.
+
+## 8. Atualização de execução — 08/11/2026
+- A migração inicial de contas e o documento de cadastro/OTP estão versionados na branch main. Commit mais recente da migração: `abda0c71da26c85bb04351c29815065b9e780fd0`.
+- CI desse commit: workflow 42480280197 concluído com sucesso. Isso valida somente os comandos automatizados já configurados (`npm install`, testes do app e build); **não executa nem valida a migração SQL em um banco Supabase**.
+- O esquema SQL continua como rascunho técnico não implantado. A criação de Edge Functions, envio real de OTP, cadastro/login integrado, recuperação, gestão administrativa e testes SQL/RLS continuam pendentes.
+- Não ativar autenticação nem prometer confirmação por e-mail/WhatsApp enquanto o projeto Supabase não estiver conectado e configurado com os secrets do provedor. Não colocar chaves no repositório ou no frontend.

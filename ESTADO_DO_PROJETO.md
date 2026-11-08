@@ -1,5 +1,5 @@
 # ESTADO_DO_PROJETO — Treino Seguro
-Última atualização: 2026-11-08 (etapa: bloqueio de fluxo reforçado + arquitetura LGPD documentada)
+Última atualização: 2026-11-08 (etapa: testes de interface adicionados e CI aprovado)
 
 ## A. Funções já prontas no código (protótipo)
 - Aplicação React + TypeScript + Vite, interface em português e responsiva/mobile-first.
@@ -14,8 +14,9 @@
 - Tela de privacidade explica que não existe persistência ou envio a servidor.
 - Tela Ciência com referências e resumos informativos.
 - Workflow GitHub Actions em .github/workflows/ci.yml configurado para npm install, npm test e npm run build em push/PR para main.
+- Testes React Testing Library em src/App.test.tsx: acesso direto ao Treino sem avaliação é bloqueado; mudanças após avaliação exigem nova conclusão; biblioteca de exercícios é ocultada após relato de dor/limitação.
 - Regras de triagem isoladas em src/safety.ts e usadas pelo app: exclusividade de “Nenhuma”, validação de peso/altura, revisão médica, revisão por dor/limitação e bloqueio de corrida com IMC ≥ 35.
-- Testes automatizados Vitest em src/safety.test.ts: 6 testes automatizados cobrindo as regras iniciais e os critérios de conclusão da avaliação; commit 7fb6521 validado com sucesso.
+- Testes automatizados Vitest em src/safety.test.ts: 6 testes de regras puras em src/safety.test.ts e 3 testes de interface em src/App.test.tsx; total de 9 testes aprovados no workflow 42479628366.
 - Elegibilidade para concluir a avaliação centralizada em canCompleteAssessment; o treino volta a exigir saved e canStart simultaneamente.
 - Alterações em objetivo, dias, local, nível, liberação médica, maioridade ou aviso educativo invalidam a avaliação concluída.
 - Triagem corrigida: “Nenhuma” é mutuamente exclusiva das demais opções em cada grupo.
@@ -26,8 +27,8 @@
 - Tipos de React adicionados como dependências de desenvolvimento e declaração de tipos do Vite criada em src/vite-env.d.ts.
 
 ## B. Pendências (prioridade)
-1. **P0 — Confirmar CI do commit de documentação 7b73fe963d7c06dd219e5ac48c19ca98c4100c05.** O código e os 6 testes passaram no workflow 42479447651; o commit de documentação mais recente está com workflow 42479491233 pendente.
-2. **P0 — Testes de interface:** cobrir navegação direta para Treino/Exercícios e mudança de dados após conclusão, preferencialmente com React Testing Library.
+1. **P0 — Expandir testes de segurança de ponta a ponta:** cobrir seleção de condição de saúde, reinício da confirmação médica, bloqueio de corrida por IMC, navegação por teclado e layout móvel.
+2. **P0 — Acessibilidade e experiência móvel:** testar foco visível, rótulos acessíveis, navegação em viewport estreita e mensagens de erro/alerta.
 3. **P1 — Revisão técnica externa:** validar arquitetura, base legal, política de privacidade e controles de dados sensíveis antes de qualquer persistência.
 4. **P0 — Revisar triagem de segurança:** impedir combinações contraditórias como “Nenhuma” + condição/dor; garantir que liberação declarada não seja tratada como validação clínica; revisar fluxo para menores e estados de avaliação.
 5. **P1 — Persistência segura:** implementar somente após revisão jurídica e de segurança, seguindo docs/ARQUITETURA_BACKEND_LGPD.md.
@@ -74,4 +75,4 @@
 - Metadados de Bull et al. (2020), Donnelly et al. (2009), Hayden et al. (2021), Guia Alimentar (2014) e TACO (2011) conferidos em fontes bibliográficas/organizacionais; a TACO continua como referência de composição, não reconhecimento automático de refeições.
 
 ## F. Próximo passo exato
-Confirmar workflow 42479491233 do commit 7b73fe9. Depois adicionar testes de interface para revalidação da avaliação e bloqueio de telas. A especificação inicial de arquitetura e LGPD está em docs/ARQUITETURA_BACKEND_LGPD.md; não há backend implementado. Manter fotos e persistência desativadas até implementação, testes de autorização e revisão jurídica/de segurança.
+CI validado no commit 3f741ad (workflow 42479628366: 9 testes e build aprovados). Próximo passo: ampliar os testes de condições médicas, liberação autodeclarada, bloqueio de corrida e acessibilidade em dispositivos móveis. A especificação inicial de arquitetura e LGPD está em docs/ARQUITETURA_BACKEND_LGPD.md; não há backend implementado. Manter fotos e persistência desativadas até implementação, testes de autorização e revisão jurídica/de segurança. A especificação inicial de arquitetura e LGPD está em docs/ARQUITETURA_BACKEND_LGPD.md; não há backend implementado. Manter fotos e persistência desativadas até implementação, testes de autorização e revisão jurídica/de segurança.

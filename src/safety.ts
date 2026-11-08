@@ -20,3 +20,18 @@ export function requiresPainReview(pains: string[]): boolean {
 export function blocksRunningRecommendation(bmi: number, goal: string): boolean {
   return bmi >= 35 && goal === "Começar a correr";
 }
+
+export function canCompleteAssessment(input: {
+  adult: boolean;
+  understood: boolean;
+  weight: number;
+  heightCm: number;
+  medicalReviewNeeded: boolean;
+  medicalClearanceDeclared: boolean;
+  runningBlocked: boolean;
+}): boolean {
+  return input.adult && input.understood &&
+    isValidMeasurement(input.weight, input.heightCm) &&
+    (!input.medicalReviewNeeded || input.medicalClearanceDeclared) &&
+    !input.runningBlocked;
+}

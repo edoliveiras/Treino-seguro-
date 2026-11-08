@@ -87,7 +87,7 @@ export default function AuthGate() {
   }, [loadProfile]);
 
   useEffect(() => {
-    if (window.location.hash.includes("type=recovery") || new URLSearchParams(window.location.search).has("code") && window.location.pathname === "/redefinir-senha") setMode("recovery");
+    if (window.location.hash.includes("type=recovery") || new URLSearchParams(window.location.search).get("flow") === "recovery" || (new URLSearchParams(window.location.search).has("code") && window.location.pathname === "/redefinir-senha")) setMode("recovery");
   }, []);
 
   if (window.location.pathname === "/termos") return <LegalPage kind="terms" />;
@@ -166,7 +166,7 @@ export default function AuthGate() {
 
   const sendRecovery = async () => {
     if (!supabase) return;
-    const { error: recoveryError } = await supabase!.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: window.location.origin });
+    const { error: recoveryError } = await supabase!.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: window.location.origin + "/?flow=recovery" });
     if (recoveryError) throw recoveryError;
     setNotice("Se houver uma conta para esse e-mail, enviaremos um link de recuperação.");
   };

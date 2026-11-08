@@ -71,8 +71,9 @@ export function useHealthDataPersistence(
   }, [userId, consent, loading, payload]);
 
   const grantConsent = useCallback(async () => {
-    if (!userId || !supabase) return false;
-    const { error } = await supabase.from("account_consent_events").insert({
+    const client = supabase;
+    if (!userId || !client) return false;
+    const { error } = await client.from("account_consent_events").insert({
       user_id: userId,
       consent_type: "health_data",
       action: "granted",
@@ -83,7 +84,7 @@ export function useHealthDataPersistence(
       return false;
     }
     setConsent(true);
-    const { data } = await supabase
+    const { data } = await client
       .from("health_data_records")
       .select("payload")
       .eq("user_id", userId)
@@ -94,8 +95,9 @@ export function useHealthDataPersistence(
   }, [userId, onLoad]);
 
   const revokeConsent = useCallback(async () => {
-    if (!userId || !supabase) return false;
-    const { error } = await supabase.from("account_consent_events").insert({
+    const client = supabase;
+    if (!userId || !client) return false;
+    const { error } = await client.from("account_consent_events").insert({
       user_id: userId,
       consent_type: "health_data",
       action: "withdrawn",
@@ -111,8 +113,9 @@ export function useHealthDataPersistence(
   }, [userId]);
 
   const deleteCloudData = useCallback(async () => {
-    if (!userId || !supabase) return false;
-    const { error } = await supabase.from("health_data_records").delete().eq("user_id", userId);
+    const client = supabase;
+    if (!userId || !client) return false;
+    const { error } = await client.from("health_data_records").delete().eq("user_id", userId);
     if (error) {
       setStatus("Não foi possível apagar os registros salvos.");
       return false;

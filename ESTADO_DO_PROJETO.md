@@ -102,3 +102,13 @@ CI validado no commit `33fbdf65f407d931e7f8eb3f91b18f828235ef7a` (workflow 42479
 - CI dos commits de código `42481144741` e `42481152231` estava em execução no momento do registro; não declarar aprovação até conclusão.
 - O envio Meta/Twilio ainda não foi testado com contas e credenciais reais. Não há implantação Supabase, tela de cadastro/login, recuperação ou troca de contato conectadas ao frontend. A migração SQL segue sem execução e sem validação PostgreSQL.
 - Próxima etapa: verificar os dois workflows, adicionar testes unitários para geração/validação de payload e testar as RPCs/migrações em PostgreSQL/Supabase de homologação; depois implementar cadastro/login e recuperação no app, mantendo dados de saúde/fotos desativados.
+
+
+## 12. Testes unitários OTP e correção de compatibilidade SQL — 08/11/2026
+- Extraídas as primitivas de OTP para `supabase/functions/phone-otp/otp.ts`: geração criptograficamente segura de código de seis dígitos, validação estrita do formato e HMAC-SHA-256.
+- Adicionados quatro testes Deno em `supabase/functions/phone-otp/otp_test.ts`, cobrindo formato/quantidade de códigos, aceitação/rejeição de entradas, determinismo/tamanho do HMAC e rejeição de segredo curto/código malformado.
+- CI atualizado para executar `deno test --no-lock supabase/functions/phone-otp/otp_test.ts` além do type-check existente.
+- Uma execução inicial dos novos testes falhou porque o padrão de dígitos foi gravado com escape duplicado. O log do workflow confirmou a causa; o padrão foi corrigido e a execução 42481535444 concluiu com sucesso. A execução 42481532789 ainda corresponde à versão intermediária com o defeito, não ao estado final.
+- Revisão da migração encontrou incompatibilidade entre o CHECK antigo do campo `provider` (que não aceitava `twilio_sms`) e a nova RPC de registro de entrega. A migração `202611080002_phone_otp_rpc.sql` agora atualiza essa constraint para aceitar o identificador efetivo do fallback SMS.
+- A correção SQL está versionada, mas **ainda não foi aplicada nem testada em PostgreSQL/Supabase**. A aprovação do CI não valida migrações, RLS, autenticação, Meta ou Twilio.
+- Próximo passo: validar migrações/RPCs em banco Supabase de homologação, com casos de sucesso, expiração, tentativas, bloqueio, rate limit e unicidade; depois implementar telas de cadastro/login/recuperação e bloqueio de contas suspensas. Manter o fluxo de contas desativado até essa validação.

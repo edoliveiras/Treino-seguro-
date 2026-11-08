@@ -131,3 +131,11 @@ CI validado no commit `33fbdf65f407d931e7f8eb3f91b18f828235ef7a` (workflow 42479
 - Execução CI 42482287325 concluiu com sucesso nos testes do app, build, type-check da função OTP, testes unitários OTP e integração PostgreSQL incluindo a migração de exclusão. A checagem específica da nova Edge Function administrativa e o último ajuste de CORS ainda precisam de confirmação na execução mais recente.
 - A simulação usa PostgreSQL e stub de Supabase Auth; não comprova implantação, configuração de Auth, e-mail, WhatsApp, SMS ou permissões de um projeto Supabase real.
 - O endpoint administrativo e a migração estão versionados, mas ainda não implantados. Não há tela de administração no frontend. Não habilitar a função antes de configurar projeto Supabase, criar admin de forma segura e testar em homologação.
+
+
+## 15. Validação final da etapa de código — 08/11/2026
+- Execução CI 42482360627 concluída com sucesso no commit de documentação atual: testes React/Vitest, compilação TypeScript/Vite, type-check das Edge Functions OTP e admin, testes unitários Deno de OTP e integração PostgreSQL das três migrações.
+- A suíte PostgreSQL confirmou também o endpoint administrativo por RPC: acesso negado a usuário comum, diretório cadastral restrito a admin, suspensão/reativação com auditoria, exclusão em cascata e limpeza dos logs OTP do telefone.
+- O conjunto de alterações desta etapa está aprovado em CI. Isso é validação de código e simulação PostgreSQL, **não publicação nem homologação em Supabase real**.
+- Bloqueios para considerar o produto pronto para uso público: criar/conectar projeto Supabase próprio para Treino Seguro; aplicar as migrações em homologação e produção após revisão; configurar confirmação de e-mail, template Meta aprovado, credenciais Twilio e secrets; criar conta admin por processo seguro; implantar Edge Functions; implementar e testar telas de cadastro/login/recuperação/troca de contato e gestão administrativa; validar autorização com duas contas reais e testar envio real; obter revisão clínica, jurídica e de segurança.
+- Até esses passos, manter a aplicação como demonstração sem conta, sem persistência de dados pessoais/de saúde e sem fotos. Não afirmar que o aplicativo está concluído ou disponível para cadastro público.

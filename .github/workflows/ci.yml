@@ -20,3 +20,5 @@ jobs:
       - run: npm run build
       - name: Type-check Supabase Edge Functions
         run: deno check --no-lock supabase/functions/phone-otp/index.ts
+      - name: Test OTP security primitives
+        run: deno test --no-lock supabase/functions/phone-otp/otp_test.ts

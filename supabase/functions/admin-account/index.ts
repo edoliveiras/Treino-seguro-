@@ -35,10 +35,14 @@ Deno.serve(async (request) => {
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
-  if (!supabaseUrl || !anonKey) return json(503, { error: "service_unavailable" });
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!supabaseUrl || !anonKey || !serviceKey) return json(503, { error: "service_unavailable" });
 
   const client = createClient(supabaseUrl, anonKey, {
     global: { headers: { Authorization: authorization } },
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const adminClient = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
@@ -68,8 +72,12 @@ Deno.serve(async (request) => {
   }
 
   const rpc = action === "delete"
-    ? await client.rpc("admin_delete_account", { p_target_user_id: targetUserId })
-    : await client.rpc("admin_set_account_status", {
+    ? await adminClient.rpc("admin_delete_account", {
+      p_actor_user_id: userData.user.id,
+      p_target_user_id: targetUserId,
+    })
+    : await adminClient.rpc("admin_set_account_status", {
+      p_actor_user_id: userData.user.id,
       p_target_user_id: targetUserId,
       p_action: action as "suspend" | "reactivate",
     });

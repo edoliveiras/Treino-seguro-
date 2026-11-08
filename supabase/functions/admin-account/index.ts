@@ -59,7 +59,8 @@ Deno.serve(async (request) => {
   const action = body.action;
   const targetUserId = body.targetUserId;
   if (
-    !["suspend", "reactivate", "delete"].includes(String(action)) ||
+    typeof action !== "string" ||
+    !["suspend", "reactivate", "delete"].includes(action) ||
     typeof targetUserId !== "string" ||
     !uuidPattern.test(targetUserId)
   ) {
@@ -70,7 +71,7 @@ Deno.serve(async (request) => {
     ? await client.rpc("admin_delete_account", { p_target_user_id: targetUserId })
     : await client.rpc("admin_set_account_status", {
       p_target_user_id: targetUserId,
-      p_action: action,
+      p_action: action as "suspend" | "reactivate",
     });
 
   if (rpc.error) {

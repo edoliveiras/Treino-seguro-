@@ -74,3 +74,11 @@ Secrets de produção: `APP_ORIGIN`, `OTP_HMAC_SECRET` (mínimo 32 caracteres), 
 - A Edge Function inicial de OTP Meta e as RPCs transacionais foram adicionadas ao repositório, mas **não foram implantadas nem testadas em projeto Supabase**.
 - O fallback Twilio SMS foi acrescentado à Edge Function; ainda falta configurá-lo e testá-lo com credenciais reais. Também faltam endpoints administrativos completos, tela de cadastro/login/consentimentos, recuperação e troca de contato, testes SQL/RLS e testes de integração, além da configuração do projeto/provedores.
 - As migrações não foram executadas. Não há envio real de e-mail, WhatsApp ou SMS.
+
+
+## Gestão administrativa de contas — implementação versionada
+- Edge Function `supabase/functions/admin-account/index.ts`: aceita somente POST com JWT válido, origem igual a `APP_ORIGIN` e usuário cuja `app_metadata.role` seja `admin`.
+- A função permite suspender, reativar ou excluir uma conta chamando RPCs protegidas. A autorização também é verificada no banco; a validação no Edge Function não é a única barreira.
+- Migração `202611080003_admin_delete.sql`: exclusão atômica da conta em `auth.users`, remoção em cascata do perfil, consentimentos e desafios OTP, limpeza dos logs de envio associados ao telefone e registro da ação administrativa sem guardar dados clínicos.
+- A exclusão administrativa não equivale a uma política completa de retenção/eliminação de backups. A retenção legal, backups, solicitações do titular e revisão jurídica ainda precisam ser definidos antes de produção.
+- A função e a migração estão versionadas, mas não implantadas em projeto Supabase real.

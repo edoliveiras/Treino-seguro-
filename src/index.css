@@ -20,3 +20,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .exercise small{color:#4e7658}
 .quote p{color:#5e7063}
 .bmi small{color:#596e60}
+
+
+.session-delete{border-top:1px solid #e5ebe4;margin-top:24px;padding-top:20px}
+.session-delete>b{display:block;color:#385442;margin-bottom:7px}
+.session-delete>p{font-size:13px;line-height:1.55;color:#68796e}
+.danger-button{border:1px solid #a33c35;background:#fff;color:#8c302b;border-radius:10px;padding:11px 14px;font:700 13px 'DM Sans',sans-serif;cursor:pointer}
+.danger-button:hover{background:#fff1ef}
+.danger-button:focus-visible{outline:3px solid #d98b83;outline-offset:3px}

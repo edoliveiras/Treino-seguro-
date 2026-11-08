@@ -95,12 +95,13 @@ export default function CaloriesTracker({ weight, foodLogs, setFoodLogs, activit
       </div>
       <label className="photo-upload">Foto do alimento (opcional)
         <input type="file" accept="image/*" capture="environment" onChange={async e => {
-          const file = e.target.files?.[0];
+          const input = e.currentTarget;
+          const file = input.files?.[0];
           if (!file) return;
           setPhotoStatus("Preparando foto...");
           try { setFoodPhoto(await compressFoodPhoto(file)); setPhotoStatus("Foto pronta para salvar junto ao alimento."); }
           catch (error) { setPhotoStatus(error instanceof Error ? error.message : "Não foi possível carregar a foto."); setFoodPhoto(undefined); }
-          e.currentTarget.value = "";
+          input.value = "";
         }} />
       </label>
       {foodPhoto && <div className="food-photo-preview"><img src={foodPhoto} alt="Prévia do alimento" /><button type="button" className="secondary" onClick={() => { setFoodPhoto(undefined); setPhotoStatus(""); }}>Remover foto</button></div>}

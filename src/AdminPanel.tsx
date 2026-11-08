@@ -60,7 +60,7 @@ export default function AdminPanel() {
     setBusyId("");
   };
 
-  return <section className="panel admin-panel">
+  return <main className="admin-main"><section className="panel admin-panel">
     <div className="admin-panel-heading">
       <div><span className="eyebrow">GESTÃO RESTRITA</span><h2>Administração de contas</h2></div>
       <button className="secondary" type="button" onClick={() => void loadAccounts()} disabled={loading}><RefreshCw size={16}/> Atualizar</button>
@@ -86,5 +86,5 @@ export default function AdminPanel() {
         </div>
       </article>)}
     </div>}
-  </section>;
+  </section></main>;
 }

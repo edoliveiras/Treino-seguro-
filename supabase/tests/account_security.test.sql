@@ -1,0 +1,131 @@
+-- Integration tests for the account and OTP migrations using a minimal Supabase Auth stub.
+-- This verifies PostgreSQL behavior in CI; it does not replace a real Supabase staging test.
+create schema auth;
+create schema extensions;
+create role anon;
+create role authenticated;
+create role service_role;
+create table auth.users (
+  id uuid primary key,
+  email text not null,
+  email_confirmed_at timestamptz,
+  raw_user_meta_data jsonb not null default '{}'::jsonb
+);
+create function auth.uid() returns uuid language sql stable as $$
+  select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid
+$$;
+create function auth.role() returns text language sql stable as $$
+  select nullif(current_setting('request.jwt.claim.role', true), '')
+$$;
+create function auth.jwt() returns jsonb language sql stable as $$
+  select coalesce(nullif(current_setting('request.jwt.claims', true), '')::jsonb, '{}'::jsonb)
+$$;
+
+\ir ../migrations/202611080001_account_security.sql
+\ir ../migrations/202611080002_phone_otp_rpc.sql
+
+insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
+('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),
+ '{"full_name":"Pessoa Teste 1","whatsapp_e164":"+5511999990001","adult_confirmed":"true","terms_accepted":"true","privacy_accepted":"true"}'),
+('00000000-0000-4000-8000-000000000002','adult2@example.test',now(),
+ '{"full_name":"Pessoa Teste 2","whatsapp_e164":"+5511999990002","adult_confirmed":"true","terms_accepted":"true","privacy_accepted":"true"}'),
+('00000000-0000-4000-8000-000000000003','adult3@example.test',now(),
+ '{"full_name":"Pessoa Teste 3","whatsapp_e164":"+5511999990003","adult_confirmed":"true","terms_accepted":"true","privacy_accepted":"true"}'),
+('00000000-0000-4000-8000-000000000004','adult4@example.test',now(),
+ '{"full_name":"Pessoa Teste 4","whatsapp_e164":"+5511999990001","adult_confirmed":"true","terms_accepted":"true","privacy_accepted":"true"}');
+
+do $$
+begin
+  if (select count(*) from public.profiles) <> 4 then
+    raise exception 'profile_sync_failed';
+  end if;
+  if (select account_status from public.profiles where id='00000000-0000-4000-8000-000000000001') <> 'pending_verification' then
+    raise exception 'account_should_start_pending';
+  end if;
+  if (select count(*) from public.account_consent_events where user_id='00000000-0000-4000-8000-000000000001') <> 2 then
+    raise exception 'required_consents_not_recorded';
+  end if;
+end $$;
+
+set request.jwt.claim.role = 'service_role';
+do $$
+declare
+  v_challenge uuid;
+  v_ok boolean;
+begin
+  v_challenge := public.create_phone_otp_challenge(
+    '00000000-0000-4000-8000-000000000001', repeat('a',64)
+  );
+  perform public.record_phone_otp_delivery(v_challenge,'sent','twilio_sms');
+  if not exists (
+    select 1 from public.phone_otp_send_log
+    where challenge_id=v_challenge and outcome='sent' and provider='twilio_sms'
+  ) then
+    raise exception 'sms_delivery_provider_not_recorded';
+  end if;
+  v_ok := public.verify_phone_otp_challenge(
+    '00000000-0000-4000-8000-000000000001', repeat('a',64)
+  );
+  if not v_ok then raise exception 'valid_otp_was_rejected'; end if;
+  if (select account_status from public.profiles where id='00000000-0000-4000-8000-000000000001') <> 'active' then
+    raise exception 'verified_account_not_activated';
+  end if;
+end $$;
+
+do $$
+declare
+  v_challenge uuid;
+  i integer;
+begin
+  v_challenge := public.create_phone_otp_challenge(
+    '00000000-0000-4000-8000-000000000002', repeat('b',64)
+  );
+  for i in 1..5 loop
+    if public.verify_phone_otp_challenge(
+      '00000000-0000-4000-8000-000000000002', repeat('c',64)
+    ) then
+      raise exception 'wrong_otp_was_accepted';
+    end if;
+  end loop;
+  if public.verify_phone_otp_challenge(
+    '00000000-0000-4000-8000-000000000002', repeat('b',64)
+  ) then
+    raise exception 'otp_accepted_after_attempt_limit';
+  end if;
+  if not exists (
+    select 1 from public.phone_otp_challenges
+    where id=v_challenge and attempts=5 and locked_until > now()
+  ) then
+    raise exception 'attempt_lock_not_applied';
+  end if;
+end $$;
+
+do $$
+declare
+  v_challenge uuid;
+  v_rejected boolean := false;
+begin
+  v_challenge := public.create_phone_otp_challenge(
+    '00000000-0000-4000-8000-000000000003', repeat('d',64)
+  );
+  update public.phone_otp_challenges
+    set expires_at=now()-interval '1 second' where id=v_challenge;
+  if public.verify_phone_otp_challenge(
+    '00000000-0000-4000-8000-000000000003', repeat('d',64)
+  ) then
+    raise exception 'expired_otp_was_accepted';
+  end if;
+
+  begin
+    perform public.create_phone_otp_challenge(
+      '00000000-0000-4000-8000-000000000004', repeat('e',64)
+    );
+  exception when others then
+    if sqlerrm = 'request_not_allowed' then v_rejected := true;
+    else raise; end if;
+  end;
+  if not v_rejected then raise exception 'verified_phone_was_not_protected'; end if;
+end $$;
+
+reset request.jwt.claim.role;
+select 'account_security_and_otp_sql_tests_passed' as result;

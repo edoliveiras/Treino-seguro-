@@ -34,10 +34,17 @@ Status: **base de banco e especificação preparadas; não implantadas nem conec
 - Sem leitura/escrita direta das tabelas OTP pelo cliente.
 - Rate limit adicional por IP/identificador e CAPTCHA na borda, com erros genéricos e logs sem códigos ou PII.
 
-## Configuração dos provedores
+## Implementação técnica versionada (ainda não implantada)
+
+- Edge Function: `supabase/functions/phone-otp/index.ts`, com ações autenticadas `send` e `verify`. Exige sessão do próprio usuário e e-mail confirmado; não aceita telefone enviado pelo navegador, consulta o telefone cadastrado no perfil.
+- RPCs transacionais: `supabase/migrations/202611080002_phone_otp_rpc.sql`. Aplicam expiração de 10 minutos, máximo de 5 tentativas, bloqueio de 15 minutos após falhas, intervalo de 60 segundos e limite de 3 solicitações por número em 1 hora.
+- O telefone só fica reservado para uma conta depois de confirmado; números ainda não verificados não bloqueiam o titular legítimo. A unicidade é aplicada aos números verificados.
+- O código é gerado com Web Crypto, e somente HMAC-SHA-256 é persistido. A função não retorna o código e não o registra em logs.
+- O envio Meta usa template de autenticação aprovado, com parâmetro do corpo e botão de copiar código. O formato deve corresponder exatamente ao template aprovado na conta Meta. <https://whatsapp.serpro.gov.br/api-docs/guia-rapido/como-enviar-mensagens-notificacao/>
+- A função responde com mensagens genéricas para evitar revelar dados de cadastro. A função está protegida por sessão e origem permitida (`APP_ORIGIN`).
 
 ### Meta WhatsApp Cloud API
-Secrets de produção: WHATSAPP_PROVIDER=meta, WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_API_VERSION, WHATSAPP_OTP_TEMPLATE_NAME e WHATSAPP_OTP_TEMPLATE_LANGUAGE. O template de autenticação precisa estar aprovado no WhatsApp Manager. Token nunca vai para React, Vite, GitHub ou navegador.
+Secrets de produção: `APP_ORIGIN`, `OTP_HMAC_SECRET` (mínimo 32 caracteres), `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_API_VERSION`, `WHATSAPP_OTP_TEMPLATE_NAME` e `WHATSAPP_OTP_TEMPLATE_LANGUAGE`. O template de autenticação precisa estar aprovado no WhatsApp Manager e ter corpo com variável e botão de copiar código compatíveis com o payload. Token e service role nunca vão para React, Vite, GitHub ou navegador.
 
 ### Fallback SMS
 Secrets: OTP_FALLBACK_PROVIDER=twilio, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN e TWILIO_VERIFY_SERVICE_SID. O fallback precisa ser configurado e testado antes de habilitado. Provedor não configurado significa que cadastro não conclui verificação.
@@ -60,5 +67,6 @@ Secrets: OTP_FALLBACK_PROVIDER=twilio, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN e T
 ## Estado técnico real
 
 - A migração supabase/migrations/202611080001_account_security.sql prepara tabelas, unicidade, RLS, status e trilha administrativa.
-- Ainda faltam Edge Functions de envio/validação OTP, endpoints administrativos completos, tela de cadastro/login/consentimentos, recuperação e troca de contato, testes de integração e configuração do projeto/provedores.
-- A migração não foi executada. Não há envio real de e-mail, WhatsApp ou SMS.
+- A Edge Function inicial de OTP Meta e as RPCs transacionais foram adicionadas ao repositório, mas **não foram implantadas nem testadas em projeto Supabase**.
+- Ainda faltam fallback Twilio, endpoints administrativos completos, tela de cadastro/login/consentimentos, recuperação e troca de contato, testes SQL/RLS e testes de integração, além da configuração do projeto/provedores.
+- As migrações não foram executadas. Não há envio real de e-mail, WhatsApp ou SMS.

@@ -1,5 +1,5 @@
 # ESTADO_DO_PROJETO — Treino Seguro
-Última atualização: 2026-11-08 (etapa: CI validado + revisão de triagem e fontes)
+Última atualização: 2026-11-08 (etapa: correção JSX + gates de segurança + CI validado)
 
 ## A. Funções já prontas no código (protótipo)
 - Aplicação React + TypeScript + Vite, interface em português e responsiva/mobile-first.
@@ -22,7 +22,7 @@
 - Tipos de React adicionados como dependências de desenvolvimento e declaração de tipos do Vite criada em src/vite-env.d.ts.
 
 ## B. Pendências (prioridade)
-1. **P0 — Confirmar CI da revisão de segurança (commit 4366f6d734a89f452d532569094e92187c627315).** A compilação anterior passou; a compilação da revisão atual está em andamento.
+1. **P0 — Testes automatizados:** criar testes para exclusividade de opções, validação de peso/altura/idade declarada, bloqueio de corrida e ocultação da biblioteca quando há dor/limitação.
 2. **P0 — Revisar triagem de segurança:** impedir combinações contraditórias como “Nenhuma” + condição/dor; garantir que liberação declarada não seja tratada como validação clínica; revisar fluxo para menores e estados de avaliação.
 3. **P1 — Persistência segura:** definir backend, autenticação, autorização por usuário, RLS, minimização de dados e consentimentos LGPD antes de armazenar dados de saúde.
 4. **P1 — Persistência de avaliações, treinos, refeições e histórico**, com exportação e exclusão.
@@ -55,7 +55,7 @@
 
 ## E. Erros conhecidos / riscos
 - ESTADO_DO_PROJETO.md não existia no repositório até esta atualização.
-- CI do commit 4420d2dc50baac43d91f50c24cb3151cb532bda1 e do commit 28c78c5631c881d7f51d4670bf1eff343a720710 passou. CI da revisão de segurança mais recente ainda está em andamento.
+- CI do commit 4420d2dc50baac43d91f50c24cb3151cb532bda1, 28c78c5631c881d7f51d4670bf1eff343a720710 e revisão atual 69a97df15de0f7c8d4dcb64c710d9ba6eca9f091 passou (`npm run build` sucesso; workflow 42479210353). Os commits intermediários 4366f6d e 6ce5097 falharam por fechamento incorreto de JSX, corrigido em de13d69 e validado nas execuções seguintes.
 - Campos e listas de avaliação usam estado local; atualizar/fechar página perde os dados.
 - Seleção “Nenhuma” nos grupos de dores/condições agora é mutuamente exclusiva com as demais opções.
 - A confirmação de liberação médica é autodeclarada e não verificada.
@@ -65,4 +65,4 @@
 - Metadados de Bull et al. (2020), Donnelly et al. (2009), Hayden et al. (2021), Guia Alimentar (2014) e TACO (2011) conferidos em fontes bibliográficas/organizacionais; a TACO continua como referência de composição, não reconhecimento automático de refeições.
 
 ## F. Próximo passo exato
-Consultar o workflow GitHub Actions 42478993227 do commit 4366f6d734a89f452d532569094e92187c627315 e confirmar `npm run build`. Se falhar, corrigir os erros restantes (até três abordagens). Depois seguir para testes automatizados de triagem e plano de exercícios, mantendo fotos e persistência desativadas até implementar backend e LGPD.
+A compilação da revisão atual está validada no workflow 42479210353 (sucesso). Próximo passo: extrair as regras de triagem para funções puras e adicionar testes automatizados para exclusividade das opções, validação dos campos, bloqueio de corrida com IMC ≥ 35 e ocultação de exercícios quando há dor/limitação. Manter fotos e persistência desativadas até implementar backend, autorização e LGPD.

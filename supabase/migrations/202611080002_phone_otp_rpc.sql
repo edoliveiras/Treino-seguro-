@@ -168,7 +168,7 @@ exception
   when unique_violation then
     return false;
 end;
-$;
+$$;
 
 revoke all on function public.create_phone_otp_challenge(uuid,text) from public, anon, authenticated;
 revoke all on function public.record_phone_otp_delivery(uuid,text) from public, anon, authenticated;

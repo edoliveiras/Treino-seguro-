@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-export type FoodLog = { id: string; name: string; grams: number; kcal: number; date: string };
+export type FoodLog = { id: string; name: string; grams: number; unit?: "g" | "ml"; kcal: number; date: string };
 export type ActivityLog = { id: string; name: string; minutes: number; kcal: number; date: string };
 
 const foods = [
@@ -17,6 +17,10 @@ const foods = [
   { name: "Leite integral", kcal: 61 }, { name: "Iogurte natural", kcal: 51 },
   { name: "Azeite de oliva", kcal: 884 }, { name: "Abacate", kcal: 96 },
   { name: "Tapioca (goma hidratada)", kcal: 240 }, { name: "Cuscuz de milho cozido", kcal: 113 },
+  { name: "Água", kcal: 0, unit: "ml" }, { name: "Café sem açúcar", kcal: 2, unit: "ml" },
+  { name: "Café com açúcar", kcal: 35, unit: "ml" }, { name: "Suco de laranja natural", kcal: 37, unit: "ml" },
+  { name: "Suco de uva integral", kcal: 58, unit: "ml" }, { name: "Refrigerante tipo cola", kcal: 42, unit: "ml" },
+  { name: "Leite desnatado", kcal: 35, unit: "ml" },
 ];
 
 const activities = [
@@ -45,7 +49,8 @@ export default function CaloriesTracker({ weight, foodLogs, setFoodLogs, activit
   const bodyWeight = Number(weight);
   const food = foods.find(x => x.name === foodName) ?? foods[0];
   const activity = activities.find(x => x.name === activityName) ?? activities[0];
-  const foodEstimate = Number(grams) > 0 ? food.kcal * Number(grams) / 100 : 0;
+  const foodUnit = "unit" in food && food.unit === "ml" ? "ml" : "g";
+  const foodEstimate = Number(grams) >= 0 ? food.kcal * Number(grams) / 100 : 0;
   const activityEstimate = bodyWeight > 0 && Number(minutes) > 0
     ? Math.max(0, activity.met - 1) * 3.5 * bodyWeight / 200 * Number(minutes) : 0;
   const todayFoods = useMemo(() => foodLogs.filter(x => x.date === date), [foodLogs, date]);
@@ -55,14 +60,14 @@ export default function CaloriesTracker({ weight, foodLogs, setFoodLogs, activit
   return <div className="calorie-tracker">
     <section className="panel">
       <span className="eyebrow">CALCULADORA DE ALIMENTOS</span><h2>Calorias consumidas</h2>
-      <p>Escolha o alimento e informe a quantidade em gramas. O cálculo usa valores de referência por 100 g.</p>
+      <p>Escolha o alimento ou bebida e informe a quantidade. As calorias são calculadas automaticamente enquanto você preenche, usando a referência por 100 g ou 100 ml.</p>
       <div className="form-grid">
         <label>Alimento<select value={foodName} onChange={e => setFoodName(e.target.value)}>{foods.map(x => <option key={x.name} value={x.name}>{x.name}</option>)}</select></label>
-        <label>Quantidade (gramas)<input type="number" min="1" max="3000" value={grams} onChange={e => setGrams(e.target.value)} /></label>
+        <label>Quantidade ({foodUnit})<input type="number" min="0" max="3000" value={grams} onChange={e => setGrams(e.target.value)} /></label>
       </div>
-      <div className="calorie-preview"><span>{food.kcal} kcal / 100 g</span><b>{fmt(foodEstimate)} kcal nesta porção</b></div>
-      <button className="primary" disabled={!Number(grams) || Number(grams) <= 0} onClick={() => setFoodLogs(old => [...old, { id: crypto.randomUUID(), name: food.name, grams: Number(grams), kcal: foodEstimate, date }])}>Adicionar alimento ao diário</button>
-      <p className="muted">A preparação muda as calorias. Selecione a versão mais parecida com a que foi consumida; óleo, molhos e acompanhamentos devem ser registrados separadamente.</p>
+      <div className="calorie-preview"><span>{food.kcal} kcal / 100 {foodUnit}</span><b>{fmt(foodEstimate)} kcal nesta porção</b></div>
+      <button className="primary" disabled={grams === "" || !Number.isFinite(Number(grams)) || Number(grams) < 0} onClick={() => setFoodLogs(old => [...old, { id: crypto.randomUUID(), name: food.name, grams: Number(grams), unit: foodUnit, kcal: foodEstimate, date }])}>Adicionar alimento ao diário</button>
+      <p className="muted">Inclua também bebidas. A preparação muda as calorias: selecione a versão mais parecida com a consumida; óleo, molhos e acompanhamentos devem ser registrados separadamente.</p>
     </section>
     <section className="panel">
       <span className="eyebrow">CALCULADORA DE ATIVIDADE</span><h2>Calorias gastas nos exercícios</h2>
@@ -83,7 +88,7 @@ export default function CaloriesTracker({ weight, foodLogs, setFoodLogs, activit
         <div><small>DIFERENÇA</small><b>{fmt(consumed - burned)} kcal</b></div>
       </div>
       <p className="muted">A diferença é apenas entre alimentos e exercícios registrados aqui. Não representa o balanço energético completo do dia: o corpo também gasta energia em repouso e nas atividades cotidianas. Não use esse número sozinho para definir dieta ou meta de emagrecimento.</p>
-      <div className="calorie-log"><b>Alimentos de hoje</b>{todayFoods.length ? todayFoods.map(x => <div className="calorie-log-row" key={x.id}><span>{x.name} · {x.grams} g</span><b>{fmt(x.kcal)} kcal</b><button aria-label={"Excluir " + x.name} onClick={() => setFoodLogs(old => old.filter(y => y.id !== x.id))}>×</button></div>) : <p>Nenhum alimento registrado hoje.</p>}</div>
+      <div className="calorie-log"><b>Alimentos de hoje</b>{todayFoods.length ? todayFoods.map(x => <div className="calorie-log-row" key={x.id}><span>{x.name} · {x.grams} {x.unit ?? "g"}</span><b>{fmt(x.kcal)} kcal</b><button aria-label={"Excluir " + x.name} onClick={() => setFoodLogs(old => old.filter(y => y.id !== x.id))}>×</button></div>) : <p>Nenhum alimento registrado hoje.</p>}</div>
       <div className="calorie-log"><b>Exercícios de hoje</b>{todayActivities.length ? todayActivities.map(x => <div className="calorie-log-row" key={x.id}><span>{x.name} · {x.minutes} min</span><b>{fmt(x.kcal)} kcal</b><button aria-label={"Excluir " + x.name} onClick={() => setActivityLogs(old => old.filter(y => y.id !== x.id))}>×</button></div>) : <p>Nenhum exercício registrado hoje.</p>}</div>
     </section>
     <p className="muted">Base alimentar de referência: TACO/NEPA-Unicamp. Valores aproximados por 100 g; não substituem avaliação nutricional. Gasto adicional estimado por MET, conforme o Compendium of Physical Activities. <a href="https://pacompendium.com/" target="_blank" rel="noreferrer">Consultar referência de atividades</a>.</p>

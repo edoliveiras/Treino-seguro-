@@ -1,5 +1,5 @@
 # ESTADO_DO_PROJETO — Treino Seguro
-Última atualização: 2026-11-08 (etapa: handoff persistente + exclusividade de triagem)
+Última atualização: 2026-11-08 (etapa: CI validado + revisão de triagem e fontes)
 
 ## A. Funções já prontas no código (protótipo)
 - Aplicação React + TypeScript + Vite, interface em português e responsiva/mobile-first.
@@ -14,11 +14,15 @@
 - Tela de privacidade explica que não existe persistência ou envio a servidor.
 - Tela Ciência com referências e resumos informativos.
 - Workflow GitHub Actions em .github/workflows/ci.yml configurado para npm install e npm run build em push/PR para main.
-- Triagem corrigida: “Nenhuma” agora é mutuamente exclusiva das demais opções em cada grupo.
+- Triagem corrigida: “Nenhuma” é mutuamente exclusiva das demais opções em cada grupo.
+- Mudanças na avaliação invalidam a conclusão anterior; ao alterar condições de saúde, a autodeclaração de liberação é reiniciada.
+- Campos de peso/altura agora validam faixas plausíveis de entrada antes de concluir a avaliação.
+- Se IMC ≥ 35 e o objetivo selecionado for começar a correr, a conclusão da avaliação fica bloqueada e o app explica a restrição.
+- Se o usuário informa dor/limitação, o app oculta os exercícios demonstrativos e orienta avaliação profissional individual antes de exibir movimentos.
 - Tipos de React adicionados como dependências de desenvolvimento e declaração de tipos do Vite criada em src/vite-env.d.ts.
 
 ## B. Pendências (prioridade)
-1. **P0 — Verificar novo build real e corrigir erros TypeScript/JSX.** Primeiro CI falhou por ausência de @types/react, @types/react-dom e declaração vite/client; correção foi commitada, aguarda CI.
+1. **P0 — Confirmar CI da revisão de segurança (commit 4366f6d734a89f452d532569094e92187c627315).** A compilação anterior passou; a compilação da revisão atual está em andamento.
 2. **P0 — Revisar triagem de segurança:** impedir combinações contraditórias como “Nenhuma” + condição/dor; garantir que liberação declarada não seja tratada como validação clínica; revisar fluxo para menores e estados de avaliação.
 3. **P1 — Persistência segura:** definir backend, autenticação, autorização por usuário, RLS, minimização de dados e consentimentos LGPD antes de armazenar dados de saúde.
 4. **P1 — Persistência de avaliações, treinos, refeições e histórico**, com exportação e exclusão.
@@ -51,14 +55,14 @@
 
 ## E. Erros conhecidos / riscos
 - ESTADO_DO_PROJETO.md não existia no repositório até esta atualização.
-- Primeiro CI falhou em TypeScript por ausência de definições de tipos de React e Vite; correção enviada, novo resultado ainda não confirmado.
+- CI do commit 4420d2dc50baac43d91f50c24cb3151cb532bda1 e do commit 28c78c5631c881d7f51d4670bf1eff343a720710 passou. CI da revisão de segurança mais recente ainda está em andamento.
 - Campos e listas de avaliação usam estado local; atualizar/fechar página perde os dados.
 - Seleção “Nenhuma” nos grupos de dores/condições agora é mutuamente exclusiva com as demais opções.
 - A confirmação de liberação médica é autodeclarada e não verificada.
 - O cálculo do IMC não valida todos os limites clínicos e não deve ser usado para prescrição.
 - Diário alimentar não calcula calorias nem reconhece fotos.
 - Sem fotos, gráficos reais, banco de dados, autenticação ou sincronização.
-- Fontes constam no código com links; auditoria de metadados e adequação de cada alegação ainda pendente.
+- Metadados de Bull et al. (2020), Donnelly et al. (2009), Hayden et al. (2021), Guia Alimentar (2014) e TACO (2011) conferidos em fontes bibliográficas/organizacionais; a TACO continua como referência de composição, não reconhecimento automático de refeições.
 
 ## F. Próximo passo exato
-Consultar o workflow GitHub Actions acionado pelos commits f543b383d85b68af892b1f6868588ed75ae839e4 e 28c78c5631c881d7f51d4670bf1eff343a720710 e obter o resultado de `npm run build`. Se falhar, corrigir os erros restantes (até três abordagens). Depois revisar os bloqueios de segurança da avaliação e atualizar este arquivo ao fim da etapa.
+Consultar o workflow GitHub Actions 42478993227 do commit 4366f6d734a89f452d532569094e92187c627315 e confirmar `npm run build`. Se falhar, corrigir os erros restantes (até três abordagens). Depois seguir para testes automatizados de triagem e plano de exercícios, mantendo fotos e persistência desativadas até implementar backend e LGPD.

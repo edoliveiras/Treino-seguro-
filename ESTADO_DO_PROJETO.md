@@ -1,5 +1,5 @@
 # ESTADO_DO_PROJETO — Treino Seguro
-Última atualização: 2026-11-08 (etapa: correção JSX + gates de segurança + CI validado)
+Última atualização: 2026-11-08 (etapa: regras de triagem isoladas + testes automatizados aprovados)
 
 ## A. Funções já prontas no código (protótipo)
 - Aplicação React + TypeScript + Vite, interface em português e responsiva/mobile-first.
@@ -13,7 +13,9 @@
 - Fotos desativadas; interface explica a razão de segurança.
 - Tela de privacidade explica que não existe persistência ou envio a servidor.
 - Tela Ciência com referências e resumos informativos.
-- Workflow GitHub Actions em .github/workflows/ci.yml configurado para npm install e npm run build em push/PR para main.
+- Workflow GitHub Actions em .github/workflows/ci.yml configurado para npm install, npm test e npm run build em push/PR para main.
+- Regras de triagem isoladas em src/safety.ts e usadas pelo app: exclusividade de “Nenhuma”, validação de peso/altura, revisão médica, revisão por dor/limitação e bloqueio de corrida com IMC ≥ 35.
+- Testes automatizados Vitest em src/safety.test.ts: 5 testes aprovados cobrindo as regras acima.
 - Triagem corrigida: “Nenhuma” é mutuamente exclusiva das demais opções em cada grupo.
 - Mudanças na avaliação invalidam a conclusão anterior; ao alterar condições de saúde, a autodeclaração de liberação é reiniciada.
 - Campos de peso/altura agora validam faixas plausíveis de entrada antes de concluir a avaliação.
@@ -22,7 +24,7 @@
 - Tipos de React adicionados como dependências de desenvolvimento e declaração de tipos do Vite criada em src/vite-env.d.ts.
 
 ## B. Pendências (prioridade)
-1. **P0 — Testes automatizados:** criar testes para exclusividade de opções, validação de peso/altura/idade declarada, bloqueio de corrida e ocultação da biblioteca quando há dor/limitação.
+1. **P0 — Ampliar testes de fluxo:** cobrir a tela de avaliação completa, estado de consentimento/maioridade autodeclarada e navegação direta para biblioteca/treino após informar dor; incluir testes de interface quando viável.
 2. **P0 — Revisar triagem de segurança:** impedir combinações contraditórias como “Nenhuma” + condição/dor; garantir que liberação declarada não seja tratada como validação clínica; revisar fluxo para menores e estados de avaliação.
 3. **P1 — Persistência segura:** definir backend, autenticação, autorização por usuário, RLS, minimização de dados e consentimentos LGPD antes de armazenar dados de saúde.
 4. **P1 — Persistência de avaliações, treinos, refeições e histórico**, com exportação e exclusão.
@@ -55,7 +57,7 @@
 
 ## E. Erros conhecidos / riscos
 - ESTADO_DO_PROJETO.md não existia no repositório até esta atualização.
-- CI do commit 4420d2dc50baac43d91f50c24cb3151cb532bda1, 28c78c5631c881d7f51d4670bf1eff343a720710 e revisão atual 69a97df15de0f7c8d4dcb64c710d9ba6eca9f091 passou (`npm run build` sucesso; workflow 42479210353). Os commits intermediários 4366f6d e 6ce5097 falharam por fechamento incorreto de JSX, corrigido em de13d69 e validado nas execuções seguintes.
+- CI dos commits 4420d2dc50baac43d91f50c24cb3151cb532bda1, 28c78c5631c881d7f51d4670bf1eff343a720710 e 69a97df15de0f7c8d4dcb64c710d9ba6eca9f091 passou. O commit atual 975ee7319d8fe8519ad9c78bc2a1d8b18c187391 passou `npm test` e `npm run build` no workflow 42479288776. Commits intermediários 4366f6d e 6ce5097 falharam por JSX, corrigido em de13d69.
 - Campos e listas de avaliação usam estado local; atualizar/fechar página perde os dados.
 - Seleção “Nenhuma” nos grupos de dores/condições agora é mutuamente exclusiva com as demais opções.
 - A confirmação de liberação médica é autodeclarada e não verificada.
@@ -65,4 +67,4 @@
 - Metadados de Bull et al. (2020), Donnelly et al. (2009), Hayden et al. (2021), Guia Alimentar (2014) e TACO (2011) conferidos em fontes bibliográficas/organizacionais; a TACO continua como referência de composição, não reconhecimento automático de refeições.
 
 ## F. Próximo passo exato
-A compilação da revisão atual está validada no workflow 42479210353 (sucesso). Próximo passo: extrair as regras de triagem para funções puras e adicionar testes automatizados para exclusividade das opções, validação dos campos, bloqueio de corrida com IMC ≥ 35 e ocultação de exercícios quando há dor/limitação. Manter fotos e persistência desativadas até implementar backend, autorização e LGPD.
+Testes automatizados e build validados no workflow 42479288776 (sucesso). Próximo passo: ampliar testes de fluxo da avaliação, maioridade autodeclarada e bloqueio de navegação para exercícios quando há dor/limitação; depois preparar especificação técnica de backend, autenticação, RLS, consentimento e LGPD. Manter fotos e persistência desativadas até implementar backend, autorização e LGPD.

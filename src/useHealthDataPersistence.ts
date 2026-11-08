@@ -83,9 +83,15 @@ export function useHealthDataPersistence(
       return false;
     }
     setConsent(true);
-    setStatus("Autorização registrada. Seus registros desta sessão serão salvos.");
+    const { data } = await supabase
+      .from("health_data_records")
+      .select("payload")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (data?.payload && typeof data.payload === "object") onLoad(data.payload as HealthPayload);
+    setStatus("Autorização registrada. Seus registros serão sincronizados.");
     return true;
-  }, [userId]);
+  }, [userId, onLoad]);
 
   const revokeConsent = useCallback(async () => {
     if (!userId || !supabase) return false;

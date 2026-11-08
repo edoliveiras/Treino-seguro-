@@ -23,6 +23,7 @@ $$;
 
 \ir ../migrations/202611080001_account_security.sql
 \ir ../migrations/202611080002_phone_otp_rpc.sql
+\ir ../migrations/202611080003_admin_delete.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),
@@ -167,13 +168,17 @@ begin
     raise exception 'admin_suspend_failed';
   end if;
   perform public.admin_set_account_status('00000000-0000-4000-8000-000000000002','reactivate');
+  perform public.admin_delete_account('00000000-0000-4000-8000-000000000002');
+  if (select count(*) from public.admin_account_directory) <> 3 then
+    raise exception 'admin_delete_did_not_remove_profile';
+  end if;
 end $rls$;
 reset role;
 do $rls$
 begin
   if (select count(*) from public.account_admin_audit
       where target_user_id='00000000-0000-4000-8000-000000000002'
-        and action in ('suspend','reactivate')) <> 2 then
+        and action in ('suspend','reactivate','delete')) <> 3 then
     raise exception 'admin_actions_not_audited';
   end if;
 end $rls$;

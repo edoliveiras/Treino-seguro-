@@ -52,7 +52,10 @@ const library: Exercise[] = [
  {name:"Toque de ombros em prancha inclinada",focus:["Abdômen","Braços"],home:true,gym:true,beginner:false,styles:["HIIT","Calistenia","Funcional"],sets:"3",reps:"20–30 s",rest:"45–60 s",cue:"Apoie as mãos em superfície firme e evite girar o quadril."},
  {name:"Agachamento com alcance dos braços",focus:["Pernas","Glúteos","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["HIIT","Funcional"],sets:"3",reps:"30–40 s",rest:"40 s",cue:"Faça agachamento confortável e alcance os braços à frente ao subir."},
  {name:"Passada para trás alternada com apoio",focus:["Pernas","Glúteos"],home:true,gym:true,beginner:true,styles:["Full body","Calistenia","Funcional"],sets:"3",reps:"8–10 por lado",rest:"75 s",cue:"Segure um apoio estável e dê passos curtos para trás, sem dor."},
- {name:"Flexão escapular na parede",focus:["Peito","Costas"],home:true,gym:true,beginner:true,styles:["Calistenia","Funcional","Full body"],sets:"3",reps:"12–15",rest:"45 s",cue:"Com braços estendidos na parede, aproxime e afaste as escápulas sem dobrar os cotovelos."}
+ {name:"Passos laterais contínuos",focus:["Pernas","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["HIIT","Funcional"],sets:"3",reps:"40 s",rest:"30–40 s",cue:"Dê passos laterais amplos e controlados, mantendo joelhos levemente flexionados."},
+ {name:"Elevação alternada de joelhos",focus:["Abdômen","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["HIIT","Funcional"],sets:"3",reps:"40 s",rest:"30–40 s",cue:"Eleve um joelho de cada vez em ritmo constante, sem inclinar o tronco."},
+ {name:"Toque de calcanhar em pé",focus:["Pernas","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["HIIT","Funcional"],sets:"3",reps:"40 s",rest:"30–40 s",cue:"Alterne o toque do calcanhar à frente, movimentando os braços naturalmente."},
+ {name:"Abdominal em pé com joelho cruzado",focus:["Abdômen","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["HIIT","Funcional"],sets:"3",reps:"30–40 s",rest:"30–40 s",cue:"Aproxime cotovelo e joelho opostos sem puxar o pescoço e sem acelerar demais."}
 ];
 const split: Record<number, Focus[][]> = {
  2:[["Glúteos","Pernas","Abdômen"],["Costas","Peito","Braços","Abdômen"]],

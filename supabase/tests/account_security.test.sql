@@ -209,6 +209,7 @@ insert into public.health_data_records(user_id,payload) values
 
 -- Verify row-level access and audited admin-only status changes.
 grant select on public.profiles to authenticated, anon;
+grant select, insert on public.account_consent_events to authenticated;
 grant select on public.admin_account_directory to authenticated;
 set role authenticated;
 set request.jwt.claim.role = 'authenticated';

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import App from "./App";
 
@@ -115,6 +115,7 @@ describe("fluxos de segurança da interface", () => {
   });
 
   it("permite apagar todos os dados mantidos apenas na sessão", () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
     completeBasicAssessment();

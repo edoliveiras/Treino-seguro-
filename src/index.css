@@ -154,3 +154,5 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
   margin: 8px 0 0;
   font-size: .9rem;
 }
+
+.ai-workout-box{background:linear-gradient(135deg,#f0f6ed,#fff);border:1px solid #dce9d8;border-radius:16px;padding:18px;margin:8px 0 14px}.ai-workout-box label{display:flex;flex-direction:column;gap:7px;color:#244535}.ai-workout-box label b{font:800 16px Manrope}.ai-workout-box label small{font-size:12px;line-height:1.55;color:#718176;font-weight:500}.ai-workout-box textarea{min-height:88px;margin:12px 0;border-color:#cbdcc8}.ai-workout-box .home-primary{margin:0}.ai-workout-box .muted{margin:12px 0 0}

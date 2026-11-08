@@ -31,6 +31,7 @@ $$;
 \ir ../migrations/20261108150015_email_only_account_activation.sql
 \ir ../migrations/20261108153254_user_health_records_with_consent.sql
 \ir ../migrations/20261108153447_health_records_policy_and_index_tuning.sql
+\ir ../migrations/20261108160000_rls_performance_and_fk_indexes.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),

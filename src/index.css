@@ -13,3 +13,10 @@
   .mobile-nav-button.active{background:#174b35;color:#fff;border-color:#174b35}
 }
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #8bbd73;outline-offset:3px}
+
+/* Reforço de contraste para textos auxiliares e rótulos pequenos. */
+.eyebrow{color:#536b5a}
+.panel>p,.muted,.workout-meta small,.source small,footer{color:#5f7064!important}
+.exercise small{color:#4e7658}
+.quote p{color:#5e7063}
+.bmi small{color:#596e60}

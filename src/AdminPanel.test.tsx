@@ -32,6 +32,7 @@ describe("painel administrativo", () => {
     expect(screen.getByText("user@example.test")).toBeTruthy();
     expect(screen.getByText("Suspensa")).toBeTruthy();
     expect(screen.getAllByRole("button", { name: "Excluir" })).toHaveLength(1);
+    expect(screen.getByText("Sua conta de administrador")).toBeTruthy();
     expect(screen.getByText(/Avaliações e informações de saúde não aparecem/)).toBeTruthy();
   });
 });

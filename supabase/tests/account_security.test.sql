@@ -28,6 +28,7 @@ $$;
 \ir ../migrations/202611080004_lock_trigger_function.sql
 \ir ../migrations/202611080005_deny_client_access_to_private_account_tables.sql
 \ir ../migrations/202611080006_restrict_admin_account_rpcs.sql
+\ir ../migrations/202611080007_email_only_account_activation.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),
@@ -37,15 +38,25 @@ insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000003','adult3@example.test',now(),
  '{"full_name":"Pessoa Teste 3","whatsapp_e164":"+5511999990003","adult_confirmed":"true","terms_accepted":"true","privacy_accepted":"true"}'),
 ('00000000-0000-4000-8000-000000000004','adult4@example.test',now(),
- '{"full_name":"Pessoa Teste 4","whatsapp_e164":"+5511999990001","adult_confirmed":"true","terms_accepted":"true","privacy_accepted":"true"}');
+ '{"full_name":"Pessoa Teste 4","whatsapp_e164":"+5511999990001","adult_confirmed":"true","terms_accepted":"true","privacy_accepted":"true"}'),
+('00000000-0000-4000-8000-000000000005','adult5@example.test',null,
+ '{"full_name":"Pessoa Teste 5","whatsapp_e164":"+5511999990005","adult_confirmed":"true","terms_accepted":"true","privacy_accepted":"true"}');
 
 do $$
 begin
-  if (select count(*) from public.profiles) <> 4 then
+  if (select count(*) from public.profiles) <> 5 then
     raise exception 'profile_sync_failed';
   end if;
-  if (select account_status from public.profiles where id='00000000-0000-4000-8000-000000000001') <> 'pending_verification' then
-    raise exception 'account_should_start_pending';
+  if (select account_status from public.profiles where id='00000000-0000-4000-8000-000000000001') <> 'active' then
+    raise exception 'email_confirmed_account_not_activated';
+  end if;
+  if (select account_status from public.profiles where id='00000000-0000-4000-8000-000000000005') <> 'pending_verification' then
+    raise exception 'unconfirmed_email_account_should_start_pending';
+  end if;
+  update auth.users set email_confirmed_at=now()
+    where id='00000000-0000-4000-8000-000000000005';
+  if (select account_status from public.profiles where id='00000000-0000-4000-8000-000000000005') <> 'active' then
+    raise exception 'email_confirmation_did_not_activate_account';
   end if;
   if (select count(*) from public.account_consent_events where user_id='00000000-0000-4000-8000-000000000001') <> 2 then
     raise exception 'required_consents_not_recorded';
@@ -216,7 +227,7 @@ end $rls$;
 set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
 do $rls$
 begin
-  if (select count(*) from public.admin_account_directory) <> 4 then
+  if (select count(*) from public.admin_account_directory) <> 5 then
     raise exception 'admin_directory_missing_profiles';
   end if;
 end $rls$;

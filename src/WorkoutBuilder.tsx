@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Clock3, Target, RotateCcw } from "lucide-react";
 
 type Focus = "Glúteos" | "Abdômen" | "Pernas" | "Braços" | "Costas" | "Peito" | "Corpo inteiro";
-type Style = "Musculação" | "Full body" | "Calistenia" | "Funcional";
+type Style = "Musculação" | "Full body" | "Calistenia" | "Funcional" | "HIIT";
 type Exercise = { name: string; focus: Focus[]; home: boolean; gym: boolean; beginner: boolean; styles: Style[]; sets: string; reps: string; rest: string; cue: string };
 const library: Exercise[] = [
  {name:"Agachamento até a cadeira",focus:["Glúteos","Pernas","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"3",reps:"10–12",rest:"90 s",cue:"Desça com controle, mantendo os pés apoiados e os joelhos alinhados."},
@@ -24,7 +24,7 @@ const library: Exercise[] = [
  {name:"Tríceps na polia ou extensão com faixa",focus:["Braços"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"2–3",reps:"10–15",rest:"60 s",cue:"Mantenha os cotovelos estáveis e use amplitude confortável."},
  {name:"Agachamento goblet",focus:["Pernas","Glúteos"],home:true,gym:true,beginner:false,styles:["Musculação","Full body"],sets:"3",reps:"8–12",rest:"90–120 s",cue:"Segure o peso junto ao peito e mantenha o tronco firme."},
  {name:"Caminhada ou bicicleta leve",focus:["Corpo inteiro"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"1",reps:"8–12 min",rest:"—",cue:"Ritmo confortável para aquecer; ajuste ao condicionamento."},
- {name:"Flexão de braços inclinada ou no solo",focus:["Peito","Braços","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["Calistenia","Full body","Funcional"],sets:"3",reps:"6–12",rest:"90 s",cue:"Comece com as mãos em apoio elevado se necessário; mantenha tronco alinhado e amplitude sem dor."},
+ {name:"Flexão de braços inclinada ou no solo",focus:["Peito","Braços","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["Calistenia","Full body","Funcional","HIIT"],sets:"3",reps:"6–12",rest:"90 s",cue:"Comece com as mãos em apoio elevado se necessário; mantenha tronco alinhado e amplitude sem dor."},
  {name:"Remada invertida em barra baixa",focus:["Costas","Braços","Corpo inteiro"],home:false,gym:true,beginner:false,styles:["Calistenia","Full body"],sets:"3",reps:"6–10",rest:"90 s",cue:"Use barra firme e ajuste a inclinação para controlar o esforço; não solte a pegada."},
  {name:"Agachamento livre",focus:["Pernas","Glúteos","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["Calistenia","Full body","Funcional"],sets:"3",reps:"12–15",rest:"75–90 s",cue:"Mantenha os pés apoiados, joelhos alinhados e amplitude confortável."},
  {name:"Avanço alternado",focus:["Pernas","Glúteos","Corpo inteiro"],home:true,gym:true,beginner:false,styles:["Calistenia","Full body","Funcional"],sets:"3",reps:"8–10 por lado",rest:"90 s",cue:"Dê um passo estável e desça somente até onde mantém equilíbrio e controle."},
@@ -32,9 +32,9 @@ const library: Exercise[] = [
  {name:"Bird dog",focus:["Abdômen","Costas","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["Calistenia","Full body","Funcional"],sets:"3",reps:"8–10 por lado",rest:"45–60 s",cue:"Estenda braço e perna opostos sem girar a pelve; faça devagar."},
  {name:"Elevação de panturrilhas",focus:["Pernas","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["Calistenia","Full body","Funcional"],sets:"3",reps:"12–20",rest:"45–60 s",cue:"Suba e desça com controle; use apoio para equilíbrio."},
  {name:"Mountain climber lento",focus:["Abdômen","Corpo inteiro"],home:true,gym:true,beginner:false,styles:["Calistenia","Full body","Funcional"],sets:"3",reps:"20–30 s",rest:"60 s",cue:"Mantenha os ombros estáveis e mova os joelhos alternadamente sem perder o alinhamento."},
- {name:"Burpee sem salto (adaptado)",focus:["Corpo inteiro"],home:true,gym:true,beginner:false,styles:["Calistenia","Funcional"],sets:"2–3",reps:"6–8",rest:"90 s",cue:"Faça a transição passo a passo; retire a flexão e o salto para reduzir impacto."},
+ {name:"Burpee sem salto (adaptado)",focus:["Corpo inteiro"],home:true,gym:true,beginner:false,styles:["Calistenia","Funcional","HIIT"],sets:"2–3",reps:"6–8",rest:"90 s",cue:"Faça a transição passo a passo; retire a flexão e o salto para reduzir impacto."},
  {name:"Agachamento isométrico na parede",focus:["Pernas","Glúteos"],home:true,gym:true,beginner:true,styles:["Calistenia","Funcional"],sets:"3",reps:"20–40 s",rest:"60 s",cue:"Desça até uma posição confortável e mantenha joelhos alinhados aos pés."},
- {name:"Pike push-up adaptada",focus:["Braços","Peito","Corpo inteiro"],home:true,gym:true,beginner:false,styles:["Calistenia"],sets:"2–3",reps:"5–8",rest:"90 s",cue:"Use amplitude curta e apoio estável; interrompa se houver desconforto nos ombros."},
+ {name:"Pike push-up adaptada",focus:["Braços","Peito","Corpo inteiro"],home:true,gym:true,beginner:false,styles:["Calistenia","HIIT"],sets:"2–3",reps:"5–8",rest:"90 s",cue:"Use amplitude curta e apoio estável; interrompa se houver desconforto nos ombros."},
  {name:"Superman alternado",focus:["Costas","Abdômen"],home:true,gym:true,beginner:true,styles:["Calistenia","Funcional"],sets:"2–3",reps:"8–10 por lado",rest:"60 s",cue:"Eleve pouco braço e perna opostos, sem forçar a lombar."}
 ];
 const split: Record<number, Focus[][]> = {
@@ -69,7 +69,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   <h2>Monte um treino com seu objetivo</h2>
   <p>Escolha o foco e veja uma divisão semanal com exercícios, séries, repetições, intervalos e instruções. O foco prioriza o grupo escolhido, sem abandonar o equilíbrio muscular.</p>
   <div className="form-grid">
-   <label>Modalidade<select value={style} onChange={e=>setStyle(e.target.value as Style)}>{["Musculação","Full body","Calistenia","Funcional"].map(x=><option key={x}>{x}</option>)}</select></label>
+   <label>Modalidade<select value={style} onChange={e=>setStyle(e.target.value as Style)}>{["Musculação","Full body","Calistenia","Funcional","HIIT"].map(x=><option key={x}>{x}</option>)}</select></label>
    <label>Meu foco principal<select value={focus} onChange={e=>setFocus(e.target.value as Focus)}>{["Glúteos","Abdômen","Pernas","Braços","Costas","Peito","Corpo inteiro"].map(x=><option key={x}>{x}</option>)}</select></label>
    <label>Onde vou treinar<select value={place} onChange={e=>setPlace(e.target.value)}><option>Casa</option><option>Academia</option></select></label>
    <label>Nível<select value={level} onChange={e=>setLevel(e.target.value)}>{["Iniciante","Intermediário","Avançado"].map(x=><option key={x}>{x}</option>)}</select></label>
@@ -78,13 +78,13 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   </div>
   <div className="bmi"><Target/><div><b>Foco selecionado: {focus}</b><p>O treino distribui o foco em mais de uma sessão, conforme os dias disponíveis. Exercícios abdominais fortalecem o core, mas não eliminam gordura localizada.</p></div></div>
   <h3>Seu planejamento semanal</h3>
-  <p className="muted">{style==="Full body"?"Full body: cada sessão trabalha os principais grupos musculares, com alternância de exercícios e recuperação entre dias.":style==="Calistenia"?"Calistenia: exercícios com o peso do corpo, com progressões e regressões conforme o nível.":style==="Funcional"?"Funcional: movimentos integrados para força, estabilidade e coordenação.":"Musculação: foco em força e hipertrofia com exercícios de resistência."}</p>
+  <p className="muted">{style==="Full body"?"Full body: cada sessão trabalha os principais grupos musculares, com alternância de exercícios e recuperação entre dias.":style==="Calistenia"?"Calistenia: exercícios com o peso do corpo, com progressões e regressões conforme o nível.":style==="Funcional"?"Funcional: movimentos integrados para força, estabilidade e coordenação.":style==="HIIT"?"HIIT: blocos curtos de esforço alternados com recuperação; ajuste a intensidade ao condicionamento.":"Musculação: foco em força e hipertrofia com exercícios de resistência."}</p>
   <div className="workout-meta"><div><small>FREQUÊNCIA</small><b>{days} dias</b></div><div><small>SESSÃO</small><b>{duration} min</b></div><div><small>AMBIENTE</small><b>{place}</b></div></div>
   {sessions.map((session,index)=><article className="workout-day" key={session.title}>
    <button type="button" className="secondary workout-day-toggle" aria-expanded={expanded===index} onClick={()=>setExpanded(expanded===index?null:index)}><span><b>{session.title} · Dia {index+1}</b><small>{session.groups.join(" · ")}</small></span><span>{expanded===index?"−":"+"}</span></button>
    {expanded===index&&<div className="workout-day-content">
     <p><b>Aquecimento:</b> 5–8 minutos de caminhada, bicicleta leve ou mobilidade confortável.</p>
-    {session.items.map((e,i)=><div className="planned-exercise" key={e.name}><div><b>{i+1}. {e.name}</b><p>{e.cue}</p><small>{Math.min(5,Number.parseInt(e.sets,10)+(level==="Iniciante"?0:level==="Intermediário"?1:2))} séries · {e.reps} repetições/tempo · descanso {e.rest}</small></div></div>)}
+    {session.items.map((e,i)=><div className="planned-exercise" key={e.name}><div><b>{i+1}. {e.name}</b><p>{e.cue}</p><small>{Math.min(5,Number.parseInt(e.sets,10)+(level==="Iniciante"?0:level==="Intermediário"?1:2))} séries · {e.reps} repetições/tempo · descanso {e.rest}</small><a className="exercise-demo-link" href={`https://www.youtube.com/results?search_query=${encodeURIComponent(e.name+" execução correta")}`} target="_blank" rel="noreferrer">▶ Ver execução em vídeo</a></div></div>)}
     <p><b>Finalização:</b> 3–5 minutos leves e respiração confortável. Registre as cargas e repetições realizadas.</p>
    </div>}
   </article>)}

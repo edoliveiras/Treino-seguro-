@@ -4,6 +4,7 @@
 ## 1. Projeto
 - Aplicativo web em português, responsivo e mobile-first, destinado a adultos (18+).
 - Código React + TypeScript + Vite; repositório GitHub na branch main. Lovable permanece apenas como visualizador.
+- O workspace Lovable consultado não possui um projeto Treino Seguro cadastrado; por isso ainda não existe prévia ou URL publicada do aplicativo nessa plataforma.
 - Banco Supabase dedicado ao Treino Seguro. O projeto Empório EdTudo não foi acessado nem alterado.
 
 ## 2. Aplicativo existente

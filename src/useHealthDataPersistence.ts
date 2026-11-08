@@ -55,10 +55,11 @@ export function useHealthDataPersistence(
   }, [userId, onLoad]);
 
   useEffect(() => {
-    if (!userId || !supabase || !consent || loading) return;
+    const client = supabase;
+    if (!userId || !client || !consent || loading) return;
     let active = true;
     const timer = window.setTimeout(async () => {
-      const { error } = await supabase
+      const { error } = await client
         .from("health_data_records")
         .upsert({ user_id: userId, payload }, { onConflict: "user_id" });
       if (!active) return;

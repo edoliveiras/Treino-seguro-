@@ -122,3 +122,12 @@ CI validado no commit `33fbdf65f407d931e7f8eb3f91b18f828235ef7a` (workflow 42479
 - Importante: PostgreSQL temporário + stub valida sintaxe e comportamento básico das migrações/RPCs, mas não equivale a um projeto Supabase real. Ainda faltam testes de RLS com usuários reais/roles, Auth real, implantação de Edge Function, confirmação de e-mail, envio Meta/Twilio e teste de recuperação.
 - Os dados de avaliação, peso, refeições e evolução seguem somente em memória e são apagados ao atualizar/fechar ou pelo novo comando de limpeza. Não foi habilitada persistência nem fotos.
 - Próxima etapa técnica: ampliar testes de autorização/RLS e corrigir quaisquer problemas encontrados; depois preparar a integração Auth com variáveis de ambiente, mantendo o fluxo desligado até a configuração real de Supabase e provedores. A revisão clínica, jurídica e de segurança independente continua necessária antes de uso público.
+
+
+## 14. Administração segura de contas — 08/11/2026
+- Criada a migração `202611080003_admin_delete.sql` com RPC de exclusão administrativa. Ela exige papel `admin` em `app_metadata`, impede autoexclusão, apaga a conta Auth e os dados cadastrais dependentes, limpa logs de OTP vinculados ao telefone e registra auditoria sem conteúdo clínico.
+- Criada a Edge Function `supabase/functions/admin-account/index.ts`, que aceita somente POST, valida origem, JWT e papel administrativo, e delega suspensão, reativação e exclusão às RPCs protegidas do banco. A checagem de autorização também ocorre no SQL.
+- A suíte PostgreSQL temporária foi ampliada para testar RLS de perfil (cada usuário vê apenas o próprio), bloqueio de leitura direta das tabelas OTP, negação de ações administrativas para usuário comum, diretório limitado para admin, suspensão/reativação auditadas, exclusão em cascata e limpeza dos logs do telefone.
+- Execução CI 42482287325 concluiu com sucesso nos testes do app, build, type-check da função OTP, testes unitários OTP e integração PostgreSQL incluindo a migração de exclusão. A checagem específica da nova Edge Function administrativa e o último ajuste de CORS ainda precisam de confirmação na execução mais recente.
+- A simulação usa PostgreSQL e stub de Supabase Auth; não comprova implantação, configuração de Auth, e-mail, WhatsApp, SMS ou permissões de um projeto Supabase real.
+- O endpoint administrativo e a migração estão versionados, mas ainda não implantados. Não há tela de administração no frontend. Não habilitar a função antes de configurar projeto Supabase, criar admin de forma segura e testar em homologação.

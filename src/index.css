@@ -156,3 +156,18 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 }
 
 .ai-workout-box{background:linear-gradient(135deg,#f0f6ed,#fff);border:1px solid #dce9d8;border-radius:16px;padding:18px;margin:8px 0 14px}.ai-workout-box label{display:flex;flex-direction:column;gap:7px;color:#244535}.ai-workout-box label b{font:800 16px Manrope}.ai-workout-box label small{font-size:12px;line-height:1.55;color:#718176;font-weight:500}.ai-workout-box textarea{min-height:88px;margin:12px 0;border-color:#cbdcc8}.ai-workout-box .home-primary{margin:0}.ai-workout-box .muted{margin:12px 0 0}
+
+/* Calculadoras de calorias: porções alimentares e estimativa de gasto por MET. */
+.calorie-tracker{display:grid;gap:16px}
+.calorie-preview{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#edf5eb;border:1px solid #dce9d8;border-radius:12px;padding:14px;margin:14px 0;color:#45634c}
+.calorie-preview span{font-size:12px}.calorie-preview b{font:800 18px Manrope;color:#174b35}
+.calorie-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0}
+.calorie-summary>div{background:#f2f6ef;border:1px solid #e0e9dd;border-radius:12px;padding:14px;min-width:0}
+.calorie-summary small{display:block;color:#627665;font-size:9px;font-weight:800;letter-spacing:.7px}
+.calorie-summary b{display:block;color:#174b35;font:800 18px Manrope;margin-top:7px;overflow-wrap:anywhere}
+.calorie-log{margin-top:18px}.calorie-log>b{display:block;color:#31533c;margin-bottom:9px}
+.calorie-log>p{color:#718176;font-size:12px}
+.calorie-log-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;border-top:1px solid #e6ece4;padding:10px 0;font-size:12px;color:#53685a}
+.calorie-log-row span{overflow-wrap:anywhere}.calorie-log-row>b{white-space:nowrap;color:#315b3d}
+.calorie-log-row button{border:0;border-radius:50%;width:27px;height:27px;background:#fff0ee;color:#91372f;font-size:19px;cursor:pointer}
+@media(max-width:600px){.calorie-summary{grid-template-columns:1fr}.calorie-summary>div{display:flex;align-items:center;justify-content:space-between;gap:10px}.calorie-summary b{font-size:16px}.calorie-preview b{font-size:16px}}

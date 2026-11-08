@@ -1,5 +1,5 @@
 # ESTADO_DO_PROJETO — Treino Seguro
-Última atualização: 2026-11-08 (etapa: regras de triagem isoladas + testes automatizados aprovados)
+Última atualização: 2026-11-08 (etapa: bloqueio de fluxo reforçado + arquitetura LGPD documentada)
 
 ## A. Funções já prontas no código (protótipo)
 - Aplicação React + TypeScript + Vite, interface em português e responsiva/mobile-first.
@@ -15,7 +15,9 @@
 - Tela Ciência com referências e resumos informativos.
 - Workflow GitHub Actions em .github/workflows/ci.yml configurado para npm install, npm test e npm run build em push/PR para main.
 - Regras de triagem isoladas em src/safety.ts e usadas pelo app: exclusividade de “Nenhuma”, validação de peso/altura, revisão médica, revisão por dor/limitação e bloqueio de corrida com IMC ≥ 35.
-- Testes automatizados Vitest em src/safety.test.ts: 5 testes aprovados cobrindo as regras acima.
+- Testes automatizados Vitest em src/safety.test.ts: 5 testes iniciais aprovados; conjunto ampliado inclui critérios de conclusão da avaliação e aguarda CI do commit 7fb6521.
+- Elegibilidade para concluir a avaliação centralizada em canCompleteAssessment; o treino volta a exigir saved e canStart simultaneamente.
+- Alterações em objetivo, dias, local, nível, liberação médica, maioridade ou aviso educativo invalidam a avaliação concluída.
 - Triagem corrigida: “Nenhuma” é mutuamente exclusiva das demais opções em cada grupo.
 - Mudanças na avaliação invalidam a conclusão anterior; ao alterar condições de saúde, a autodeclaração de liberação é reiniciada.
 - Campos de peso/altura agora validam faixas plausíveis de entrada antes de concluir a avaliação.
@@ -24,17 +26,19 @@
 - Tipos de React adicionados como dependências de desenvolvimento e declaração de tipos do Vite criada em src/vite-env.d.ts.
 
 ## B. Pendências (prioridade)
-1. **P0 — Ampliar testes de fluxo:** cobrir a tela de avaliação completa, estado de consentimento/maioridade autodeclarada e navegação direta para biblioteca/treino após informar dor; incluir testes de interface quando viável.
-2. **P0 — Revisar triagem de segurança:** impedir combinações contraditórias como “Nenhuma” + condição/dor; garantir que liberação declarada não seja tratada como validação clínica; revisar fluxo para menores e estados de avaliação.
-3. **P1 — Persistência segura:** definir backend, autenticação, autorização por usuário, RLS, minimização de dados e consentimentos LGPD antes de armazenar dados de saúde.
-4. **P1 — Persistência de avaliações, treinos, refeições e histórico**, com exportação e exclusão.
-5. **P1 — Política de privacidade, termos, consentimento explícito para dados sensíveis e fotos, retenção e canal de direitos.**
-6. **P2 — Fotos privadas:** armazenamento privado, URLs assinadas, controles de acesso, exclusão verificável e consentimento separado; manter desativado até isso existir.
-7. **P2 — Progressão de treino individualizada:** dias 2–5, nível, limitações, condições, baixo impacto; sem prescrição automática para casos de risco.
-8. **P2 — Biblioteca multimídia:** imagens e vídeos profissionais licenciados, erros comuns e contraindicações revisadas.
-9. **P2 — Nutrição:** integração confiável com TACO e Guia Alimentar; reconhecimento por foto e calorias somente com metodologia validada, estimativas rotuladas e orientação profissional.
-10. **P3 — Gráficos, metas e indicadores longitudinais; testes automatizados e acessibilidade.**
-11. **P3 — Configurar visualização no Lovable (somente visualizador) e publicação após testes e serviços externos.**
+1. **P0 — Validar CI do commit 7fb652189efb50c1aa9d6c878c440802ae2db0be.** O commit anterior falhou por uma quebra de linha literal no import do teste; correção já enviada, aguardando workflow 42479447651.
+2. **P0 — Testes de interface:** cobrir navegação direta para Treino/Exercícios e mudança de dados após conclusão, preferencialmente com React Testing Library.
+3. **P1 — Revisão técnica externa:** validar arquitetura, base legal, política de privacidade e controles de dados sensíveis antes de qualquer persistência.
+4. **P0 — Revisar triagem de segurança:** impedir combinações contraditórias como “Nenhuma” + condição/dor; garantir que liberação declarada não seja tratada como validação clínica; revisar fluxo para menores e estados de avaliação.
+5. **P1 — Persistência segura:** implementar somente após revisão jurídica e de segurança, seguindo docs/ARQUITETURA_BACKEND_LGPD.md.
+6. **P1 — Persistência de avaliações, treinos, refeições e histórico**, com exportação e exclusão.
+7. **P1 — Política de privacidade, termos, consentimento explícito para dados sensíveis e fotos, retenção e canal de direitos.**
+8. **P2 — Fotos privadas:** armazenamento privado, URLs assinadas, controles de acesso, exclusão verificável e consentimento separado; manter desativado até isso existir.
+9. **P2 — Progressão de treino individualizada:** dias 2–5, nível, limitações, condições, baixo impacto; sem prescrição automática para casos de risco.
+10. **P2 — Biblioteca multimídia:** imagens e vídeos profissionais licenciados, erros comuns e contraindicações revisadas.
+11. **P2 — Nutrição:** integração confiável com TACO e Guia Alimentar; reconhecimento por foto e calorias somente com metodologia validada, estimativas rotuladas e orientação profissional.
+12. **P3 — Gráficos, metas e indicadores longitudinais; testes automatizados e acessibilidade.**
+13. **P3 — Configurar visualização no Lovable (somente visualizador) e publicação após testes e serviços externos.**
 
 ## C. Decisões e suposições
 - Público-alvo: adultos 18+; interface brasileira em português.
@@ -48,7 +52,10 @@
 - Lovable será usado apenas como visualizador; código no GitHub.
 - Repositório: https://github.com/edoliveiras/Treino-seguro- ; branch main.
 
-## D. Fontes científicas incluídas no protótipo (verificação bibliográfica ainda precisa ser auditada)
+## D. Arquitetura e fontes
+- Especificação inicial de backend, autenticação, RLS, consentimento, retenção, direitos e critérios de liberação documentada em docs/ARQUITETURA_BACKEND_LGPD.md. Não é implementação, não comprova conformidade LGPD e não ativa armazenamento.
+
+### Fontes científicas incluídas no protótipo (verificação bibliográfica ainda precisa ser auditada)
 - Bull FC et al. (2020), WHO 2020 guidelines on physical activity and sedentary behaviour, British Journal of Sports Medicine 54:1451–1462. https://bjsm.bmj.com/content/54/24/1451
 - Donnelly JE et al. (2009), Appropriate physical activity intervention strategies for weight loss and prevention of weight regain for adults, Medicine & Science in Sports & Exercise 41(2):459–471; PMID 19127177. https://pubmed.ncbi.nlm.nih.gov/19127177/
 - Hayden JA et al. (2021), Exercise therapy for chronic low back pain, Cochrane Database of Systematic Reviews 9:CD009790; PMID 34580864. https://pubmed.ncbi.nlm.nih.gov/34580864/
@@ -57,7 +64,7 @@
 
 ## E. Erros conhecidos / riscos
 - ESTADO_DO_PROJETO.md não existia no repositório até esta atualização.
-- CI dos commits 4420d2dc50baac43d91f50c24cb3151cb532bda1, 28c78c5631c881d7f51d4670bf1eff343a720710 e 69a97df15de0f7c8d4dcb64c710d9ba6eca9f091 passou. O commit atual 975ee7319d8fe8519ad9c78bc2a1d8b18c187391 passou `npm test` e `npm run build` no workflow 42479288776. Commits intermediários 4366f6d e 6ce5097 falharam por JSX, corrigido em de13d69.
+- CI do commit 975ee7319d8fe8519ad9c78bc2a1d8b18c187391 passou `npm test` e `npm run build` no workflow 42479288776. O commit 0f03da5 falhou em `npm test` devido a `\\n` literal inserido no import de safety.test.ts; corrigido no commit 7fb652189efb50c1aa9d6c878c440802ae2db0be. Workflow 42479447651 estava em andamento na última consulta.
 - Campos e listas de avaliação usam estado local; atualizar/fechar página perde os dados.
 - Seleção “Nenhuma” nos grupos de dores/condições agora é mutuamente exclusiva com as demais opções.
 - A confirmação de liberação médica é autodeclarada e não verificada.
@@ -67,4 +74,4 @@
 - Metadados de Bull et al. (2020), Donnelly et al. (2009), Hayden et al. (2021), Guia Alimentar (2014) e TACO (2011) conferidos em fontes bibliográficas/organizacionais; a TACO continua como referência de composição, não reconhecimento automático de refeições.
 
 ## F. Próximo passo exato
-Testes automatizados e build validados no workflow 42479288776 (sucesso). Próximo passo: ampliar testes de fluxo da avaliação, maioridade autodeclarada e bloqueio de navegação para exercícios quando há dor/limitação; depois preparar especificação técnica de backend, autenticação, RLS, consentimento e LGPD. Manter fotos e persistência desativadas até implementar backend, autorização e LGPD.
+Revalidar workflow 42479447651 do commit 7fb6521 e corrigir se necessário. Depois adicionar testes de interface para revalidação da avaliação e bloqueio de telas. A especificação inicial de arquitetura e LGPD está em docs/ARQUITETURA_BACKEND_LGPD.md; não há backend implementado. Manter fotos e persistência desativadas até implementação, testes de autorização e revisão jurídica/de segurança.

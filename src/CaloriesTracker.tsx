@@ -30,7 +30,7 @@ const activities = [
   { name: "Subir escadas", met: 8.8 }, { name: "Natação moderada", met: 6.0 },
 ];
 
-const today = () => new Date().toLocaleDateString("en-CA");
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
 const fmt = (n: number) => Math.round(n).toLocaleString("pt-BR");
 
 export default function CaloriesTracker({ weight, foodLogs, setFoodLogs, activityLogs, setActivityLogs }: {
@@ -47,7 +47,7 @@ export default function CaloriesTracker({ weight, foodLogs, setFoodLogs, activit
   const activity = activities.find(x => x.name === activityName) ?? activities[0];
   const foodEstimate = Number(grams) > 0 ? food.kcal * Number(grams) / 100 : 0;
   const activityEstimate = bodyWeight > 0 && Number(minutes) > 0
-    ? activity.met * 3.5 * bodyWeight / 200 * Number(minutes) : 0;
+    ? Math.max(0, activity.met - 1) * 3.5 * bodyWeight / 200 * Number(minutes) : 0;
   const todayFoods = useMemo(() => foodLogs.filter(x => x.date === date), [foodLogs, date]);
   const todayActivities = useMemo(() => activityLogs.filter(x => x.date === date), [activityLogs, date]);
   const consumed = todayFoods.reduce((sum, x) => sum + x.kcal, 0);
@@ -73,7 +73,7 @@ export default function CaloriesTracker({ weight, foodLogs, setFoodLogs, activit
       </div>
       <div className="calorie-preview"><span>{bodyWeight > 0 ? `Peso usado: ${bodyWeight} kg` : "Informe seu peso na aba Avaliação"}</span><b>{fmt(activityEstimate)} kcal estimadas</b></div>
       <button className="primary" disabled={!bodyWeight || bodyWeight <= 0 || !Number(minutes) || Number(minutes) <= 0} onClick={() => setActivityLogs(old => [...old, { id: crypto.randomUUID(), name: activity.name, minutes: Number(minutes), kcal: activityEstimate, date }])}>Registrar exercício</button>
-      <p className="muted">Estimativa por MET; intensidade real, condicionamento, pausas e características individuais alteram o gasto. Não é uma medição do relógio ou equipamento.</p>
+      <p className="muted">Estimativa do gasto adicional acima do repouso, pela fórmula MET − 1. Intensidade real, condicionamento, pausas e características individuais alteram o resultado. Não é uma medição do relógio ou equipamento.</p>
     </section>
     <section className="panel">
       <span className="eyebrow">RESUMO DE HOJE</span><h2>Seu balanço calórico registrado</h2>
@@ -86,6 +86,6 @@ export default function CaloriesTracker({ weight, foodLogs, setFoodLogs, activit
       <div className="calorie-log"><b>Alimentos de hoje</b>{todayFoods.length ? todayFoods.map(x => <div className="calorie-log-row" key={x.id}><span>{x.name} · {x.grams} g</span><b>{fmt(x.kcal)} kcal</b><button aria-label={"Excluir " + x.name} onClick={() => setFoodLogs(old => old.filter(y => y.id !== x.id))}>×</button></div>) : <p>Nenhum alimento registrado hoje.</p>}</div>
       <div className="calorie-log"><b>Exercícios de hoje</b>{todayActivities.length ? todayActivities.map(x => <div className="calorie-log-row" key={x.id}><span>{x.name} · {x.minutes} min</span><b>{fmt(x.kcal)} kcal</b><button aria-label={"Excluir " + x.name} onClick={() => setActivityLogs(old => old.filter(y => y.id !== x.id))}>×</button></div>) : <p>Nenhum exercício registrado hoje.</p>}</div>
     </section>
-    <p className="muted">Base alimentar de referência: TACO/NEPA-Unicamp. Valores aproximados por 100 g; não substituem avaliação nutricional. Gasto dos exercícios calculado por estimativa MET.</p>
+    <p className="muted">Base alimentar de referência: TACO/NEPA-Unicamp. Valores aproximados por 100 g; não substituem avaliação nutricional. Gasto adicional estimado por MET, conforme o Compendium of Physical Activities. <a href="https://pacompendium.com/" target="_blank" rel="noreferrer">Consultar referência de atividades</a>.</p>
   </div>;
 }

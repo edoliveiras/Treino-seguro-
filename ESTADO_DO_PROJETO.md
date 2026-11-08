@@ -19,7 +19,7 @@
 
 ## 3. Banco e segurança de contas
 - Projeto Supabase dedicado ativo e saudável; tabelas de cadastro, consentimentos, preferências, OTP e auditoria criadas e com RLS habilitado.
-- Migrações de conta e autenticação aplicadas; migrações 008 a 011 criam `health_data_records`, RLS de propriedade/conta ativa/e-mail confirmado/consentimento vigente, índices para consultas e chaves estrangeiras, políticas RLS otimizadas e exclusão permitida ao titular mesmo com conta suspensa. O acesso anon é negado; authenticated recebe apenas as permissões cobertas por RLS.
+- Migrações de conta e autenticação aplicadas; migrações 008 a 012 criam `health_data_records`, RLS de propriedade/conta ativa/e-mail confirmado/consentimento vigente, índices para consultas e chaves estrangeiras, políticas RLS otimizadas, exclusão permitida ao titular mesmo com conta suspensa e bootstrap de primeiro administrador restrito a `service_role`. O acesso anon é negado; authenticated recebe apenas as permissões cobertas por RLS.
 - As tabelas estão vazias; não há contas ou dados clínicos cadastrados.
 - Verificação de segurança do Supabase: sem alertas ativos após as últimas correções. Operações administrativas são verificadas na Edge Function e novamente no banco, consultando o papel de administrador em app_metadata.
 - A chave publishable do projeto está configurada no cliente; nenhuma chave service_role ou segredo de provedor está no navegador ou no repositório.
@@ -36,7 +36,7 @@
 - O fluxo público não utiliza Facebook, Meta, WhatsApp, SMS ou OTP por telefone. O código e as tabelas antigas de OTP permanecem apenas como legado de testes; não são chamados pelo aplicativo e não devem ser implantados.
 - A interface de administração de contas foi criada e só aparece quando o token da conta contém o papel `admin`; ela lista dados cadastrais e oferece suspensão, reativação e exclusão, sem expor dados de saúde.
 - A Edge Function administrativa ainda não foi implantada no projeto; as ações do painel não funcionarão até a implantação e configuração da origem pública.
-- Ainda não foi criado um usuário administrador. O primeiro administrador deverá receber o papel exclusivamente por procedimento seguro no servidor, nunca por cadastro público.
+- Ainda não foi criado um usuário administrador. O primeiro administrador poderá receber o papel por função de bootstrap executável somente por `service_role`, para uma conta ativa e com e-mail confirmado, se ainda não existir administrador.
 - Confirmação por e-mail depende de confirmar a configuração do Supabase Auth, URLs de retorno e template de e-mail.
 
 ## 6. Testes e validação

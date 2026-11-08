@@ -30,11 +30,11 @@
 
 ## 3. Testes e estado de CI
 - `src/safety.test.ts`: 6 testes de regras puras.
-- `src/App.test.tsx`: 7 testes de interface.
-- Total: **13 testes aprovados**.
-- Commit dos testes: `4f34a4049402b9244f7b57ecc179e598808636d0`; workflow 42479872555: testes e build aprovados.
+- `src/App.test.tsx`: 8 testes de interface.
+- Total: **14 testes aprovados**.
+- Commit dos testes: `33fbdf65f407d931e7f8eb3f91b18f828235ef7a`; workflow 42479956704: 14 testes e build aprovados.
 - Commit do ajuste de contraste: `da1785b36022bfa6dc43635e168910c2fc514f8e`; workflow 42479881418: testes e build aprovados.
-- Os testes atuais cobrem: bloqueio de acesso direto ao treino, revalidação após mudanças, ocultação de exercícios após relato de dor, navegação móvel, reinício da declaração médica, bloqueio de corrida no cenário definido e exclusividade de “Nenhuma”.
+- Os testes atuais cobrem: bloqueio de acesso direto ao treino, revalidação após mudanças de objetivo/peso/altura/dias/local/nível/maioridade/aviso educativo, ocultação de exercícios após relato de dor, navegação móvel, reinício da declaração médica, bloqueio de corrida no cenário definido e exclusividade de “Nenhuma”.
 
 ## 4. Arquitetura, privacidade e limitações
 - Documento de proposta: `docs/ARQUITETURA_BACKEND_LGPD.md`.
@@ -65,4 +65,4 @@
 9. **P3 — Configurar Lovable como visualizador e planejar publicação após as revisões e serviços externos necessários.**
 
 ## 7. Próximo passo exato
-Continuar pela cobertura de segurança e acessibilidade: ampliar testes de alteração de cada campo e estados de navegação; depois revisar nomes acessíveis, ordem de foco e layout móvel. Manter backend, persistência e fotos desativados. Não declarar o produto publicado, clinicamente validado ou LGPD-compliant.
+CI validado no commit `33fbdf65f407d931e7f8eb3f91b18f828235ef7a` (workflow 42479956704: 14 testes e build aprovados). Próximo passo: revisar nomes acessíveis, ordem de foco, leitor de tela e layout móvel; depois fazer revisão clínica/editorial das orientações. Manter backend, persistência e fotos desativados. Manter backend, persistência e fotos desativados. Não declarar o produto publicado, clinicamente validado ou LGPD-compliant.

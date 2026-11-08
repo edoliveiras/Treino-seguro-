@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  blocksRunningRecommendation,\n  canCompleteAssessment,
+  blocksRunningRecommendation,
+  canCompleteAssessment,
   isValidMeasurement,
   requiresMedicalReview,
   requiresPainReview,

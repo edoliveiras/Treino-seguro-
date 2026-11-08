@@ -22,15 +22,15 @@ create function auth.jwt() returns jsonb language sql stable as $$
   select coalesce(nullif(current_setting('request.jwt.claims', true), '')::jsonb, '{}'::jsonb)
 $$;
 
-\ir ../migrations/202611080001_account_security.sql
-\ir ../migrations/202611080002_phone_otp_rpc.sql
-\ir ../migrations/202611080003_admin_delete.sql
-\ir ../migrations/202611080004_lock_trigger_function.sql
-\ir ../migrations/202611080005_deny_client_access_to_private_account_tables.sql
-\ir ../migrations/202611080006_restrict_admin_account_rpcs.sql
-\ir ../migrations/202611080007_email_only_account_activation.sql
-\ir ../migrations/202611080008_user_health_records_with_consent.sql
-\ir ../migrations/202611080009_health_records_policy_and_index_tuning.sql
+\ir ../migrations/20261108131911_initial_account_security.sql
+\ir ../migrations/20261108131938_phone_otp_rpc.sql
+\ir ../migrations/20261108131939_admin_delete.sql
+\ir ../migrations/20261108131941_lock_trigger_function.sql
+\ir ../migrations/20261108133235_deny_client_access_to_private_account_tables.sql
+\ir ../migrations/20261108133259_restrict_admin_account_rpcs_to_service_role.sql
+\ir ../migrations/20261108150015_email_only_account_activation.sql
+\ir ../migrations/20261108153254_user_health_records_with_consent.sql
+\ir ../migrations/20261108153447_health_records_policy_and_index_tuning.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),

@@ -1,6 +1,6 @@
 # Treino Seguro
 
-Aplicativo web educativo, mobile-first e em português para adultos. Inclui demonstração de avaliação inicial, orientações gerais de movimento, diário alimentar sem estimativas automáticas, registros temporários de evolução e referências científicas.
+Aplicativo web educativo, mobile-first e em português para adultos. Inclui avaliação inicial, orientações gerais de movimento, diário alimentar sem estimativas automáticas, registros pessoais de evolução e referências científicas.
 
 ## Executar
 ```bash

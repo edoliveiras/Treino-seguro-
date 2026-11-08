@@ -66,7 +66,7 @@ begin
   if (select count(*) from public.account_consent_events where user_id='00000000-0000-4000-8000-000000000001') <> 2 then
     raise exception 'required_consents_not_recorded';
   end if;
-end $;
+end $$;
 
 do $bootstrap_permissions$
 begin

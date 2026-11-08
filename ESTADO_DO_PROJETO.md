@@ -19,14 +19,14 @@
 
 ## 3. Banco e segurança de contas
 - Projeto Supabase dedicado ativo e saudável; tabelas de cadastro, consentimentos, preferências, OTP e auditoria criadas e com RLS habilitado.
-- Migrações de conta e autenticação aplicadas; migrações 008 e 009 criam `health_data_records`, RLS de propriedade/conta ativa/e-mail confirmado/consentimento vigente e remoção de índice sem uso. O acesso anon é negado; authenticated recebe apenas as permissões cobertas por RLS.
+- Migrações de conta e autenticação aplicadas; migrações 008 a 011 criam `health_data_records`, RLS de propriedade/conta ativa/e-mail confirmado/consentimento vigente, índices para consultas e chaves estrangeiras, políticas RLS otimizadas e exclusão permitida ao titular mesmo com conta suspensa. O acesso anon é negado; authenticated recebe apenas as permissões cobertas por RLS.
 - As tabelas estão vazias; não há contas ou dados clínicos cadastrados.
 - Verificação de segurança do Supabase: sem alertas ativos após as últimas correções. Operações administrativas são verificadas na Edge Function e novamente no banco, consultando o papel de administrador em app_metadata.
 - A chave publishable do projeto está configurada no cliente; nenhuma chave service_role ou segredo de provedor está no navegador ou no repositório.
 
 ## 4. Cadastro e autenticação implementados no código
 - Tela de cadastro: nome, e-mail, WhatsApp com DDD e senha.
-- Declaração de 18 anos, aceite obrigatório dos Termos e da Política; consentimentos de saúde e fotos opcionais e separados; notificações opcionais desligadas por padrão.
+- Declaração de 18 anos, aceite obrigatório dos Termos e da Política; consentimento opcional para dados de saúde. Fotos e notificações não são solicitadas porque ainda não estão disponíveis.
 - Login por e-mail e senha, reenvio do link de confirmação, recuperação e redefinição de senha.
 - Confirmação do e-mail via Supabase Auth. O telefone é coletado apenas como contato, sem integração com aplicativos de mensagens ou envio de mensagens.
 - O app libera as áreas após confirmação do e-mail e status ativo.
@@ -39,8 +39,8 @@
 - Confirmação por e-mail depende de confirmar a configuração do Supabase Auth, URLs de retorno e template de e-mail.
 
 ## 6. Testes e validação
-- Testes de interface e regras de segurança existentes; CI executa testes, build, verificação estática das Edge Functions, testes dos componentes OTP e testes SQL das migrações em PostgreSQL temporário.
-- A execução de CI após a mudança para ativação somente por e-mail foi concluída com sucesso. Uma nova execução foi disparada pelas alterações recentes de persistência e ainda precisa terminar.
+- Testes de interface, persistência com consentimento, regras de segurança, build, verificação estática das Edge Functions, testes dos componentes OTP e testes SQL das migrações em PostgreSQL temporário.
+- A execução CI #195 concluiu com sucesso: testes do aplicativo, compilação, tipos das Edge Functions, testes OTP e migrações SQL passaram. A execução seguinte, após ajustes de texto legal e cadastro, está em validação.
 - Testes automatizados não substituem teste real de cadastro, confirmação de e-mail, recuperação de senha, RLS e suspensão em ambiente de homologação.
 
 ## 7. Pendências para disponibilização pública
@@ -50,8 +50,8 @@
 4. Implantar a Edge Function administrativa somente quando o painel de gestão estiver pronto e criar o primeiro administrador por procedimento seguro.
 5. Realizar testes reais com duas contas: cadastro, confirmação de e-mail, recuperação, suspensão, exclusão e isolamento dos dados.
 6. Revisão jurídica da LGPD, Termos e Política; definir contato do controlador, retenção, exclusão e direitos dos titulares.
-8. Revisão clínica e editorial por profissionais habilitados antes de uso público.
-9. Planejar publicação e testar em celulares reais. Não declarar produto pronto, clinicamente validado ou em conformidade legal antes dessas etapas.
+7. Revisão clínica e editorial por profissionais habilitados antes de uso público.
+8. Planejar publicação e testar em celulares reais. Não declarar produto pronto, clinicamente validado ou em conformidade legal antes dessas etapas.
 
 ## 8. Fontes bibliográficas do aplicativo
 - Bull FC et al. (2020), diretrizes OMS: https://bjsm.bmj.com/content/54/24/1451

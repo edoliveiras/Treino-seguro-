@@ -1,5 +1,5 @@
 # ESTADO_DO_PROJETO — Treino Seguro
-Última atualização: 2026-11-08 (testes de segurança ampliados, contraste ajustado e CI aprovado)
+Última atualização: 2026-11-08 (base de cadastro e segurança de contas preparada; ainda não implantada)
 
 ## 1. Repositório e fluxo
 - Repositório: https://github.com/edoliveiras/Treino-seguro-
@@ -38,9 +38,12 @@
 
 ## 4. Arquitetura, privacidade e limitações
 - Documento de proposta: `docs/ARQUITETURA_BACKEND_LGPD.md`.
-- **Não existe backend, autenticação, banco de dados, sincronização ou upload de fotos implementado.**
+- Requisitos de conta: `docs/CADASTRO_E_VERIFICACAO.md`.
+- Migração inicial de contas: `supabase/migrations/202611080001_account_security.sql` (criada no GitHub, **não aplicada**).
+- **Não existe backend implantado, autenticação ativa no app, banco conectado, sincronização ou upload de fotos implementado.** Há apenas uma migração SQL preparada para futura aplicação.
 - Os dados digitados ficam apenas na memória da página e são perdidos ao atualizar/fechar.
 - O documento LGPD é uma proposta técnica; não é implementação nem comprovação de conformidade.
+- A migração de contas prepara perfil cadastral separado, unicidade de e-mail/WhatsApp, eventos de consentimento, preferências de notificações, tabelas privadas para OTP, RLS e auditoria de ações administrativas. Ela não implementa o envio nem a validação do OTP, nem a tela de cadastro.
 - Não habilitar persistência ou fotos antes de revisão jurídica/de segurança, consentimento adequado, controles de acesso, testes de autorização, exportação e exclusão.
 - Público-alvo definido: adultos 18+; a idade é autodeclarada, não verificada.
 - O app é educativo e não substitui médico, nutricionista ou profissional de Educação Física.
@@ -58,11 +61,11 @@
 2. **P0 — Acessibilidade:** auditoria de contraste de toda a interface, leitor de tela, nomes acessíveis, ordem de foco e testes em viewport estreita.
 3. **P1 — Revisão clínica/editorial:** revisão por profissionais habilitados das orientações, triagem e exercícios antes de uso público.
 4. **P1 — Revisão jurídica e segurança:** política de privacidade, termos, base legal, consentimento específico, retenção e direitos dos titulares.
-5. **P1 — Backend seguro:** somente após decisões e revisão; autenticação, RLS, segregação por usuário, exportação e exclusão.
+5. **P1 — Backend seguro:** aplicar e revisar a migração; implementar Supabase Auth, confirmação de e-mail, Edge Functions para OTP Meta/Twilio, recuperação/troca de contato, bloqueio de suspensos, exclusão administrativa e testes RLS antes de ativar autenticação.
 6. **P2 — Personalização de treinos:** considerar dias, nível, local e limitações sem prescrição automática em cenários de risco.
 7. **P2 — Conteúdo multimídia licenciado:** imagens/vídeos profissionais, erros comuns e contraindicações revisadas.
 8. **P2 — Nutrição:** integração confiável com TACO/Guia Alimentar; não habilitar reconhecimento por foto ou calorias sem método validado.
 9. **P3 — Configurar Lovable como visualizador e planejar publicação após as revisões e serviços externos necessários.**
 
 ## 7. Próximo passo exato
-CI validado no commit `33fbdf65f407d931e7f8eb3f91b18f828235ef7a` (workflow 42479956704: 14 testes e build aprovados). Próximo passo: revisar nomes acessíveis, ordem de foco, leitor de tela e layout móvel; depois fazer revisão clínica/editorial das orientações. Manter backend, persistência e fotos desativados. Manter backend, persistência e fotos desativados. Não declarar o produto publicado, clinicamente validado ou LGPD-compliant.
+CI validado no commit `33fbdf65f407d931e7f8eb3f91b18f828235ef7a` (workflow 42479956704: 14 testes e build aprovados). A migração de contas foi criada, mas não foi executada nem testada contra Supabase. Próximo passo: implementar Edge Functions de OTP e fluxo de cadastro/login, com configuração por secrets e testes negativos; depois integrar a interface. Manter autenticação, backend, persistência clínica e fotos desativados até configuração e validação real. Manter backend, persistência e fotos desativados. Não declarar o produto publicado, clinicamente validado ou LGPD-compliant.

@@ -16,6 +16,10 @@ npm run build
 
 O CI também verifica a função de OTP com Deno e executa as migrações de contas/OTP em um PostgreSQL temporário, com stubs mínimos de Supabase Auth. Essa simulação verifica regras SQL, mas não substitui homologação em um projeto Supabase real.
 
+## Acessibilidade
+- Atalho visível ao receber foco para pular diretamente ao conteúdo principal.
+- Seção ativa anunciada por tecnologia assistiva na navegação principal e móvel.
+
 ## Segurança e limites
 - Não diagnostica nem substitui médico, nutricionista ou profissional de Educação Física.
 - Exclusivo para maiores de 18 anos.

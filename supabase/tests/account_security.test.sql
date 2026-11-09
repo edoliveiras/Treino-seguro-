@@ -41,6 +41,7 @@ $$;
 \ir ../migrations/20261109183000_rebuild_admin_account_directory.sql
 \ir ../migrations/20261109184000_training_rpc_invoker_security.sql
 \ir ../migrations/20261109185000_training_rls_and_index_tuning.sql
+\ir ../migrations/20261109186000_email_only_admin_reactivation.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),
@@ -248,6 +249,7 @@ do $admin$
 begin
   perform public.admin_set_account_status('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002','suspend');
   perform public.admin_set_account_status('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002','reactivate');
+  if (select account_status from public.profiles where id='00000000-0000-4000-8000-000000000002') <> 'active' then raise exception 'admin_reactivation_must_only_require_confirmed_email'; end if;
   perform public.admin_delete_account('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002');
 end $admin$;
 reset role;

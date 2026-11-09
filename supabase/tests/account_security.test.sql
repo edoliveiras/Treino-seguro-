@@ -249,13 +249,20 @@ where id='00000000-0000-4000-8000-000000000001';
 -- verification of the admin caller stored in auth.users.raw_app_meta_data.
 set role service_role;
 set request.jwt.claim.role = 'service_role';
-do $admin$
+do $admin_status$
 begin
   perform public.admin_set_account_status('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002','suspend');
   perform public.admin_set_account_status('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002','reactivate');
-  if (select account_status from public.profiles where id='00000000-0000-4000-8000-000000000002') <> 'active' then raise exception 'admin_reactivation_must_only_require_confirmed_email'; end if;
-  perform public.admin_delete_account('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002');
-end $admin$;
+end $admin_status$;
+reset role;
+do $admin_reactivation_check$
+begin
+  if (select account_status from public.profiles where id='00000000-0000-4000-8000-000000000002') <> 'active' then
+    raise exception 'admin_reactivation_must_only_require_confirmed_email';
+  end if;
+end $admin_reactivation_check$;
+set role service_role;
+perform public.admin_delete_account('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002');
 reset role;
 do $rls$
 begin

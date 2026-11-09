@@ -23,7 +23,6 @@ create function auth.jwt() returns jsonb language sql stable as $$
 $$;
 
 \ir ../migrations/20261108131911_initial_account_security.sql
-\ir ../migrations/20261108131938_phone_otp_rpc.sql
 \ir ../migrations/20261108131939_admin_delete.sql
 \ir ../migrations/20261108131941_lock_trigger_function.sql
 \ir ../migrations/20261108133235_deny_client_access_to_private_account_tables.sql
@@ -112,8 +111,12 @@ begin
   if (select count(*) from public.profiles where phone_e164 = '+5511999990001') <> 2 then
     raise exception 'contact_phone_should_not_be_unique';
   end if;
-  if has_function_privilege('service_role','public.create_phone_otp_challenge(uuid,text)','EXECUTE')
-     or has_function_privilege('service_role','public.verify_phone_otp_challenge(uuid,text)','EXECUTE') then
+  if to_regprocedure('public.create_phone_otp_challenge(uuid,text)') is not null
+     and has_function_privilege('service_role','public.create_phone_otp_challenge(uuid,text)','EXECUTE') then
+    raise exception 'legacy_phone_verification_still_executable';
+  end if;
+  if to_regprocedure('public.verify_phone_otp_challenge(uuid,text)') is not null
+     and has_function_privilege('service_role','public.verify_phone_otp_challenge(uuid,text)','EXECUTE') then
     raise exception 'legacy_phone_verification_still_executable';
   end if;
   if has_table_privilege('service_role','public.phone_otp_challenges','SELECT')

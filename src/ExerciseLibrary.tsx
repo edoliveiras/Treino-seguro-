@@ -718,7 +718,8 @@ const shortNameLookup = Object.fromEntries(Object.entries(shortNameOverrides).ma
 function rawSimpleExerciseName(name:string, segment:string) {
  const key=name.trim().toLowerCase();
  const s=segment.toLowerCase();
- if(distinctExerciseNameLookup[key]) return distinctExerciseNameLookup[key];\n if(shortNameLookup[key]) return shortNameLookup[key];
+ if(distinctExerciseNameLookup[key]) return distinctExerciseNameLookup[key];
+ if(shortNameLookup[key]) return shortNameLookup[key];
  if(key==="coice na polia" && /tr[ií]ceps/.test(s)) return "Esticar braço com cabo";
  if(simpleNameLookup[key]) return simpleNameLookup[key];
  if(/peito/.test(s)) return /flex|mergulho/.test(key)?"Empurrar o próprio corpo":/cruci|abert/.test(key)?"Abrir braços com controle":"Empurrar peso à frente";

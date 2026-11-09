@@ -144,3 +144,36 @@ comment on table public.phone_otp_challenges is
   'Artefato legado sem acesso concedido; não utilizar no aplicativo.';
 comment on table public.phone_otp_send_log is
   'Artefato legado sem acesso concedido; não utilizar no aplicativo.';
+
+-- The old account deletion routine referred to the legacy WhatsApp column and OTP log.
+-- Phone verification is disabled, so deletion now removes only the account and records the audit.
+create or replace function public.admin_delete_account(
+  p_actor_user_id uuid,
+  p_target_user_id uuid
+) returns void
+language plpgsql
+security definer
+set search_path = public, auth, pg_temp
+as $admin_delete$
+begin
+  if p_actor_user_id is null or not exists (
+    select 1 from auth.users
+    where id=p_actor_user_id
+      and coalesce(raw_app_meta_data ->> 'role','')='admin'
+  ) then
+    raise exception 'not_authorized' using errcode='42501';
+  end if;
+  if p_target_user_id is null or p_target_user_id=p_actor_user_id then
+    raise exception 'invalid_target';
+  end if;
+  if not exists (select 1 from public.profiles where id=p_target_user_id) then
+    raise exception 'account_not_found';
+  end if;
+  delete from auth.users where id=p_target_user_id;
+  if not found then raise exception 'account_not_found'; end if;
+  insert into public.account_admin_audit(actor_user_id,target_user_id,action)
+    values(p_actor_user_id,p_target_user_id,'delete');
+end;
+$admin_delete$;
+revoke all on function public.admin_delete_account(uuid,uuid) from public, anon, authenticated;
+grant execute on function public.admin_delete_account(uuid,uuid) to service_role;

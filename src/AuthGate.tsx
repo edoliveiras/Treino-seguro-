@@ -66,12 +66,18 @@ export default function AuthGate() {
       return;
     }
     let alive = true;
-    supabase!.auth.getSession().then(async ({ data }) => {
+    (async () => {
+      const { data: initial } = await supabase!.auth.getSession();
+      let nextSession = initial.session;
+      if (nextSession) {
+        const { data: refreshed } = await supabase!.auth.refreshSession();
+        nextSession = refreshed.session ?? nextSession;
+      }
       if (!alive) return;
-      setSession(data.session);
-      await loadProfile(data.session?.user ?? null);
+      setSession(nextSession);
+      await loadProfile(nextSession?.user ?? null);
       if (alive) setLoading(false);
-    });
+    })();
     const { data: listener } = supabase!.auth.onAuthStateChange((event, nextSession) => {
       if (event === "PASSWORD_RECOVERY") setMode("recovery");
       setSession(nextSession);

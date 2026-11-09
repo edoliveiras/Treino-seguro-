@@ -114,10 +114,9 @@ export default function TrainingManager({currentUserId}:{currentUserId:string}) 
  const assign=async()=>{
   if(!supabase||!planId||!selectedStudents.length){setError("Salve um treino e selecione pelo menos um aluno.");return;}
   setBusy(true);setError("");setNotice("");
-  const rows=selectedStudents.map(student_id=>({plan_id:planId,student_id,assigned_by:currentUserId,status:"active"}));
-  const {error:e}=await supabase.from("workout_assignments").insert(rows);
+  const {error:e}=await supabase.rpc("admin_assign_workout_plan",{p_plan_id:planId,p_student_ids:selectedStudents});
   if(e){setError("Não foi possível atribuir o treino aos alunos selecionados.");setBusy(false);return;}
-  setNotice("Treino atribuído. Ele aparecerá na tela inicial dos alunos selecionados quando entrarem no aplicativo.");
+  setNotice("Treino atribuído. O plano anterior foi substituído e o novo aparecerá na tela inicial dos alunos selecionados.");
   setSelectedStudents([]);await load();setBusy(false);
  };
  const removeAssignment=async(id:string)=>{
@@ -136,7 +135,7 @@ export default function TrainingManager({currentUserId}:{currentUserId:string}) 
   else{setNotice("Modelo excluído.");if(planId===p.id)reset();await load();}
  };
 
- const activeStudents=students.filter(s=>s.account_status==="active");
+ const activeStudents=students.filter(s=>s.account_status==="active"&&s.id!==currentUserId);
  const planName=(id:string)=>plans.find(p=>p.id===id)?.title??"Treino";
  return <section className="panel training-manager">
   <div className="admin-panel-heading"><div><span className="eyebrow">TREINOS DO PROFESSOR</span><h2>Montar, salvar e atribuir treinos</h2></div><button className="secondary" type="button" onClick={()=>void load()} disabled={loading}><RefreshCw size={16}/> Atualizar</button></div>

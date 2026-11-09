@@ -148,7 +148,7 @@ export default function TrainingManager({currentUserId}:{currentUserId:string}) 
    <h3>Alunos cadastrados</h3>
    {loading?<p>Carregando…</p>:activeStudents.length===0?<p>Nenhum aluno ativo cadastrado.</p>:<div className="admin-account-list">{activeStudents.map(s=><article className="admin-account-card" key={s.id}>
     <div className="admin-account-main"><Users size={20}/><div><b>{s.full_name}</b><span>{s.email}</span><small>WhatsApp para contato: {s.phone_e164}</small></div></div>
-    <div className="admin-account-meta"><b>{s.training_level||"Iniciante"}</b><small>{s.training_place||"Casa"} · {s.training_days||3} dias/semana</small><small>Treino atual: {s.current_workout||"Modelo de exemplo"}</small></div>
+    <div className="admin-account-meta"><b>{s.training_level||"Iniciante"}</b><small>{s.training_place||"Casa"} · {s.training_days||3} dias disponíveis/semana</small><small>Treino atual: {s.current_workout||"Modelo de exemplo"}</small></div>
     <label className="student-select"><input type="checkbox" checked={selectedStudents.includes(s.id)} onChange={()=>toggleStudent(s.id)}/> Selecionar aluno</label>
    </article>)}</div>}
    <p className="muted">O WhatsApp é apenas um contato cadastral. O aplicativo não envia mensagens nem usa telefone para autenticação.</p>

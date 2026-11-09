@@ -492,7 +492,7 @@ const simpleNames: Record<string,string> = {
 "Puxada alta na polia ou faixa":"Puxar peso ao peito",
 "Face pull com faixa ou polia":"Puxar faixa ao rosto",
 "Step-up em degrau baixo":"Subir em degrau baixo",
-"Agachamento sumô":"Agachar pernas abertas",
+"Agachamento sumô":"Agachar com pernas abertas",
 "Ponte de glúteos com marcha":"Subir quadril alternando pernas",
 "Prancha lateral com joelhos apoiados":"Sustentar corpo de lado",
 "Polichinelo sem salto (step jack)":"Abrir pernas sem salto",

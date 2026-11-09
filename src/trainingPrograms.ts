@@ -121,8 +121,10 @@ export function getExampleProgram(level:string):ExampleProgram {
 
 export function getWeekPrescription(week:number, baseSets:number, baseReps:string, baseRest:number) {
   const w=Math.min(7,Math.max(1,week));
-  if(w<=2) return {sets:Math.min(2,baseSets),reps:"10–12",restSeconds:Math.max(90,baseRest),tempo:"2 segundos para descer e 2 para subir",phase:"Adaptação técnica",effort:"Leve a moderado; termine com 3 a 4 repetições possíveis."};
-  if(w<=5) return {sets:Math.min(3,baseSets+1),reps:baseReps,restSeconds:baseRest,tempo:"2 segundos para descer e 2 para subir",phase:"Progressão gradual",effort:"Moderado; termine com 2 a 3 repetições possíveis."};
-  if(w===6) return {sets:Math.min(3,baseSets+1),reps:"8–10",restSeconds:Math.max(90,baseRest),tempo:"2 segundos para descer e 2 para subir",phase:"Consolidação",effort:"Moderado; sem chegar à falha."};
-  return {sets:Math.max(1,Math.min(2,baseSets)),reps:"10–12",restSeconds:Math.max(90,baseRest),tempo:"2 segundos para descer e 2 para subir",phase:"Recuperação e reavaliação",effort:"Reduza a carga em cerca de 10 a 20% e priorize a técnica."};
+  const timed=/segundo|minuto|tempo/i.test(baseReps);
+  const tempo=timed?"Manter a posição com respiração contínua":"2 segundos para descer e 2 para subir";
+  if(w<=2) return {sets:Math.min(2,baseSets),reps:timed?"10–20 segundos":"10–12",restSeconds:Math.max(90,baseRest),tempo,phase:"Adaptação técnica",effort:timed?"Leve; pare antes de perder a posição e continue respirando.":"Leve a moderado; termine com 3 a 4 repetições possíveis."};
+  if(w<=5) return {sets:Math.min(3,baseSets+1),reps:baseReps,restSeconds:Math.max(90,baseRest),tempo,phase:"Progressão gradual",effort:timed?"Moderado; aumente o tempo somente mantendo a posição e a respiração.":"Moderado; termine com 2 a 3 repetições possíveis."};
+  if(w===6) return {sets:Math.min(3,baseSets+1),reps:timed?"20–30 segundos":"8–10",restSeconds:Math.max(90,baseRest),tempo,phase:"Consolidação",effort:timed?"Moderado; sem perder o alinhamento.":"Moderado; sem chegar à falha."};
+  return {sets:Math.max(1,Math.min(2,baseSets)),reps:timed?"10–20 segundos":"10–12",restSeconds:Math.max(90,baseRest),tempo,phase:"Recuperação e reavaliação",effort:"Reduza a carga em cerca de 10 a 20% e priorize a técnica."};
 }

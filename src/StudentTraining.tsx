@@ -110,21 +110,23 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
           const knee=("knee_adaptation" in e?e.knee_adaptation:e.knee);
           const back=("back_adaptation" in e?e.back_adaptation:e.back);
           const rest=("rest_seconds" in e?e.rest_seconds:e.restSeconds);
+          const muscle=("muscle_group" in e?e.muscle_group:e.muscle);
+          const observation=("observation" in e?e.observation:"");
           const video=("video_url" in e?e.video_url:"")||youtube({name,technicalName});
           const photoUrl=("photo_url" in e?e.photo_url:"")||photo;
           const reps=("reps" in e?e.reps:"8–12");
           const sets=("sets" in e?e.sets:2);
           const tempo=("tempo" in e?e.tempo:"Movimento controlado");
           return <article className="exercise student-exercise" key={key}>
-            <img src={photoUrl} alt={"Foto ilustrativa do exercício "+name} loading="lazy"/>
+            <div><img src={photoUrl} alt={"Foto ilustrativa do exercício "+name} loading="lazy"/><small className="muted">Foto ilustrativa</small></div>
             <div className="exercise-copy">
               <b>{name}</b><small className="technical-exercise-name">Nome técnico: {technicalName}</small>
               <p><b>{prescription.phase} · Semana {week}</b></p>
               <p>{prescription.sets||sets} séries · {prescription.reps||reps} repetições · descanso {prescription.restSeconds||rest} segundos</p>
-              <p><b>Ritmo:</b> {prescription.tempo||tempo}</p>
+              <p><b>Ritmo:</b> {prescription.tempo||tempo}</p><p><b>O que fazer:</b> {place==="Academia"?gym:home}</p><p><b>Onde sente o esforço:</b> {muscle}</p>
               <p><b>Na academia:</b> {gym}</p><p><b>Em casa:</b> {home}</p>
               <p><b>Adaptação para joelho:</b> {knee}</p><p><b>Adaptação para lombar:</b> {back}</p>
-              <p className="muted">{prescription.effort}</p>
+              <p className="muted">{prescription.effort}</p>{observation&&<p><b>Observação do professor:</b> {observation}</p>}
               <div className="library-actions">
                 <a href={video} target="_blank" rel="noreferrer"><PlayCircle size={16}/> Ver vídeo no YouTube</a>
                 <a href={photoSearch({name,technicalName})} target="_blank" rel="noreferrer"><ImageIcon size={16}/> Ver fotos deste movimento</a>
@@ -135,6 +137,7 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
         })}
       </article>;
     })}
+    <div className="safety-alert"><b>Como progredir com segurança</b><p>Quando completar o limite superior das repetições em duas sessões seguidas, sem perder a técnica e mantendo 2 a 3 repetições possíveis, o professor pode aumentar a carga em pequenos passos. Não aumente carga e séries ao mesmo tempo.</p><p>Semana 7: reduza a carga em cerca de 10 a 20% e reavalie técnica, conforto e recuperação antes do próximo ciclo.</p></div>
     <div className="safety-alert"><b><AlertTriangle size={16}/> Aviso importante</b><p>Este plano é educativo e não substitui avaliação de médico, fisioterapeuta ou profissional de Educação Física. Antes de começar, procure orientação profissional, principalmente se estiver acima do peso, for iniciante ou tiver dor, lesão ou condição de saúde. Não force movimentos dolorosos. Se houver dor no peito, tontura, falta de ar intensa ou dor forte/piorando, pare e procure atendimento.</p></div>
   </section>;
 }

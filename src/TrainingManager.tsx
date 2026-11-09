@@ -83,7 +83,7 @@ export default function TrainingManager({currentUserId}:{currentUserId:string}) 
   setNotice("Modelo copiado. Ajuste os exercícios e salve com um novo nome.");
  };
  const addCatalogExercise=(name:string)=>{
-  const e=catalog.find(x=>x.name===name);
+  const e=catalog.find(x=>x.technicalName===name);
   if(!e)return;
   const day=items[items.length-1]?.day_label??"Dia 1";
   setItems(old=>[...old,blankExercise(e,day,old.filter(x=>x.day_label===day).length+1)]);

@@ -3,7 +3,7 @@ import { AlertTriangle, CheckCircle2, Dumbbell, Image as ImageIcon, PlayCircle }
 import { supabase } from "./lib/supabase";
 import { getExampleProgram, getWeekPrescription, type ProgramExercise, type ProgramDay } from "./trainingPrograms";
 
-type SavedExercise = ProgramExercise & { id?: string; day_label: string; position: number };
+type SavedExercise = { id:string; day_label:string; position:number; exercise_name:string; technical_name:string; muscle_group:string; sets:number; reps:string; rest_seconds:number; tempo:string; gym_version:string; home_version:string; knee_adaptation:string; back_adaptation:string; observation:string; photo_url:string; video_url:string };
 type Assignment = { id: string; plan_id: string; seen_at: string | null; assigned_at: string };
 type Completion = { id: string; exercise_id: string; session_date: string; completed_at: string };
 
@@ -100,23 +100,23 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
       return <article className="workout-day" key={day.label}>
         <h3>{day.label}</h3><p className="muted">{day.focus}</p>
         {items.map((e,i)=>{
-          const prescription=getWeekPrescription(week,e.sets,("reps" in e?e.reps:"8–12"),("rest_seconds" in e?e.rest_seconds:e.restSeconds));
+          const baseRest=("rest_seconds" in e?e.rest_seconds:e.restSeconds);\n          const prescription=getWeekPrescription(week,e.sets,e.reps,baseRest);
           const key=("id" in e&&e.id)?e.id!:day.label+"-"+i;
           const done=activePlan?completions.some(c=>c.exercise_id===key):demoDone.includes(key);
-          const name=e.name;
+          const name=("exercise_name" in e?e.exercise_name:e.name);
           const technicalName=("technical_name" in e?e.technical_name:e.technicalName);
           const gym=("gym_version" in e?e.gym_version:e.gym);
           const home=("home_version" in e?e.home_version:e.home);
           const knee=("knee_adaptation" in e?e.knee_adaptation:e.knee);
           const back=("back_adaptation" in e?e.back_adaptation:e.back);
-          const rest=("rest_seconds" in e?e.rest_seconds:e.restSeconds);
+          const rest=baseRest;
           const muscle=("muscle_group" in e?e.muscle_group:e.muscle);
           const observation=("observation" in e?e.observation:"");
           const video=("video_url" in e?e.video_url:"")||youtube({name,technicalName});
           const photoUrl=("photo_url" in e?e.photo_url:"")||photo;
-          const reps=("reps" in e?e.reps:"8–12");
-          const sets=("sets" in e?e.sets:2);
-          const tempo=("tempo" in e?e.tempo:"Movimento controlado");
+          const reps=e.reps;
+          const sets=e.sets;
+          const tempo=e.tempo;
           return <article className="exercise student-exercise" key={key}>
             <div><img src={photoUrl} alt={"Foto ilustrativa do exercício "+name} loading="lazy"/><small className="muted">Foto ilustrativa</small></div>
             <div className="exercise-copy">

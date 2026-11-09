@@ -213,11 +213,9 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    // A prioridade escolhida nunca é retirada pela rotação: primeiro entram os exercícios do foco,
    // depois os complementares. A variação acontece dentro de cada grupo, sem descaracterizar o pedido.
    const priority=glutePreferred.length?glutePreferred:preferred;
-   const secondary=unique.filter(e=>!priority.includes(e));
    const rotate=(items:Exercise[],offset:number)=>items.length?[...items.slice(offset%items.length),...items.slice(0,offset%items.length)]:[];
-   const priorityRotated=rotate(priority,index+variation);
-   const secondaryRotated=rotate(secondary,index*2+variation);
-   const ordered=[...priorityRotated,...secondaryRotated];
+   // Não completar com exercícios de grupos não selecionados: todos os itens devem respeitar o foco marcado.
+   const ordered=rotate(priority,index+variation);
    const limit=Number(duration)>=60?10:Number(duration)>=50?8:6;
    const targetCount=Math.min(ordered.length,limit);
    const selected=ordered.slice(0,targetCount);

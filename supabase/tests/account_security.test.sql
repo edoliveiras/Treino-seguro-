@@ -303,8 +303,8 @@ begin
   end if;
   update public.workout_assignments set seen_at=now()
   where id='30000000-0000-4000-8000-000000000001';
-  insert into public.workout_completions(assignment_id,exercise_id,student_id)
-  values ('30000000-0000-4000-8000-000000000001','20000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000003');
+  insert into public.workout_completions(assignment_id,exercise_id,student_id,exercise_name)
+  values ('30000000-0000-4000-8000-000000000001','20000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000003','Sentar e levantar');
   begin
     insert into public.workout_assignments(plan_id,student_id,assigned_by)
     values ('10000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000004','00000000-0000-4000-8000-000000000003');
@@ -313,6 +313,33 @@ begin
   if not v_denied then raise exception 'student_created_assignment'; end if;
 end;
 $training_student_access$;
+reset role;
+
+set role authenticated;
+set request.jwt.claim.role = 'authenticated';
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
+select public.admin_save_workout_plan(
+ '10000000-0000-4000-8000-000000000001',
+ 'Modelo de teste atualizado','Iniciante','Corpo inteiro','Versão revisada',false,
+ '[{"day_label":"Corpo inteiro","position":1,"exercise_name":"Agachar com apoio","technical_name":"Agachamento com apoio","muscle_group":"Pernas","sets":2,"reps":"8–12","rest_seconds":90,"tempo":"2 segundos para descer e 2 para subir","gym_version":"Agachar com apoio fixo","home_version":"Sentar e levantar de cadeira","knee_adaptation":"Amplitude confortável","back_adaptation":"Tronco estável","observation":"Sem dor","photo_url":"","video_url":""}]'::jsonb
+);
+reset role;
+
+set role authenticated;
+set request.jwt.claim.role = 'authenticated';
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000003';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000003","role":"authenticated","app_metadata":{"role":"user"}}';
+do $training_history_preserved$
+begin
+  if (select count(*) from public.workout_plan_exercises where exercise_name='Agachar com apoio' and is_active) <> 1 then
+    raise exception 'updated_plan_did_not_show_new_active_exercise';
+  end if;
+  if (select count(*) from public.workout_completions where exercise_name='Sentar e levantar') <> 1 then
+    raise exception 'editing_plan_deleted_completed_exercise_history';
+  end if;
+end;
+$training_history_preserved$;
 reset role;
 
 set role authenticated;

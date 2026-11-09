@@ -90,7 +90,7 @@ A biblioteca contém 443 ocorrências de exercícios e variações, 398 nomes t�
 | desenvolvimento militar com barra | Empurrar barra para cima |
 | desenvolvimento na máquina | Empurrar alças para cima |
 | desenvolvimento com kettlebell | Empurrar peso para cima |
-| elevação lateral | Levantar braços para os |
+| elevação lateral | Levantar braços de lado |
 | elevação lateral na polia | Levantar braços com cabo |
 | elevação lateral sentado | Levantar braços sentado |
 | elevação frontal | Levantar braços à frente |
@@ -105,7 +105,7 @@ A biblioteca contém 443 ocorrências de exercícios e variações, 398 nomes t�
 | flexão pike elevada | Empurrar pés altos |
 | flexão em Y | Empurrar formando um Y |
 | parada de mão na parede | Sustentar corpo invertido |
-| handstand push-up na parede | Empurrar de cabeça para |
+| handstand push-up na parede | Empurrar corpo invertido |
 | círculos de braço | Girar braços em círculos |
 | caminhada de mãos | Andar apoiado nas mãos |
 | prancha com toque no ombro | Tocar ombros mantendo prancha |
@@ -183,7 +183,7 @@ A biblioteca contém 443 ocorrências de exercícios e variações, 398 nomes t�
 
 | Nome técnico antigo | Nome simples exibido |
 |---|---|
-| agachamento livre | Agachar sem peso |
+| agachamento livre | Agachar peso nas costas |
 | agachamento no Smith | Agachar guiado na máquina |
 | agachamento frontal | Agachar peso à frente |
 | agachamento goblet com halter ou kettlebell | Agachar segurando peso |
@@ -225,9 +225,9 @@ A biblioteca contém 443 ocorrências de exercícios e variações, 398 nomes t�
 | cadeira flexora | Dobrar pernas sentado |
 | flexora em pé | Dobrar perna em pé |
 | flexora unilateral | Dobrar uma perna |
-| stiff | Descer peso com pernas |
+| stiff | Descer peso pernas retas |
 | stiff unilateral com halter | Descer peso uma perna |
-| levantamento terra romeno | Descer peso pernas retas |
+| levantamento terra romeno | Descer peso quadril atrás |
 | levantamento terra sumô | Levantar peso pernas afastadas |
 | good morning | Inclinar tronco com peso |
 | hiperextensão | Elevar tronco deitado |
@@ -273,7 +273,7 @@ A biblioteca contém 443 ocorrências de exercícios e variações, 398 nomes t�
 
 | Nome técnico antigo | Nome simples exibido |
 |---|---|
-| panturrilha em pé na máquina | Erguer calcanhares máquina |
+| panturrilha em pé na máquina | Erguer calcanhares em pé |
 | panturrilha sentado | Erguer calcanhares sentado |
 | panturrilha no leg press | Erguer calcanhares plataforma |
 | panturrilha no Smith | Erguer calcanhares barra |
@@ -295,7 +295,7 @@ A biblioteca contém 443 ocorrências de exercícios e variações, 398 nomes t�
 | cadeira abdutora | Abrir pernas sentado |
 | adução deitado de lado | Fechar perna deitado |
 | adução com elástico | Fechar pernas com faixa |
-| elevação lateral de perna | Levantar perna para o |
+| elevação lateral de perna | Levantar perna de lado |
 | agachamento lateral (cossaco) | Agachar de lado |
 
 ## Abdômen
@@ -321,7 +321,7 @@ A biblioteca contém 443 ocorrências de exercícios e variações, 398 nomes t�
 | tesoura | Cruzar pernas no ar |
 | flutter kick | Bater pernas alternadas |
 | toe touch | Tocar pés com mãos |
-| oblíquo crunch | Encolher tronco para o |
+| oblíquo crunch | Encolher tronco de lado |
 | russian twist | Girar tronco sentado |
 | mountain climber | Levar joelhos ao peito |
 | dead bug | Estender braço deitado |
@@ -511,7 +511,7 @@ A biblioteca contém 443 ocorrências de exercícios e variações, 398 nomes t�
 
 | Nome técnico antigo | Nome simples exibido |
 |---|---|
-| gato-camelo | Arredondar e estender as |
+| gato-camelo | Arredondar costas e estender |
 | alongamentos de isquiotibiais e piriforme | Alongar coxa e glúteos |
 
 ## Gestantes (com liberação médica)
@@ -520,7 +520,6 @@ A biblioteca contém 443 ocorrências de exercícios e variações, 398 nomes t�
 |---|---|
 | agachamento com apoio | Agachar segurando apoio |
 | respiração | Respirar devagar e profundamente |
-
 
 ## Exercícios da tela inicial para baixo impacto
 

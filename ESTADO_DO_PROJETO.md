@@ -30,9 +30,9 @@
 - O painel não deve exibir avaliações, refeições, peso, medidas ou outros dados de saúde.
 
 ## 5. Testes e validação
-- O CI executa testes de interface e segurança do aplicativo, compilação, verificação de tipos da função administrativa e testes SQL das migrações em PostgreSQL temporário.
-- Os testes SQL usam stubs mínimos de Supabase Auth. São testes automatizados simulados; não comprovam que as migrações estejam aplicadas no Supabase real.
-- A última execução verificada falhou em dois testes de interface que ainda esperavam textos e caminhos antigos, após mudanças recentes na biblioteca e no plano de treino. Os testes foram atualizados para refletir o comportamento atual; a nova execução precisa terminar antes de declarar aprovação.
+- A execução mais recente do CI concluiu com sucesso: testes de interface e segurança do aplicativo, compilação, verificação de tipos da função administrativa e testes SQL das migrações passaram.
+- Os testes SQL usam stubs mínimos de Supabase Auth em PostgreSQL temporário. São testes automatizados simulados; não comprovam que as migrações estejam aplicadas no Supabase real.
+- Os testes de interface foram atualizados para refletir o filtro atual da biblioteca e o caminho correto para marcar exercícios no plano.
 - Ainda faltam testes reais de cadastro, confirmação de e-mail, recuperação, isolamento entre duas contas, consentimento, revogação, exclusão e ações administrativas no Supabase de homologação.
 
 ## 6. Pendências antes de uma versão real e segura

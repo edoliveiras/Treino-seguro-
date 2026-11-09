@@ -509,7 +509,7 @@ const simpleNames: Record<string,string> = {
 "Hip thrust com barra":"Subir quadril com barra",
 "Agachamento búlgaro":"Agachar com um pé atrás",
 "Coice de glúteo na polia":"Levar perna para trás",
-"Leg press":"Empurrar plataforma",
+"Leg press":"Empurrar plataforma",\n"Levantamento terra com barra":"Levantar peso do chão",\n"Flexão arqueira":"Empurrar alternando braços",
 };
 export const simpleNameLookup = Object.fromEntries(Object.entries(simpleNames).map(([key,value])=>[key.toLowerCase(),value]));
 const shortNameOverrides: Record<string,string> = {

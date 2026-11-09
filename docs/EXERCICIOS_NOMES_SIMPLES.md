@@ -1,6 +1,6 @@
 # Catálogo de exercícios — nomes simples
 
-A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes técnicos distintos e 439 nomes populares exclusivos por segmento. O mesmo exercício repetido no mesmo segmento mantém o mesmo nome. O nome técnico fica disponível no aplicativo em texto menor; as buscas aceitam os dois nomes.
+A biblioteca contém 443 ocorrências de exercícios e variações, 398 nomes técnicos distintos e 399 nomes simples exclusivos (a expressão “coice na polia” recebe dois nomes porque descreve movimentos diferentes para braço e glúteos). O mesmo exercício repetido em outras modalidades mantém o mesmo nome. O nome técnico fica disponível no aplicativo em texto menor; a busca aceita o nome simples e o técnico.
 
 ## Peito
 
@@ -25,7 +25,7 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | flexão com joelhos apoiados | Empurrar o chão ajoelhado |
 | flexão inclinada (mãos no sofá) | Empurrar apoio elevado |
 | flexão declinada | Empurrar com pés elevados |
-| flexão com pés elevados | Empurrar pés opção 2 |
+| flexão com pés elevados | Empurrar com pés altos |
 | flexão diamante | Empurrar com mãos juntas |
 | flexão aberta | Empurrar com mãos afastadas |
 | flexão arqueiro | Empurrar alternando os braços |
@@ -64,7 +64,7 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | barra fixa neutra | Subir barra mãos paralelas |
 | barra fixa aberta | Subir barra mãos afastadas |
 | barra fixa fechada | Subir barra mãos juntas |
-| chin-up | Subir barra opção 2 |
+| chin-up | Subir barra queixo alto |
 | remada invertida na barra baixa | Puxar corpo barra baixa |
 | remada australiana | Puxar corpo inclinado |
 | remada australiana com pés elevados | Puxar corpo pés elevados |
@@ -95,14 +95,14 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | elevação lateral sentado | Levantar braços sentado |
 | elevação frontal | Levantar braços à frente |
 | crucifixo invertido | Abrir braços para trás |
-| crucifixo invertido na máquina | Abrir braços opção 2 |
+| crucifixo invertido na máquina | Abrir braços sentado |
 | face pull | Puxar corda ao rosto |
-| remada alta | Puxar peso opção 2 |
+| remada alta | Puxar peso alto |
 | elevação em Y, T e W | Levantar braços em posições |
 | rotação externa com elástico | Girar braço para fora |
 | rotação interna com elástico | Girar braço para dentro |
-| flexão pike | Empurrar quadril opção 2 |
-| flexão pike elevada | Empurrar pés opção 3 |
+| flexão pike | Empurrar quadril alto |
+| flexão pike elevada | Empurrar pés altos |
 | flexão em Y | Empurrar formando um Y |
 | parada de mão na parede | Sustentar corpo invertido |
 | handstand push-up na parede | Empurrar de cabeça para |
@@ -115,7 +115,7 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | Nome técnico antigo | Nome simples exibido |
 |---|---|
 | rosca direta com barra | Dobrar braços com barra |
-| rosca com barra W | Dobrar braços opção 2 |
+| rosca com barra W | Dobrar braços curva |
 | rosca alternada | Dobrar braços alternando |
 | rosca martelo | Dobrar braços mãos paralelas |
 | rosca martelo na corda | Dobrar braços puxando corda |
@@ -128,8 +128,7 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | rosca na polia baixa | Dobrar braços cabo baixo |
 | rosca 21 | Dobrar braços em etapas |
 | rosca com kettlebell | Dobrar braços com peso |
-| barra fixa supinada | Subir barra opção 3 |
-| chin-up com pegada fechada | Subir barra opção 4 |
+| chin-up com pegada fechada | Subir barra pegada fechada |
 | rosca invertida na barra baixa | Dobrar braços sob barra |
 | rosca em argolas ou TRX | Dobrar braços em alças |
 | rosca com elástico | Dobrar braços com faixa |
@@ -145,7 +144,7 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | tríceps unilateral na polia | Esticar um braço |
 | tríceps testa | Esticar braços à testa |
 | tríceps francês | Esticar braços para cima |
-| extensão overhead com halter | Esticar braços opção 2 |
+| extensão overhead com halter | Esticar braços acima |
 | coice com halter | Esticar braço para trás |
 | coice na polia | Esticar braço com cabo |
 | tríceps na máquina | Esticar braços na máquina |
@@ -154,9 +153,7 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | tríceps com elástico | Esticar braços com faixa |
 | mergulho no banco | Descer no banco |
 | mergulho entre bancos | Descer entre dois bancos |
-| mergulho em paralelas | Descer nos opção 2 |
-| flexão fechada | Empurrar mãos opção 2 |
-| flexão diamante | Empurrar mãos opção 3 |
+| flexão fechada | Empurrar mãos juntas |
 | flexão com toalha | Empurrar deslizando as mãos |
 | extensão de tríceps em argolas ou TRX | Esticar braços em alças |
 | extensão de tríceps no chão | Esticar braços no chão |
@@ -170,7 +167,6 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | rosca punho inversa | Levantar mãos com punhos |
 | rosca inversa | Dobrar braços mãos baixas |
 | caminhada do fazendeiro | Caminhar carregando pesos |
-| suspensão na barra | Ficar pendurado opção 2 |
 | flexão sobre os dedos (progressão) | Empurrar apoiado nos dedos |
 | pegada isométrica na barra | Segurar firme na barra |
 
@@ -180,7 +176,6 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 |---|---|
 | encolhimento com halteres | Elevar ombros com pesos |
 | encolhimento com barra | Elevar ombros com barra |
-| remada alta | Puxar peso opção 3 |
 | encolhimento escapular na barra | Elevar ombros pendurado |
 | flexão escapular | Mover ombros sem dobrar |
 
@@ -193,7 +188,7 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | agachamento frontal | Agachar peso à frente |
 | agachamento goblet com halter ou kettlebell | Agachar segurando peso |
 | agachamento com pausa | Agachar e fazer pausa |
-| agachamento Zercher | Agachar segurando opção 2 |
+| agachamento Zercher | Agachar peso abraçado |
 | agachamento sissy | Agachar inclinando o corpo |
 | leg press 45 | Empurrar plataforma |
 | leg press horizontal | Empurrar plataforma sentado |
@@ -205,10 +200,10 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | afundo com halteres | Dar passo com pesos |
 | afundo caminhando | Dar passos e agachar |
 | afundo lateral | Agachar para o lado |
-| passada | Dar passo opção 2 |
+| passada | Avançar e agachar |
 | agachamento sumô | Agachar com pernas abertas |
 | sentar e levantar da cadeira | Sentar e levantar |
-| avanço andando | Dar passos opção 2 |
+| avanço andando | Avançar caminhando |
 | agachamento com salto | Agachar e saltar |
 | agachamento cossaco | Agachar para um lado |
 | agachamento com elástico | Agachar com faixa elástica |
@@ -255,24 +250,23 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | hip thrust na máquina | Subir quadril na máquina |
 | abdução na máquina | Abrir pernas na máquina |
 | coice na polia | Levar perna para trás |
-| glute kickback na máquina | Levar perna opção 2 |
+| glute kickback na máquina | Levar perna na máquina |
 | abdução com elástico em pé | Abrir pernas com faixa |
-| passada | Dar passo opção 3 |
 | step-up alto | Subir em degrau alto |
 | agachamento sumô com kettlebell | Agachar pernas abertas |
 | ponte de glúteo | Subir quadril deitado |
 | elevação pélvica no chão | Subir quadril no chão |
-| coice no quatro apoios | Levar perna opção 3 |
+| coice no quatro apoios | Chutar para trás apoiado |
 | donkey kick | Levar perna dobrada atrás |
 | hidrante (fire hydrant) | Abrir perna de lado |
 | frog pump | Subir quadril pés juntos |
 | abdução deitado | Abrir perna deitado |
 | clamshell | Abrir joelho de lado |
-| ponte unilateral | Subir quadril opção 2 |
+| ponte unilateral | Subir quadril num pé |
 | afundo reverso | Dar passo para trás |
 | monster walk com mini band | Andar lateral com faixa |
 | passada lateral com mini band | Dar passos laterais faixa |
-| ponte parada | Sustentar quadril opção 2 |
+| ponte parada | Sustentar quadril alto |
 | prancha lateral com elevação de perna | Sustentar corpo e levantar |
 
 ## Panturrilha e tibial
@@ -286,7 +280,7 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | donkey calf | Erguer calcanhares inclinado |
 | panturrilha unilateral com halter | Erguer calcanhar um pé |
 | elevação de calcanhar no degrau | Erguer calcanhares degrau |
-| panturrilha unilateral | Erguer calcanhar opção 2 |
+| panturrilha unilateral | Erguer um calcanhar |
 | saltos de panturrilha | Saltar na ponta |
 | pular corda | Pular corda |
 | elevação de ponta de pé para o tibial anterior | Levantar pontas dos pés |
@@ -298,11 +292,11 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | Nome técnico antigo | Nome simples exibido |
 |---|---|
 | cadeira adutora | Fechar pernas na máquina |
-| cadeira abdutora | Abrir pernas opção 2 |
+| cadeira abdutora | Abrir pernas sentado |
 | adução deitado de lado | Fechar perna deitado |
 | adução com elástico | Fechar pernas com faixa |
 | elevação lateral de perna | Levantar perna para o |
-| agachamento lateral (cossaco) | Agachar um opção 2 |
+| agachamento lateral (cossaco) | Agachar de lado |
 
 ## Abdômen
 
@@ -323,20 +317,20 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | sit-up | Sentar e deitar |
 | abdominal infra | Elevar pernas deitado |
 | bicicleta no ar | Pedalar deitado |
-| elevação de pernas deitado | Elevar pernas opção 2 |
+| elevação de pernas deitado | Elevar pernas no chão |
 | tesoura | Cruzar pernas no ar |
 | flutter kick | Bater pernas alternadas |
 | toe touch | Tocar pés com mãos |
 | oblíquo crunch | Encolher tronco para o |
 | russian twist | Girar tronco sentado |
 | mountain climber | Levar joelhos ao peito |
-| dead bug | Estender braço e perna |
+| dead bug | Estender braço deitado |
 | V-up | Juntar braços e pernas |
 | canivete | Juntar pernas e tronco |
 | elevação de pernas na barra | Elevar pernas pendurado |
 | L-sit (progressão) | Sustentar pernas elevadas |
 | dragon flag | Elevar corpo deitado |
-| prancha com elevação de perna | Sustentar corpo opção 2 |
+| prancha com elevação de perna | Sustentar corpo levantando perna |
 | prancha com deslocamento | Sustentar corpo e avançar |
 | plank to push-up | Alternar prancha e apoio |
 | rollout de joelhos | Deslizar roda ajoelhado |
@@ -345,8 +339,6 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | windshield wipers | Girar pernas alternando lados |
 | prancha | Sustentar corpo alinhado |
 | prancha lateral | Sustentar corpo de lado |
-| hollow hold | Segurar corpo opção 2 |
-| prancha com toque no ombro | Tocar ombros opção 2 |
 
 ## Lombar e core profundo
 
@@ -354,28 +346,24 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 |---|---|
 | extensão lombar no banco 45 graus | Elevar tronco no banco |
 | hiperextensão romana | Elevar tronco apoiado |
-| reverse hyperextension | Elevar pernas opção 3 |
-| good morning leve | Inclinar tronco opção 2 |
-| superman | Levantar braços opção 2 |
-| bird dog | Estender braço opção 2 |
-| ponte | Subir quadril opção 3 |
+| reverse hyperextension | Elevar pernas apoiado |
+| good morning leve | Inclinar tronco leve |
+| bird dog | Estender braço e perna |
+| ponte | Subir quadril |
 | extensão lombar no chão | Elevar peito deitado |
 | McGill curl-up | Elevar pouco o tronco |
 | gato-camelo (cat-camel) | Arredondar costas devagar |
-| prancha | Sustentar corpo opção 3 |
-| prancha lateral (série McGill) | Sustentar corpo opção 4 |
-| ponte isométrica | Sustentar quadril opção 3 |
+| prancha lateral (série McGill) | Sustentar de lado |
 
 ## Funcional, kettlebell e TRX
 
 | Nome técnico antigo | Nome simples exibido |
 |---|---|
 | kettlebell swing | Balançar peso entre pernas |
-| goblet squat | Agachar segurando opção 3 |
+| goblet squat | Agachar peso no peito |
 | Turkish get-up | Levantar com peso |
 | kettlebell clean | Levar peso ao ombro |
 | kettlebell snatch | Levar peso para cima |
-| caminhada do fazendeiro | Caminhar carregando opção 2 |
 | TRX remada | Puxar corpo nas alças |
 | TRX agachamento | Agachar segurando alças |
 | TRX peito | Empurrar corpo nas alças |
@@ -383,27 +371,22 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | slam ball | Arremessar bola no chão |
 | medicine ball throw | Arremessar bola à frente |
 | sled push | Empurrar trenó |
-| corda naval | Ondular cordas opção 2 |
+| corda naval | Ondular cordas |
 
 ## Calistenia avançada
 
 | Nome técnico antigo | Nome simples exibido |
 |---|---|
 | corvo (crow pose) | Equilibrar corpo nos braços |
-| parada de mão assistida | Sustentar corpo opção 5 |
-| parada de mão livre | Sustentar corpo opção 6 |
-| L-sit | Sustentar pernas opção 2 |
+| parada de mão assistida | Sustentar invertido apoiado |
+| parada de mão livre | Sustentar corpo sem apoio |
+| L-sit | Sustentar pernas suspensas |
 | tuck planche | Sustentar corpo encolhido |
-| front lever tuck | Sustentar corpo opção 7 |
-| human flag | Sustentar corpo opção 8 |
-| pistol squat | Agachar uma opção 2 |
-| shrimp squat | Agachar perna opção 2 |
-| archer pull-up | Subir alternando opção 2 |
-| typewriter pull-up | Subir barra opção 5 |
+| front lever tuck | Sustentar corpo horizontal |
+| human flag | Sustentar corpo lateral |
 | burpee | Agachar e levantar |
 | inchworm | Andar com as mãos |
 | crab walk | Andar apoiado de costas |
-| bear crawl | Andar apoiado opção 2 |
 
 ## Cardio e condicionamento
 
@@ -430,9 +413,6 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | polichinelo | Abrir e fechar braços |
 | pular corda em intervalos | Pular corda com pausas |
 | joelho alto parado | Elevar joelhos parado |
-| burpee | Agachar levantar opção 2 |
-| agachamento com salto | Agachar saltar opção 2 |
-| mountain climber | Levar joelhos opção 2 |
 | subir escada ou degrau | Subir escada ou degrau |
 | bike leve | Pedalar em ritmo leve |
 | bike intervalada | Alternar ritmos na bicicleta |
@@ -446,11 +426,10 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 |---|---|
 | equilíbrio em um pé | Equilibrar-se em um pé |
 | equilíbrio em um pé de olhos fechados | Equilibrar-se de olhos fechados |
-| caminhada no calcanhar | Caminhar sobre opção 2 |
 | caminhada na ponta dos pés | Caminhar na ponta |
 | caminhada calcanhar-ponta em linha reta | Caminhar em linha reta |
 | caminhada em linha com olhos fechados | Caminhar sem olhar |
-| agachamento unilateral com apoio | Agachar uma opção 3 |
+| agachamento unilateral com apoio | Agachar com apoio |
 | apoio unipodal sobre almofada | Equilibrar-se em almofada |
 | BOSU ou disco de equilíbrio | Equilibrar-se em base instável |
 | agachamento no BOSU | Agachar em base instável |
@@ -472,7 +451,7 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | alongamento de glúteo (figura 4) | Alongar glúteos deitado |
 | alongamento de adutores (borboleta) | Alongar parte interna |
 | alongamento de flexor do quadril (avanço baixo) | Alongar frente do quadril |
-| alongamento de iliopsoas | Alongar frente opção 2 |
+| alongamento de iliopsoas | Alongar quadril ajoelhado |
 | alongamento de piriforme | Alongar fundo dos glúteos |
 | alongamento de quadrado lombar | Alongar lateral da cintura |
 | alongamento de peitoral na porta | Alongar peito na porta |
@@ -503,61 +482,42 @@ A biblioteca contém 443 ocorrências distribuídas por grupos, com 398 nomes t�
 | remada com elástico | Puxar faixa ao corpo |
 | supino com elástico | Empurrar faixa à frente |
 | desenvolvimento com elástico | Empurrar faixa para cima |
-| rosca com elástico | Dobrar braços opção 3 |
-| tríceps com elástico | Esticar braços opção 3 |
-| agachamento com elástico | Agachar faixa opção 2 |
-| abdução com elástico | Abrir pernas opção 3 |
-| monster walk | Andar lateral opção 2 |
-| band pull-apart | Abrir faixa opção 2 |
-| rotação externa de ombro com elástico | Girar braço opção 2 |
+| abdução com elástico | Abrir pernas elástico |
+| monster walk | Caminhar lateral faixa |
+| band pull-apart | Esticar faixa lateral |
+| rotação externa de ombro com elástico | Girar braço com faixa |
 
 ## Idosos e iniciantes
 
 | Nome técnico antigo | Nome simples exibido |
 |---|---|
-| sentar e levantar da cadeira | Sentar levantar opção 2 |
 | flexão na parede | Empurrar a parede |
-| remada com elástico | Puxar faixa opção 2 |
 | elevação de calcanhar | Erguer calcanhares |
 | equilíbrio em um pé com apoio | Equilibrar-se com apoio |
 | caminhada | Caminhar em ritmo confortável |
-| ponte | Subir quadril opção 4 |
 | alongamentos suaves | Alongar o corpo suavemente |
 
 ## Reabilitação de joelho (baixo impacto)
 
 | Nome técnico antigo | Nome simples exibido |
 |---|---|
-| ponte | Subir quadril opção 5 |
 | elevação de perna reta | Levantar perna esticada |
 | agachamento parcial na parede | Agachar pouco na parede |
 | step-up baixo | Subir em degrau baixo |
 | bicicleta ergométrica leve | Pedalar bicicleta devagar |
-| abdução com elástico | Abrir pernas opção 4 |
-| panturrilha | Erguer calcanhares opção 2 |
-| hidroginástica | Exercitar dentro opção 2 |
+| panturrilha | Ficar na ponta |
 
 ## Reabilitação de lombar (baixo impacto)
 
 | Nome técnico antigo | Nome simples exibido |
 |---|---|
-| bird dog | Estender braço opção 3 |
-| dead bug | Estender braço opção 4 |
-| ponte | Subir quadril opção 6 |
-| prancha lateral | Sustentar corpo opção 9 |
-| McGill curl-up | Elevar pouco opção 2 |
 | gato-camelo | Arredondar e estender as |
-| caminhada | Caminhar ritmo opção 2 |
 | alongamentos de isquiotibiais e piriforme | Alongar coxa e glúteos |
 
 ## Gestantes (com liberação médica)
 
 | Nome técnico antigo | Nome simples exibido |
 |---|---|
-| caminhada | Caminhar ritmo opção 3 |
 | agachamento com apoio | Agachar segurando apoio |
-| ponte | Subir quadril opção 7 |
-| remada com elástico | Puxar faixa opção 3 |
-| alongamentos suaves | Alongar corpo opção 2 |
 | respiração | Respirar devagar e profundamente |
 

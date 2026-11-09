@@ -18,7 +18,7 @@ describe("nomes simples da biblioteca de exercícios", () => {
     expect(getSimpleExerciseName("leg press 45", "Quadríceps")).toBe("Empurrar plataforma");
     expect(getSimpleExerciseName("agachamento sumô", "Quadríceps")).toBe("Agachar com pernas abertas");
     expect(getSimpleExerciseName("stiff", "Posterior de coxa")).toBe("Descer peso com pernas");
-    expect(getSimpleExerciseName("dead bug", "Abdômen")).toBe("Estender braço e perna");
+    expect(getSimpleExerciseName("dead bug", "Abdômen")).toBe("Estender braço deitado");
   });
 
   it("diferencia o coice para braço do coice para glúteos", () => {

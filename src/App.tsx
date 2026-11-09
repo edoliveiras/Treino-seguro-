@@ -89,7 +89,8 @@ export default function App({ userId, initialLevel = "Iniciante", initialPlace =
   </div>
  </section>
  <div className="home-intro"><div><span className="eyebrow">UM PLANO QUE COMEÇA POR VOCÊ</span><h2>Mais do que treinar.<br/><em>Aprender a cuidar de si.</em></h2></div><p>Não existe uma fórmula única. Aqui você encontra caminhos para desenvolver força, condicionamento e bem-estar com progressão gradual e atenção aos sinais do seu corpo.</p></div>
- {userId&&<StudentTraining userId={userId} level={level} place={place} days={days} compact onOpen={()=>setTab("Treino")}/> }\n <section className="home-feature-grid">
+ {userId&&<StudentTraining userId={userId} level={level} place={place} days={days} compact onOpen={()=>setTab("Treino")}/> }
+ <section className="home-feature-grid">
   <button className="home-feature feature-main" onClick={()=>setTab("Avaliação")}><span className="feature-icon"><ClipboardList/></span><span className="feature-tag">PRIMEIRO PASSO</span><b>Conheça seu ponto de partida</b><small>Uma avaliação inicial para considerar seus objetivos, rotina e cuidados importantes.</small><span className="feature-arrow">Fazer avaliação <span>→</span></span><span className="feature-watermark">01</span></button>
   <button className="home-feature" onClick={()=>setTab("Montar treino")}><span className="feature-icon"><Dumbbell/></span><span className="feature-tag">TREINO PERSONALIZÁVEL</span><b>Monte seu treino</b><small>Escolha foco, modalidade, nível e tempo disponível.</small><span className="feature-arrow">Montar agora <span>→</span></span></button>
   <button className="home-feature" onClick={()=>setTab("Evolução")}><span className="feature-icon"><Activity/></span><span className="feature-tag">NO SEU TEMPO</span><b>Acompanhe sua evolução</b><small>Observe hábitos, registros e conquistas além da balança.</small><span className="feature-arrow">Ver evolução <span>→</span></span></button>

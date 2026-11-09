@@ -22,6 +22,7 @@ export function exerciseEquipment(e: ExerciseLike): HomeEquipment[] {
 export function isSafeForRules(e: ExerciseLike, rules: WorkoutRules): boolean {
   const n = text(e);
   if (rules.place === "Casa") {
+    if (/mochila|remada na mesa|mesa|polia|cabo|m[aá]quina|barra fixa|step|degrau/i.test(n)) return false;
     if (!e.home) return false;
     const available = rules.equipment?.length ? rules.equipment : ["Peso do corpo"];
     if (!exerciseEquipment(e).every(x => available.includes(x))) return false;
@@ -30,6 +31,7 @@ export function isSafeForRules(e: ExerciseLike, rules: WorkoutRules): boolean {
   if (rules.pains?.includes("Joelho") && /agachamento fundo|agachamento livre|agachamento sum[oô]|afundo|avan[cç]o|passada|salto|jump|pistol|step-up|burpee|polichinelo|pular/i.test(n)) return false;
   if (rules.pains?.includes("Lombar") && /remada curvada|terra pesado|levantamento terra|stiff|good morning|hiperextens[aã]o/i.test(n)) return false;
   if (rules.overweight && rules.level === "Iniciante" && /salto|jump|burpee|polichinelo|pistol|afundo|avan[cç]o|mountain climber/i.test(n)) return false;
+  if (rules.overweight && /dead bug|bird dog|ponte de gl[uú]teos|prancha frontal|prancha lateral|crunch|abdominal no ch[aã]o/i.test(n)) return false;
   return true;
 }
 export function prescriptionForLevel(e: ExerciseLike, rules: WorkoutRules) {

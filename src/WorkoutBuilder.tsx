@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { getWorkoutCatalog, getSimpleExerciseName, getSimpleExerciseExplanation } from "./ExerciseLibrary";
 import { Clock3, Target, RotateCcw } from "lucide-react";
+import { isSafeForRules, prescriptionForLevel, requiredExerciseCount, safetyNotice } from "./workoutRules";
 
 type Focus = "Glúteos" | "Abdômen" | "Pernas" | "Braços" | "Bíceps" | "Tríceps" | "Costas" | "Peito" | "Ombros" | "Antebraço" | "Trapézio" | "Quadríceps" | "Posterior de coxa" | "Panturrilha" | "Adutores e abdutores" | "Lombar e core profundo" | "Corpo inteiro";
 type Style = "Musculação" | "Full body" | "Calistenia" | "Funcional" | "HIIT" | "Corrida";
@@ -160,6 +161,10 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
  const [place,setPlace]=useState(initialPlace==="Academia"?"Academia":"Casa");
  const [level,setLevel]=useState(initialLevel);
  const [duration,setDuration]=useState("50");
+ const [homeEquipment,setHomeEquipment]=useState<string[]>(["Peso do corpo"]);
+ const [painAreas,setPainAreas]=useState<string[]>([]);
+ const [overweight,setOverweight]=useState(initialBmi>=30);
+ const [trainingWeek,setTrainingWeek]=useState(1);
  const [runningDistance,setRunningDistance]=useState("5 km");
  const [aiRequest,setAiRequest]=useState("");
  const [generatedRequest,setGeneratedRequest]=useState("");
@@ -222,7 +227,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   return templates.map((groups,index)=>{
    
    const candidates=[...catalogExercises,...library].filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i).filter(e=>(place==="Casa"?e.home:e.gym)&&e.styles.includes(style)&&selectedFocus.some(g=>e.focus.includes(g))&&(level==="Iniciante" ? (e.level ? e.level==="Iniciante" : e.beginner) : level==="Intermediário" ? (e.level ? e.level==="Intermediário" : !e.beginner && !/pistol|muscle-up|front lever|handstand push|human flag|dragon flag|planche|box jump|snatch|typewriter|archer pull|flexão com palmas|nordic curl/i.test(e.technicalName)) : true));
-   const unique=candidates.filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i);
+   const unique=candidates.filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i).filter(e=>isSafeForRules(e,{level:level as "Iniciante"|"Intermediário"|"Avançado",place:place as "Casa"|"Academia",duration:Number(duration) as 40|50|60,equipment:homeEquipment as ("Peso do corpo"|"Elásticos"|"Halteres")[],pains:painAreas as ("Joelho"|"Lombar")[],overweight,week:trainingWeek,style}));
    const preferred=unique.filter(e=>selectedFocus.some(g=>e.focus.includes(g)));
    const gluteOrder=["Hip thrust com barra","Elevação pélvica","Agachamento búlgaro","Levantamento terra romeno com halteres","Agachamento goblet","Leg press","Coice de glúteo na polia","Abdução de quadril com faixa","Mesa flexora","Agachamento sumô","Afundo apoiado"];
    const glutePreferred=glutePriority&&focus.includes("Glúteos")&&style==="Musculação"?gluteOrder.map(n=>unique.find(e=>e.technicalName===n||e.name===n)).filter((e):e is Exercise=>Boolean(e)):[];
@@ -232,12 +237,13 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    const rotate=(items:Exercise[],offset:number)=>items.length?[...items.slice(offset%items.length),...items.slice(0,offset%items.length)]:[];
    // Não completar com exercícios de grupos não selecionados: todos os itens devem respeitar o foco marcado.
    const ordered=rotate(priority,index+variation);
-   const limit=Number(duration)>=60?10:Number(duration)>=50?8:6;
+   const limit=requiredExerciseCount(level as "Iniciante"|"Intermediário"|"Avançado",Number(duration) as 40|50|60);
    const targetCount=Math.min(ordered.length,limit);
    const selected=ordered.slice(0,targetCount);
-   return {title:`Treino ${String.fromCharCode(65+index)}`,groups,items:selected,pairs:buildConjugatePairs(selected,index+variation)};
+   const prescription=prescriptionForLevel(selected[0]??{name:"",focus:[],home:true,gym:true,beginner:true,styles:[]},{level:level as "Iniciante"|"Intermediário"|"Avançado",place:place as "Casa"|"Academia",duration:Number(duration) as 40|50|60,equipment:homeEquipment as ("Peso do corpo"|"Elásticos"|"Halteres")[],pains:painAreas as ("Joelho"|"Lombar")[],overweight,week:trainingWeek,style});
+   return {title:`Treino ${String.fromCharCode(65+index)}`,groups,items:selected,pairs:prescription.conjugates?buildConjugatePairs(selected,index+variation):selected.map(e=>[e])};
   });
- },[days,place,level,duration,focus,style,glutePriority,variation]);
+ },[days,place,level,duration,focus,style,glutePriority,variation,homeEquipment,painAreas,overweight,trainingWeek]);
  return <section className="panel workout-builder">
   <span className="eyebrow">ASSISTENTE DE TREINO · PLANO PERSONALIZÁVEL</span>
   <h2>Seu treino, do seu jeito</h2>
@@ -254,6 +260,10 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    {style==="Corrida"&&<label>Distância da prova<select value={runningDistance} onChange={e=>setRunningDistance(e.target.value)}><option>5 km</option><option>10 km</option><option>15 km</option></select></label>}
    <fieldset className="focus-multiselect"><legend>Quais grupos musculares deseja treinar?</legend><small>Marque quantos grupos quiser. Ex.: Costas + Bíceps + Tríceps.</small><div className="focus-checkbox-grid">{["Glúteos","Pernas","Quadríceps","Posterior de coxa","Panturrilha","Adutores e abdutores","Abdômen","Lombar e core profundo","Costas","Trapézio","Peito","Ombros","Bíceps","Tríceps","Antebraço","Braços","Corpo inteiro"].map(x=><label key={x}><input type="checkbox" checked={focus.includes(x as Focus)} onChange={e=>setFocus(current=>{if(x==="Corpo inteiro")return e.target.checked?["Corpo inteiro"]:[];const next=e.target.checked?[...current.filter(v=>v!=="Corpo inteiro"),x as Focus]:current.filter(v=>v!==x);return next.length?next:current;})}/>{x}</label>)}</div></fieldset>
    <label>Onde vou treinar<select value={place} onChange={e=>setPlace(e.target.value)}><option>Casa</option><option>Academia</option></select></label>
+   {place==="Casa"&&<fieldset><legend>O que você tem em casa?</legend>{["Peso do corpo","Elásticos","Halteres"].map(x=><label key={x}><input type="checkbox" checked={homeEquipment.includes(x)} onChange={e=>setHomeEquipment(v=>e.target.checked?[...v,x]:v.filter(z=>z!==x))}/>{x}</label>)}</fieldset>}
+   <fieldset><legend>Tem alguma dor ou limitação?</legend>{["Joelho","Lombar"].map(x=><label key={x}><input type="checkbox" checked={painAreas.includes(x)} onChange={e=>setPainAreas(v=>e.target.checked?[...v,x]:v.filter(z=>z!==x))}/>{x}</label>)}</fieldset>
+   <label><input type="checkbox" checked={overweight} onChange={e=>setOverweight(e.target.checked)}/> Preciso de adaptações para excesso de peso</label>
+   <label>Semana do plano<select value={trainingWeek} onChange={e=>setTrainingWeek(Number(e.target.value))}>{[1,2,3,4,5,6,7].map(x=><option key={x} value={x}>Semana {x}</option>)}</select></label>
    <label>Nível<select value={level} onChange={e=>setLevel(e.target.value)}>{["Iniciante","Intermediário","Avançado"].map(x=><option key={x}>{x}</option>)}</select></label>
    <label>Dias por semana<select value={days} onChange={e=>setDays(Number(e.target.value))}>{[2,3,4,5].map(x=><option key={x} value={x}>{x} dias</option>)}</select></label>
    <label>Duração desejada<select value={duration} onChange={e=>setDuration(e.target.value)}><option value="40">40 minutos</option><option value="50">50 minutos</option><option value="60">60 minutos</option></select></label>
@@ -267,13 +277,14 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    <button type="button" className="secondary workout-day-toggle" aria-expanded={expanded===index} onClick={()=>setExpanded(expanded===index?null:index)}><span><b>{session.title} · Dia {index+1}</b><small>{session.groups.join(" · ")}</small></span><span>{expanded===index?"−":"+"}</span></button>
    {expanded===index&&<div className="workout-day-content">
     <p><b>Aquecimento:</b> 8–10 minutos de caminhada/bicicleta leve e mobilidade dinâmica confortável. Não pule esta etapa.</p>
-    {session.pairs.map((pair,pairIndex)=><div className="conjugate-block" key={pairIndex}><b>{pair.length===2?`Bloco conjugado ${pairIndex+1} · alternância A/B`:`Exercício complementar ${pairIndex+1}`}</b>{pair.map((e,i)=><div className="planned-exercise" key={e.name}><div><b>{pair.length===2?`Exercício ${i===0?"A":"B"}: ${e.name}`:`Exercício: ${e.name}`}</b><small className="technical-exercise-name">Nome técnico: {e.technicalName}</small><p className="exercise-explanation">{e.explanation}</p><p>{e.cue}</p><small>{Math.min(5,Number.parseInt(e.sets,10)+(level==="Iniciante"?0:level==="Intermediário"?1:2))} séries · {e.reps} repetições/tempo · descanso {e.rest}</small><a className="exercise-demo-link" href={`https://www.youtube.com/results?search_query=${encodeURIComponent(e.name+" "+e.technicalName+" execução correta")}`} target="_blank" rel="noreferrer">▶ Ver execução em vídeo</a></div></div>)}<p className="muted">{pair.length===2?"Faça 1 série do exercício A e, logo em seguida, 1 série do exercício B. Isso completa uma volta. Descanse 60–90 segundos e repita a sequência até completar as séries prescritas dos dois exercícios. Exemplo: rosca bíceps → agachamento → descanso → repetir.":"Faça as séries deste exercício com a pausa indicada."} Se a técnica cair, aumente a pausa ou reduza a carga.</p></div>)}
+    {session.pairs.map((pair,pairIndex)=><div className="conjugate-block" key={pairIndex}><b>{pair.length===2?`Bloco conjugado ${pairIndex+1} · alternância A/B`:`Exercício complementar ${pairIndex+1}`}</b>{pair.map((e,i)=><div className="planned-exercise" key={e.name}><div><b>{pair.length===2?`Exercício ${i===0?"A":"B"}: ${e.name}`:`Exercício: ${e.name}`}</b><small className="technical-exercise-name">Nome técnico: {e.technicalName}</small><p className="exercise-explanation">{e.explanation}</p><p>{e.cue}</p><small>{prescriptionForLevel(e,{level:level as "Iniciante"|"Intermediário"|"Avançado",place:place as "Casa"|"Academia",duration:Number(duration) as 40|50|60,equipment:homeEquipment as ("Peso do corpo"|"Elásticos"|"Halteres")[],pains:painAreas as ("Joelho"|"Lombar")[],overweight,week:trainingWeek,style}).sets} séries · {prescriptionForLevel(e,{level:level as "Iniciante"|"Intermediário"|"Avançado",place:place as "Casa"|"Academia",duration:Number(duration) as 40|50|60,equipment:homeEquipment as ("Peso do corpo"|"Elásticos"|"Halteres")[],pains:painAreas as ("Joelho"|"Lombar")[],overweight,week:trainingWeek,style}).reps} repetições/tempo · descanso {prescriptionForLevel(e,{level:level as "Iniciante"|"Intermediário"|"Avançado",place:place as "Casa"|"Academia",duration:Number(duration) as 40|50|60,equipment:homeEquipment as ("Peso do corpo"|"Elásticos"|"Halteres")[],pains:painAreas as ("Joelho"|"Lombar")[],overweight,week:trainingWeek,style}).rest}</small><a className="exercise-demo-link" href={`https://www.youtube.com/results?search_query=${encodeURIComponent(e.name+" "+e.technicalName+" execução correta")}`} target="_blank" rel="noreferrer">▶ Ver execução em vídeo</a></div></div>)}<p className="muted">{pair.length===2?"Faça 1 série do exercício A e, logo em seguida, 1 série do exercício B. Isso completa uma volta. Descanse 60–90 segundos e repita a sequência até completar as séries prescritas dos dois exercícios. Exemplo: rosca bíceps → agachamento → descanso → repetir.":"Faça as séries deste exercício com a pausa indicada."} Se a técnica cair, aumente a pausa ou reduza a carga.</p></div>)}
     <p><b>Finalização:</b> 5–8 minutos de caminhada leve, respiração e mobilidade suave. Registre cargas e repetições.</p>
    </div>}
   </article>)}
   <div className="safety-alert"><b>Como progredir ao longo de 7 semanas</b><p><b>Semanas 1–2:</b> aprenda a técnica e termine as séries sentindo que conseguiria fazer mais 3 repetições.</p><p><b>Semanas 3–5:</b> quando completar o topo da faixa de repetições com boa técnica, aumente um pouco a carga ou a dificuldade; não aumente tudo ao mesmo tempo.</p><p><b>Semana 6:</b> consolide a execução sem treinar até a falha.</p><p><b>Semana 7:</b> reduza cerca de 20–30% das séries e reavalie conforto, técnica e recuperação. Depois, ajuste o próximo bloco.</p></div>
   <p className="muted"><Clock3 size={15}/> O tempo total inclui 8–10 min de aquecimento, as séries conjugadas de cada bloco, alternando A e B com pausas entre voltas e 5–8 min de finalização. Para 40/50/60 min, o plano agora seleciona até 6/8/10 exercícios principais; o tempo real varia conforme ritmo, carga e pausas. Não acelere a execução para caber no relógio.</p>
   {initialBmi >= 35 && <div className="safety-alert"><b>Adaptação importante</b><p>Como o IMC informado está na faixa de 35 ou mais, este plano não inclui corrida nem saltos como recomendação automática. Priorize movimentos confortáveis e obtenha orientação profissional individual antes de aumentar a intensidade.</p></div>}
+  <p className="muted"><b>{safetyNotice()}</b></p>
   <p className="muted">Este é um plano educativo inicial baseado nas respostas da avaliação, não uma prescrição clínica. Se houver dor, limitação, condição clínica ou dúvida sobre a execução, suspenda o exercício e procure avaliação individual de profissional de Educação Física e/ou saúde. A seleção automática não substitui avaliação presencial.</p>
   <button type="button" className="secondary" onClick={()=>{setFocus(["Glúteos"]);setStyle("Musculação");setDays(3);setPlace("Casa");setLevel("Iniciante");setDuration("50");setRunningDistance("5 km");setVariation(0);setGeneratedRequest("");setAiRequest("");setExpanded(0)}}><RotateCcw size={16}/> Restaurar opções iniciais</button>
  </section>;

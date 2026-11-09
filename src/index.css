@@ -254,3 +254,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
 .day-selector { display:flex; flex-wrap:wrap; gap:.5rem; margin:1rem 0; }
 .complete-workout-button { width:100%; margin:1rem 0; }
+
+
+/* Opções de dor/limitação: caixa e texto sempre na mesma linha, inclusive no celular. */
+.workout-builder .pain-fieldset{display:grid;grid-template-columns:1fr;gap:10px;border:1px solid #dce5dc;border-radius:12px;padding:14px 16px;margin:0;min-width:0}
+.workout-builder .pain-fieldset legend{padding:0 5px;font-size:13px;font-weight:700;color:#405747}
+.workout-builder .pain-fieldset label{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;width:100%;margin:0;padding:5px 0;font-size:13px;line-height:1.4}
+.workout-builder .pain-fieldset input[type="checkbox"]{width:20px;height:20px;min-width:20px;margin:0;padding:0;accent-color:#24734d;flex:0 0 20px}

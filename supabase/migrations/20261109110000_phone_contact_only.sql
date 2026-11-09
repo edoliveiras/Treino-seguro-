@@ -2,12 +2,19 @@
 -- Mantém os artefatos históricos sem apagar dados, mas bloqueia seu uso por qualquer papel da aplicação.
 drop view if exists public.admin_account_directory;
 
-revoke all on function public.create_phone_otp_challenge(uuid,text)
-  from public, anon, authenticated, service_role;
-revoke all on function public.record_phone_otp_delivery(uuid,text,text)
-  from public, anon, authenticated, service_role;
-revoke all on function public.verify_phone_otp_challenge(uuid,text)
-  from public, anon, authenticated, service_role;
+do $disable_legacy_phone_functions$
+begin
+  if to_regprocedure('public.create_phone_otp_challenge(uuid,text)') is not null then
+    execute 'revoke all on function public.create_phone_otp_challenge(uuid,text) from public, anon, authenticated, service_role';
+  end if;
+  if to_regprocedure('public.record_phone_otp_delivery(uuid,text,text)') is not null then
+    execute 'revoke all on function public.record_phone_otp_delivery(uuid,text,text) from public, anon, authenticated, service_role';
+  end if;
+  if to_regprocedure('public.verify_phone_otp_challenge(uuid,text)') is not null then
+    execute 'revoke all on function public.verify_phone_otp_challenge(uuid,text) from public, anon, authenticated, service_role';
+  end if;
+end;
+$disable_legacy_phone_functions$;
 
 revoke all on table public.phone_otp_challenges, public.phone_otp_send_log
   from public, anon, authenticated, service_role;

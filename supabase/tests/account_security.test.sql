@@ -352,7 +352,8 @@ do $training_isolation$
 begin
   if (select count(*) from public.workout_assignments) <> 0
      or (select count(*) from public.workout_plans) <> 0
-     or (select count(*) from public.workout_plan_exercises) <> 0 then
+     or (select count(*) from public.workout_plan_exercises) <> 0
+     or (select count(*) from public.workout_completions) <> 0 then
     raise exception 'student_can_read_another_students_training';
   end if;
 end;
@@ -376,8 +377,13 @@ begin
      or (select count(*) from public.workout_plans) <> 0 then
     raise exception 'removed_assignment_still_visible_to_student';
   end if;
-  if (select count(*) from public.workout_completions) <> 1 then
+  if (select count(*) from public.workout_completions where source='assigned') <> 1 then
     raise exception 'removing_assignment_deleted_completion_history';
+  end if;
+  insert into public.workout_completions(assignment_id,exercise_id,student_id,exercise_name,session_date,source,program_key,day_label)
+  values (null,null,'00000000-0000-4000-8000-000000000003','Caminhada leve',current_date,'example','iniciante-corpo-inteiro','Corpo inteiro');
+  if (select count(*) from public.workout_completions where source='example') <> 1 then
+    raise exception 'student_cannot_save_example_workout_history';
   end if;
 end;
 $training_removal$;

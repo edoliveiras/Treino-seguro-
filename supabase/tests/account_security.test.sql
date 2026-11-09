@@ -262,7 +262,7 @@ begin
   end if;
 end $admin_reactivation_check$;
 set role service_role;
-perform public.admin_delete_account('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002');
+select public.admin_delete_account('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002');
 reset role;
 do $rls$
 begin

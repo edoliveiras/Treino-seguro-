@@ -688,7 +688,7 @@ const distinctExerciseNames: Record<string,string> = {
 "ponte unilateral":"Subir quadril num pé",
 "ponte parada":"Sustentar quadril alto",
 "panturrilha unilateral":"Erguer um calcanhar",
-"cadeira abdutora":"Abrir pernas na máquina",
+"cadeira abdutora":"Abrir pernas sentado",
 "agachamento lateral (cossaco)":"Agachar de lado",
 "elevação de pernas deitado":"Elevar pernas no chão",
 "prancha com elevação de perna":"Sustentar corpo levantando perna",
@@ -712,8 +712,16 @@ const distinctExerciseNames: Record<string,string> = {
 "rotação externa de ombro com elástico":"Girar braço com faixa",
 "panturrilha":"Ficar na ponta",
 "dead bug":"Estender braço deitado"
-};
-const distinctExerciseNameLookup = Object.fromEntries(Object.entries(distinctExerciseNames).map(([key,value])=>[key.toLowerCase(),value]));
+"agachamento livre":"Agachar peso nas costas",
+"levantamento terra romeno":"Descer peso quadril atrás",
+"elevação lateral":"Levantar braços de lado",
+"handstand push-up na parede":"Empurrar corpo invertido",
+"elevação lateral de perna":"Levantar perna de lado",
+"oblíquo crunch":"Encolher tronco de lado",
+"gato-camelo":"Arredondar costas e estender",
+"panturrilha em pé na máquina":"Erguer calcanhares em pé",
+"abdução na máquina":"Abrir pernas na máquina",
+};const distinctExerciseNameLookup = Object.fromEntries(Object.entries(distinctExerciseNames).map(([key,value])=>[key.toLowerCase(),value]));
 const shortNameLookup = Object.fromEntries(Object.entries(shortNameOverrides).map(([key,value])=>[key.toLowerCase(),value]));
 function rawSimpleExerciseName(name:string, segment:string) {
  const key=name.trim().toLowerCase();

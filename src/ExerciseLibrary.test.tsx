@@ -1,0 +1,26 @@
+import { describe, expect, it } from "vitest";
+import { getSimpleExerciseName, getWorkoutCatalog } from "./ExerciseLibrary";
+
+describe("nomes simples da biblioteca de exercícios", () => {
+  it("mantém os 398 exercícios com nome técnico e nome popular curto", () => {
+    const catalog = getWorkoutCatalog();
+    expect(catalog.length).toBe(398);
+    for (const exercise of catalog) {
+      expect(exercise.name.trim().split(/\\s+/).length).toBeLessThanOrEqual(4);
+      expect(exercise.technicalName.length).toBeGreaterThan(0);
+      expect(exercise.explanation).toContain("você sente");
+    }
+  });
+
+  it("traduz os principais nomes técnicos para português simples", () => {
+    expect(getSimpleExerciseName("leg press 45", "Quadríceps")).toBe("Empurrar plataforma");
+    expect(getSimpleExerciseName("agachamento sumô", "Quadríceps")).toBe("Agachar com pernas abertas");
+    expect(getSimpleExerciseName("stiff", "Posterior de coxa")).toBe("Descer peso com pernas");
+    expect(getSimpleExerciseName("dead bug", "Abdômen")).toBe("Estender braço e perna");
+  });
+
+  it("diferencia o coice para braço do coice para glúteos", () => {
+    expect(getSimpleExerciseName("coice na polia", "Tríceps")).toBe("Esticar braço com cabo");
+    expect(getSimpleExerciseName("coice na polia", "Glúteos")).toBe("Levar perna para trás");
+  });
+});

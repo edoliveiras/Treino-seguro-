@@ -4,7 +4,7 @@ import { supabase } from "./lib/supabase";
 import { getWorkoutCatalog } from "./ExerciseLibrary";
 import { EXAMPLE_PROGRAMS } from "./trainingPrograms";
 
-type Student = { id:string; full_name:string; email:string; whatsapp_e164:string; account_status:string; training_level:string; training_place:string; training_days:number; current_workout:string|null };
+type Student = { id:string; full_name:string; email:string; phone_e164:string; account_status:string; training_level:string; training_place:string; training_days:number; current_workout:string|null };
 type Plan = { id:string; title:string; level:string; split_type:string; description:string; duration_weeks:number; is_template:boolean; created_at:string };
 type Assignment = { id:string; plan_id:string; student_id:string; assigned_at:string; status:string };
 type EditorExercise = { key:string; day_label:string; position:number; exercise_name:string; technical_name:string; muscle_group:string; sets:number; reps:string; rest_seconds:number; tempo:string; gym_version:string; home_version:string; knee_adaptation:string; back_adaptation:string; observation:string; photo_url:string; video_url:string };
@@ -52,7 +52,7 @@ export default function TrainingManager({currentUserId}:{currentUserId:string}) 
   if(!supabase){setError("Conexão com o serviço indisponível.");setLoading(false);return;}
   setLoading(true);setError("");
   const [s,p,a]=await Promise.all([
-   supabase.from("admin_account_directory").select("id,full_name,email,whatsapp_e164,account_status,training_level,training_place,training_days,current_workout").order("created_at",{ascending:false}),
+   supabase.from("admin_account_directory").select("id,full_name,email,phone_e164,account_status,training_level,training_place,training_days,current_workout").order("created_at",{ascending:false}),
    supabase.from("workout_plans").select("id,title,level,split_type,description,duration_weeks,is_template,created_at").order("updated_at",{ascending:false}),
    supabase.from("workout_assignments").select("id,plan_id,student_id,assigned_at,status").eq("status","active").order("assigned_at",{ascending:false})
   ]);
@@ -144,7 +144,7 @@ export default function TrainingManager({currentUserId}:{currentUserId:string}) 
   <div className="panel">
    <h3>Alunos cadastrados</h3>
    {loading?<p>Carregando…</p>:activeStudents.length===0?<p>Nenhum aluno ativo cadastrado.</p>:<div className="admin-account-list">{activeStudents.map(s=><article className="admin-account-card" key={s.id}>
-    <div className="admin-account-main"><Users size={20}/><div><b>{s.full_name}</b><span>{s.email}</span><small>WhatsApp para contato: {s.whatsapp_e164}</small></div></div>
+    <div className="admin-account-main"><Users size={20}/><div><b>{s.full_name}</b><span>{s.email}</span><small>WhatsApp para contato: {s.phone_e164}</small></div></div>
     <div className="admin-account-meta"><b>{s.training_level||"Iniciante"}</b><small>{s.training_place||"Casa"} · {s.training_days||3} dias/semana</small><small>Treino atual: {s.current_workout||"Modelo de exemplo"}</small></div>
     <label className="student-select"><input type="checkbox" checked={selectedStudents.includes(s.id)} onChange={()=>toggleStudent(s.id)}/> Selecionar aluno</label>
    </article>)}</div>}

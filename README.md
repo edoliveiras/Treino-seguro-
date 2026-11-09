@@ -14,7 +14,7 @@ npm test
 npm run build
 ```
 
-O CI também verifica componentes de segurança legados de OTP com Deno e executa as migrações de contas, consentimento e registros de saúde em um PostgreSQL temporário, com stubs mínimos de Supabase Auth. Essa simulação verifica regras SQL, mas não substitui homologação em um projeto Supabase real.
+O CI executa testes do aplicativo, compilação, verificação de tipos da função administrativa e testes SQL das migrações em um PostgreSQL temporário com stubs mínimos de Supabase Auth. Essa simulação verifica regras SQL, mas não substitui homologação em um projeto Supabase real.
 
 ## Acessibilidade
 - Atalho visível ao receber foco para pular diretamente ao conteúdo principal.

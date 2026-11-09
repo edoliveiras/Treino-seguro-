@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Copy, Plus, RefreshCw, Save, Search, Trash2, Users, UserCheck } from "lucide-react";
+import { Copy, Plus, RefreshCw, Save, Trash2, Users, UserCheck, Dumbbell } from "lucide-react";
 import { supabase } from "./lib/supabase";
 import { getWorkoutCatalog } from "./ExerciseLibrary";
 import { EXAMPLE_PROGRAMS } from "./trainingPrograms";

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { getWorkoutCatalog, getSimpleExerciseName, getSimpleExerciseExplanation } from "./ExerciseLibrary";
 import { Clock3, Target, RotateCcw } from "lucide-react";
-import { isSafeForRules, prescriptionForLevel, requiredExerciseCount, safetyNotice } from "./workoutRules";
+import { ensureFullBodyGroups, isSafeForRules, prescriptionForLevel, requiredExerciseCount, safetyNotice } from "./workoutRules";
 
 type Focus = "Glúteos" | "Abdômen" | "Pernas" | "Braços" | "Bíceps" | "Tríceps" | "Costas" | "Peito" | "Ombros" | "Antebraço" | "Trapézio" | "Quadríceps" | "Posterior de coxa" | "Panturrilha" | "Adutores e abdutores" | "Lombar e core profundo" | "Corpo inteiro";
 type Style = "Musculação" | "Full body" | "Calistenia" | "Funcional" | "HIIT" | "Corrida";
@@ -222,7 +222,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
  const glutePriority=focus.includes("Glúteos")&&/gl[uú]te|bumbum|perna|inferior|posterior|quadr[ií]ceps/.test(generatedRequest.toLowerCase());
  const sessions=useMemo(()=>{
   const fullBodyGroups: Focus[]=["Glúteos","Pernas","Quadríceps","Posterior de coxa","Panturrilha","Adutores e abdutores","Costas","Trapézio","Peito","Ombros","Braços","Bíceps","Tríceps","Antebraço","Abdômen","Lombar e core profundo","Corpo inteiro"];
-  const selectedFocus=focus.includes("Corpo inteiro")?fullBodyGroups:focus;
+  const selectedFocus=style==="Full body" ? ensureFullBodyGroups(focus,style) as Focus[] : focus.includes("Corpo inteiro")?fullBodyGroups:focus;
   const templates: Focus[][] = Array.from({length:days},()=>selectedFocus);
   return templates.map((groups,index)=>{
    
@@ -284,6 +284,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   <div className="safety-alert"><b>Como progredir ao longo de 7 semanas</b><p><b>Semanas 1–2:</b> aprenda a técnica e termine as séries sentindo que conseguiria fazer mais 3 repetições.</p><p><b>Semanas 3–5:</b> quando completar o topo da faixa de repetições com boa técnica, aumente um pouco a carga ou a dificuldade; não aumente tudo ao mesmo tempo.</p><p><b>Semana 6:</b> consolide a execução sem treinar até a falha.</p><p><b>Semana 7:</b> reduza cerca de 20–30% das séries e reavalie conforto, técnica e recuperação. Depois, ajuste o próximo bloco.</p></div>
   <p className="muted"><Clock3 size={15}/> O tempo total inclui 8–10 min de aquecimento, as séries conjugadas de cada bloco, alternando A e B com pausas entre voltas e 5–8 min de finalização. Para 40/50/60 min, o plano agora seleciona até 6/8/10 exercícios principais; o tempo real varia conforme ritmo, carga e pausas. Não acelere a execução para caber no relógio.</p>
   {initialBmi >= 35 && <div className="safety-alert"><b>Adaptação importante</b><p>Como o IMC informado está na faixa de 35 ou mais, este plano não inclui corrida nem saltos como recomendação automática. Priorize movimentos confortáveis e obtenha orientação profissional individual antes de aumentar a intensidade.</p></div>}
+  {(painAreas.length>0||overweight)&&<div className="safety-alert"><b>Adaptações de segurança aplicadas</b><p>{painAreas.includes("Joelho")?"Dor no joelho: foram retirados exercícios com agachamento profundo, afundo e impacto. ":""}{painAreas.includes("Lombar")?"Dor lombar: foram retiradas remadas curvadas e dobradiças pesadas; priorize exercícios apoiados e controle do tronco. ":""}{overweight?"Adaptação para excesso de peso: sem saltos ou impacto alto no iniciante; priorize caminhada, bicicleta e movimentos em pé ou na cadeira.":""}</p></div>}
   <p className="muted"><b>{safetyNotice()}</b></p>
   <p className="muted">Este é um plano educativo inicial baseado nas respostas da avaliação, não uma prescrição clínica. Se houver dor, limitação, condição clínica ou dúvida sobre a execução, suspenda o exercício e procure avaliação individual de profissional de Educação Física e/ou saúde. A seleção automática não substitui avaliação presencial.</p>
   <button type="button" className="secondary" onClick={()=>{setFocus(["Glúteos"]);setStyle("Musculação");setDays(3);setPlace("Casa");setLevel("Iniciante");setDuration("50");setRunningDistance("5 km");setVariation(0);setGeneratedRequest("");setAiRequest("");setExpanded(0)}}><RotateCcw size={16}/> Restaurar opções iniciais</button>

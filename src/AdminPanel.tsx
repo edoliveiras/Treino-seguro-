@@ -93,7 +93,7 @@ export default function AdminPanel({ currentUserId }: { currentUserId: string })
         <div className="admin-account-meta">
           <span className={`account-status status-${account.account_status}`}>{account.account_status === "active" ? "Ativa" : account.account_status === "suspended" ? "Suspensa" : "Pendente de e-mail"}</span>
           <small>{account.email_verified_at ? "E-mail confirmado" : "E-mail não confirmado"}</small>
-          <small>{account.training_level} · {account.training_place} · {account.training_days} dias/semana</small>
+          <small>{account.training_level} · {account.training_place} · {account.training_days} dias disponíveis/semana</small>
           <small>Treino atual: {account.current_workout ?? "Modelo de exemplo"}</small>
         </div>
         <div className="admin-account-actions">

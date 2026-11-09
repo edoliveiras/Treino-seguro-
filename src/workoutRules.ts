@@ -3,7 +3,7 @@ export type TrainingPlace = "Casa" | "Academia";
 export type HomeEquipment = "Peso do corpo" | "Elásticos" | "Halteres";
 export type PainArea = "Joelho" | "Lombar";
 export type ExerciseLike = { name: string; technicalName?: string; focus: string[]; home: boolean; gym: boolean; beginner: boolean; styles: string[]; sets?: string; reps?: string; rest?: string; cue?: string };
-export type WorkoutRules = { level: WorkoutLevel; place: TrainingPlace; duration: 40 | 50 | 60; equipment?: HomeEquipment[]; pains?: PainArea[]; overweight?: boolean; week?: number; style?: string };
+export type WorkoutRules = { level: WorkoutLevel; place: TrainingPlace; duration: 40 | 50 | 60; equipment?: readonly HomeEquipment[]; pains?: readonly PainArea[]; overweight?: boolean; week?: number; style?: string };
 const text = (e: ExerciseLike) => `${e.name} ${e.technicalName ?? ""}`.toLowerCase();
 export function requiredExerciseCount(level: WorkoutLevel, duration: 40 | 50 | 60) {
   if (level === "Iniciante") return duration === 40 ? 6 : 7;

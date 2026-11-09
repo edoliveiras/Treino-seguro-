@@ -72,7 +72,13 @@ const simpleNames: Record<string,string> = {
 "peck deck":"Juntar braços sentado",
 "pullover com halter":"Levar peso sobre a cabeça",
 "svend press":"Juntar peso à frente",
-"flexão tradicional":"Empurrar o chão",\n"flexão parada na posição baixa":"Sustentar flexão baixa",\n"prancha alta":"Sustentar corpo com braços retos",\n"prancha com toque no ombro":"Tocar ombros mantendo prancha",\n"flexão fechada parada":"Sustentar flexão com mãos juntas",\n"prancha lateral (série McGill)":"Sustentar corpo de lado",\n"L-sit":"Sustentar pernas elevadas",
+"flexão tradicional":"Empurrar o chão",
+"flexão parada na posição baixa":"Sustentar flexão baixa",
+"prancha alta":"Sustentar corpo com braços retos",
+"prancha com toque no ombro":"Tocar ombros mantendo prancha",
+"flexão fechada parada":"Sustentar flexão com mãos juntas",
+"prancha lateral (série McGill)":"Sustentar corpo de lado",
+"L-sit":"Sustentar pernas elevadas",
 "flexão com joelhos apoiados":"Empurrar o chão ajoelhado",
 "flexão inclinada (mãos no sofá)":"Empurrar apoio elevado",
 "flexão declinada":"Empurrar com pés elevados",
@@ -174,7 +180,6 @@ const simpleNames: Record<string,string> = {
 "tríceps francês":"Esticar braços acima da cabeça",
 "extensão overhead com halter":"Esticar braços acima da cabeça",
 "coice com halter":"Esticar braço para trás",
-"coice na polia":"Esticar braço puxando cabo",
 "tríceps na máquina":"Esticar braços na máquina",
 "supino fechado":"Empurrar peso mãos juntas",
 "JM press":"Empurrar peso junto ao peito",
@@ -451,10 +456,12 @@ const simpleNames: Record<string,string> = {
 "agachamento com apoio":"Agachar segurando apoio",
 "respiração":"Respirar devagar e profundamente"
 };
-export function getSimpleExerciseName(name:string, segment:string) {
+export const simpleNameLookup = Object.fromEntries(Object.entries(simpleNames).map(([key,value])=>[key.toLowerCase(),value]));
+function getSimpleExerciseName(name:string, segment:string) {
  const key=name.trim().toLowerCase();
- if(simpleNames[key]) return simpleNames[key];
  const s=segment.toLowerCase();
+ if(key==="coice na polia" && /tr[ií]ceps/.test(s)) return "Esticar braço com cabo";
+ if(simpleNameLookup[key]) return simpleNameLookup[key];
  if(/peito/.test(s)) return /flex|mergulho/.test(key)?"Empurrar o próprio corpo":/cruci|abert/.test(key)?"Abrir braços com controle":"Empurrar peso à frente";
  if(/costas|trap[eé]zio/.test(s)) return /barra fixa|chin/.test(key)?"Subir na barra com apoio":/superman/.test(key)?"Levantar braços e pernas":"Puxar peso ao corpo";
  if(/ombro/.test(s)) return /rota/.test(key)?"Girar braço com controle":"Levantar braços com peso";
@@ -480,7 +487,8 @@ const nameUses = new Map<string,number>();
 const all = rawEntries.map(entry=>{
  const displayName=getSimpleExerciseName(entry.name,entry.segment);
  const count=(nameUses.get(displayName)||0)+1; nameUses.set(displayName,count);
- const uniqueDisplay=count>1?`${displayName.split(" ").slice(0,2).join(" ")} variação ${count}`:displayName;\n return {...entry,displayName:uniqueDisplay,explanation:getSimpleExerciseExplanation(entry.segment,displayName)};
+ const uniqueDisplay=count>1?`${displayName.split(" ").slice(0,2).join(" ")} variação ${count}`:displayName;
+ return {...entry,displayName:uniqueDisplay,explanation:getSimpleExerciseExplanation(entry.segment,displayName)};
 });
 const advanced = /avançado|muscle-up|front lever|handstand push|parada de mão livre|human flag|dragon flag|planche|pistol squat$|shrimp squat$|box jump|salto|snatch|tiros|sprint|windshield|typewriter|archer pull|flexão com palmas|nordic curl/i;
 const lowImpact = /alongamento|mobilidade|bird dog|dead bug|ponte|caminhada|bicicleta|elíptico|natação|hidro|respiração|pallof|isométric|prancha|remo ergométrico|flexora|abdução|adução/i;

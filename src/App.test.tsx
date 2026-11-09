@@ -133,10 +133,10 @@ describe("fluxos de segurança da interface", () => {
     fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
     completeBasicAssessment();
     fireEvent.click(screen.getByRole("button", { name: "Treino" }));
-    const markButton = screen.getByRole("button", { name: "Marcar Caminhada confortável" });
+    const markButton = screen.getByRole("button", { name: "Marcar Sentar e levantar" });
     expect(markButton.getAttribute("aria-pressed")).toBe("false");
     fireEvent.click(markButton);
-    expect(screen.getByRole("button", { name: "Desmarcar Caminhada confortável" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "Desmarcar Sentar e levantar" }).getAttribute("aria-pressed")).toBe("true");
   });
 
 

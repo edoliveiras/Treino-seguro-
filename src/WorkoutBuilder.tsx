@@ -104,7 +104,7 @@ const library: Exercise[] = ([
  {name:"Agachamento búlgaro",focus:["Glúteos","Pernas"],home:true,gym:true,beginner:false,styles:["Musculação"],sets:"3",reps:"8–10 por lado",rest:"120 s",cue:"Use apoio se necessário, incline levemente o tronco e desça apenas mantendo equilíbrio e joelho alinhado."},
  {name:"Coice de glúteo na polia",focus:["Glúteos"],home:false,gym:true,beginner:true,styles:["Musculação"],sets:"3",reps:"12–15 por lado",rest:"60–75 s",cue:"Mantenha o tronco estável e mova a perna pelo quadril, sem compensar com a lombar."},
  {name:"Leg press",focus:["Pernas","Glúteos"],home:false,gym:true,beginner:true,styles:["Musculação"],sets:"3",reps:"10–12",rest:"120 s",cue:"Ajuste a amplitude sem tirar o quadril do encosto; mantenha joelhos acompanhando os pés."},
-].map(e=>{const segment=e.focus[0]??"Corpo inteiro";const simpleName=getSimpleExerciseName(e.name,segment);return {...e,technicalName:e.name,name:simpleName,explanation:getSimpleExerciseExplanation(segment,simpleName)};});
+] as Exercise[]).map(e=>{const segment=e.focus[0]??"Corpo inteiro";const simpleName=getSimpleExerciseName(e.name,segment);return {...e,technicalName:e.name,name:simpleName,explanation:getSimpleExerciseExplanation(segment,simpleName)};});
 const split: Record<number, Focus[][]> = {
  2:[["Glúteos","Pernas","Abdômen"],["Costas","Peito","Braços","Abdômen"]],
  3:[["Glúteos","Pernas","Abdômen"],["Costas","Peito","Braços"],["Glúteos","Pernas","Abdômen"]],

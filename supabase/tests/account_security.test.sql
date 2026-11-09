@@ -35,6 +35,9 @@ $$;
 \ir ../migrations/20261108154727_health_records_delete_for_suspended_accounts.sql
 \ir ../migrations/20261108155740_secure_first_admin_bootstrap.sql
 \ir ../migrations/20261109110000_phone_contact_only.sql
+\ir ../migrations/20261109180000_training_programs_and_assignments.sql
+\ir ../migrations/20261109181000_admin_remove_workout_assignment.sql
+\ir ../migrations/20261109182000_atomic_workout_assignment.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),
@@ -272,8 +275,7 @@ insert into public.workout_plans(id,title,level,split_type,description,created_b
 values ('10000000-0000-4000-8000-000000000001','Modelo de teste','Iniciante','Corpo inteiro','Plano de demonstração', '00000000-0000-4000-8000-000000000001');
 insert into public.workout_plan_exercises(id,plan_id,day_label,position,exercise_name,technical_name,muscle_group)
 values ('20000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000001','Corpo inteiro',1,'Sentar e levantar','Agachamento com apoio','Pernas');
-insert into public.workout_assignments(id,plan_id,student_id,assigned_by)
-values ('30000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000003','00000000-0000-4000-8000-000000000001');
+select public.admin_assign_workout_plan('10000000-0000-4000-8000-000000000001',array['00000000-0000-4000-8000-000000000003'::uuid]);
 reset role;
 
 set role authenticated;

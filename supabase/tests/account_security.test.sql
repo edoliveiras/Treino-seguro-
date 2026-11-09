@@ -23,6 +23,7 @@ create function auth.jwt() returns jsonb language sql stable as $$
 $$;
 
 \ir ../migrations/20261108131911_initial_account_security.sql
+\ir ../migrations/20261108131938_phone_otp_rpc.sql
 \ir ../migrations/20261108131939_admin_delete.sql
 \ir ../migrations/20261108131941_lock_trigger_function.sql
 \ir ../migrations/20261108133235_deny_client_access_to_private_account_tables.sql

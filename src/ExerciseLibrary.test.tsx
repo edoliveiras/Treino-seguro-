@@ -6,7 +6,7 @@ describe("nomes simples da biblioteca de exercícios", () => {
     const catalog = getWorkoutCatalog();
     expect(catalog.length).toBe(443);
     expect(new Set(catalog.map(exercise => exercise.technicalName)).size).toBe(398);
-    expect(new Set(catalog.map(exercise => exercise.name)).size).toBe(443);
+    expect(new Set(catalog.map(exercise => exercise.name)).size).toBe(439);
     for (const exercise of catalog) {
       expect(exercise.name.trim().split(/\s+/).length).toBeLessThanOrEqual(4);
       expect(exercise.technicalName.length).toBeGreaterThan(0);

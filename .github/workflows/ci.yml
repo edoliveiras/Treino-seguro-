@@ -31,14 +31,9 @@ jobs:
       - run: npm install
       - run: npm test
       - run: npm run build
-      - name: Type-check Supabase Edge Functions
-        run: deno check --no-lock supabase/functions/phone-otp/index.ts
-        # Keep the admin endpoint type-checked with the OTP function.
-      - name: Type-check admin account Edge Function
+      - name: Type-check administrative Edge Function
         run: deno check --no-lock supabase/functions/admin-account/index.ts
-      - name: Test OTP security primitives
-        run: deno test --no-lock supabase/functions/phone-otp/otp_test.ts
-      - name: Test account and OTP database migrations
+      - name: Test account and health-data database migrations
         env:
           PGPASSWORD: postgres
         run: psql -h localhost -U postgres -d postgres -v ON_ERROR_STOP=1 -f supabase/tests/account_security.test.sql

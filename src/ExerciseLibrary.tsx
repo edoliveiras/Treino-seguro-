@@ -711,7 +711,7 @@ const distinctExerciseNames: Record<string,string> = {
 "band pull-apart":"Esticar faixa lateral",
 "rotação externa de ombro com elástico":"Girar braço com faixa",
 "panturrilha":"Ficar na ponta",
-"dead bug":"Estender braço deitado"
+"dead bug":"Estender braço deitado",
 "agachamento livre":"Agachar peso nas costas",
 "levantamento terra romeno":"Descer peso quadril atrás",
 "elevação lateral":"Levantar braços de lado",

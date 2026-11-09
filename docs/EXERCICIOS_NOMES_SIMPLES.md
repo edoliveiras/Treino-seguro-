@@ -521,3 +521,14 @@ A biblioteca contém 443 ocorrências de exercícios e variações, 398 nomes t�
 | agachamento com apoio | Agachar segurando apoio |
 | respiração | Respirar devagar e profundamente |
 
+
+## Exercícios da tela inicial para baixo impacto
+
+| Nome antigo | Nome simples exibido |
+|---|---|
+| Caminhada confortável | Caminhada confortável |
+| Sentar e levantar da cadeira | Sentar e levantar |
+| Flexão na parede | Flexão na parede |
+| Ponte de glúteos | Ponte de glúteos |
+| Elevação de panturrilhas com apoio | Subir calcanhares apoiado |
+| Marcha parada com apoio | Marcha parada com apoio |

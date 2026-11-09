@@ -6,7 +6,7 @@ type Account = {
   id: string;
   full_name: string;
   email: string;
-  whatsapp_e164: string;
+  phone_e164: string;
   account_status: "pending_verification" | "active" | "suspended";
   email_verified_at: string | null;
   created_at: string;
@@ -30,7 +30,7 @@ export default function AdminPanel({ currentUserId }: { currentUserId: string })
     try {
       const { data, error: queryError } = await supabase
         .from("admin_account_directory")
-        .select("id,full_name,email,whatsapp_e164,account_status,email_verified_at,created_at")
+        .select("id,full_name,email,phone_e164,account_status,email_verified_at,created_at")
         .order("created_at", { ascending: false });
       if (queryError) {
         setError("Não foi possível carregar as contas. Confira se seu perfil tem permissão de administrador.");
@@ -83,7 +83,7 @@ export default function AdminPanel({ currentUserId }: { currentUserId: string })
       {accounts.map(account => <article className="admin-account-card" key={account.id}>
         <div className="admin-account-main">
           <UserRound size={20}/>
-          <div><b>{account.full_name}</b><span>{account.email}</span><small>Telefone de contato: {account.whatsapp_e164}</small></div>
+          <div><b>{account.full_name}</b><span>{account.email}</span><small>Telefone de contato: {account.phone_e164}</small></div>
         </div>
         <div className="admin-account-meta">
           <span className={`account-status status-${account.account_status}`}>{account.account_status === "active" ? "Ativa" : account.account_status === "suspended" ? "Suspensa" : "Pendente de e-mail"}</span>

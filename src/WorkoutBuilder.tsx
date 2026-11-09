@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { getWorkoutCatalog } from "./ExerciseLibrary";
 import { Clock3, Target, RotateCcw } from "lucide-react";
 
-type Focus = "Glúteos" | "Abdômen" | "Pernas" | "Braços" | "Costas" | "Peito" | "Corpo inteiro";
+type Focus = "Glúteos" | "Abdômen" | "Pernas" | "Braços" | "Bíceps" | "Tríceps" | "Costas" | "Peito" | "Corpo inteiro";
 type Style = "Musculação" | "Full body" | "Calistenia" | "Funcional" | "HIIT" | "Corrida";
 type Exercise = { name: string; focus: Focus[]; home: boolean; gym: boolean; beginner: boolean; styles: Style[]; sets: string; reps: string; rest: string; cue: string };
 const catalogFocus = (segment:string): Focus[] => {
@@ -12,7 +12,9 @@ const catalogFocus = (segment:string): Focus[] => {
  if (/abd[oô]men|lombar|core/.test(s)) return ["Abdômen"];
  if (/peito/.test(s)) return ["Peito","Braços"];
  if (/costas|trap[eé]zio/.test(s)) return ["Costas","Braços"];
- if (/ombro|b[ií]ceps|tr[ií]ceps|antebraço/.test(s)) return ["Braços"];
+ if (/b[ií]ceps/.test(s)) return ["Bíceps"];
+ if (/tr[ií]ceps/.test(s)) return ["Tríceps"];
+ if (/ombro|antebraço/.test(s)) return ["Braços"];
  return ["Corpo inteiro"];
 };
 const catalogStyles = (activity:string): Style[] => {
@@ -54,8 +56,8 @@ const library: Exercise[] = [
  {name:"Flexão na parede ou banco",focus:["Peito","Braços"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"3",reps:"8–12",rest:"60–90 s",cue:"Ajuste a inclinação para manter o movimento controlado e sem dor."},
  {name:"Supino com halteres ou máquina",focus:["Peito","Braços"],home:false,gym:true,beginner:false,styles:["Musculação","Full body"],sets:"3",reps:"8–12",rest:"90 s",cue:"Mantenha os punhos alinhados e não force amplitude no ombro."},
  {name:"Desenvolvimento sentado leve",focus:["Braços"],home:false,gym:true,beginner:false,styles:["Musculação","Full body"],sets:"2–3",reps:"8–12",rest:"90 s",cue:"Use carga confortável e não arqueie a lombar."},
- {name:"Rosca bíceps",focus:["Braços"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"2–3",reps:"10–15",rest:"60 s",cue:"Mantenha os cotovelos próximos ao corpo e evite balançar o tronco."},
- {name:"Tríceps na polia ou extensão com faixa",focus:["Braços"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"2–3",reps:"10–15",rest:"60 s",cue:"Mantenha os cotovelos estáveis e use amplitude confortável."},
+ {name:"Rosca bíceps",focus:["Bíceps"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"2–3",reps:"10–15",rest:"60 s",cue:"Mantenha os cotovelos próximos ao corpo e evite balançar o tronco."},
+ {name:"Tríceps na polia ou extensão com faixa",focus:["Tríceps"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"2–3",reps:"10–15",rest:"60 s",cue:"Mantenha os cotovelos estáveis e use amplitude confortável."},
  {name:"Agachamento goblet",focus:["Pernas","Glúteos"],home:true,gym:true,beginner:false,styles:["Musculação","Full body"],sets:"3",reps:"8–12",rest:"90–120 s",cue:"Segure o peso junto ao peito e mantenha o tronco firme."},
  {name:"Caminhada ou bicicleta leve",focus:["Corpo inteiro"],home:true,gym:true,beginner:true,styles:["Musculação","Full body"],sets:"1",reps:"8–12 min",rest:"—",cue:"Ritmo confortável para aquecer; ajuste ao condicionamento."},
  {name:"Flexão de braços inclinada ou no solo",focus:["Peito","Braços","Corpo inteiro"],home:true,gym:true,beginner:true,styles:["Calistenia","Full body","Funcional","HIIT"],sets:"3",reps:"6–12",rest:"90 s",cue:"Comece com as mãos em apoio elevado se necessário; mantenha tronco alinhado e amplitude sem dor."},
@@ -176,7 +178,9 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   if(/gl[uú]te|bumbum/.test(q))setFocus("Glúteos");
   else if(/quadr[ií]ceps|posterior de coxa|pernas|membros inferiores/.test(q))setFocus("Pernas");
   else if(/abd[oô]men|core/.test(q))setFocus("Abdômen");
-  else if(/bra[cç]o|b[ií]ceps|tr[ií]ceps|ombro/.test(q))setFocus("Braços");
+  else if(/b[ií]ceps/.test(q))setFocus("Bíceps");
+  else if(/tr[ií]ceps/.test(q))setFocus("Tríceps");
+  else if(/bra[cç]o|ombro/.test(q))setFocus("Braços");
   else if(/costas/.test(q))setFocus("Costas");
   else if(/peito|peitoral/.test(q))setFocus("Peito");
   else if(/corpo inteiro|full.?body/.test(q))setFocus("Corpo inteiro");
@@ -199,7 +203,8 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
     style==="Corrida" ? Array.from({length:days},()=>fullBodyGroups) :
     Array.from({length:days},()=>fullBodyGroups);
   return templates.map((groups,index)=>{
-   const candidates=[...catalogExercises,...library].filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i).filter(e=>(place==="Casa"?e.home:e.gym)&&e.styles.includes(style)&&groups.some(g=>e.focus.includes(g))&&(level==="Iniciante" ? e.beginner : level==="Intermediário" ? !e.beginner : true));
+   const specificArmFocus=focus==="Bíceps"||focus==="Tríceps";
+   const candidates=[...catalogExercises,...library].filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i).filter(e=>(place==="Casa"?e.home:e.gym)&&e.styles.includes(style)&&(groups.some(g=>e.focus.includes(g))||(specificArmFocus&&e.focus.includes(focus)))&&(level==="Iniciante" ? e.beginner : level==="Intermediário" ? !e.beginner : true));
    const unique=candidates.filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i);
    const preferred=unique.filter(e=>e.focus.includes(focus));
    const gluteOrder=["Hip thrust com barra","Elevação pélvica","Agachamento búlgaro","Levantamento terra romeno com halteres","Agachamento goblet","Leg press","Coice de glúteo na polia","Abdução de quadril com faixa","Mesa flexora","Agachamento sumô","Afundo apoiado"];
@@ -207,7 +212,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    // A prioridade escolhida nunca é retirada pela rotação: primeiro entram os exercícios do foco,
    // depois os complementares. A variação acontece dentro de cada grupo, sem descaracterizar o pedido.
    const priority=glutePreferred.length?glutePreferred:preferred;
-   const secondary=unique.filter(e=>!priority.includes(e));
+   const secondary=specificArmFocus?[]:unique.filter(e=>!priority.includes(e));
    const rotate=(items:Exercise[],offset:number)=>items.length?[...items.slice(offset%items.length),...items.slice(0,offset%items.length)]:[];
    const priorityRotated=rotate(priority,index+variation);
    const secondaryRotated=rotate(secondary,index*2+variation);
@@ -232,7 +237,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   <div className="form-grid">
    <label>Modalidade<select value={style} onChange={e=>setStyle(e.target.value as Style)}>{["Musculação","Full body","Calistenia","Funcional","HIIT","Corrida"].map(x=><option key={x}>{x}</option>)}</select></label>
    {style==="Corrida"&&<label>Distância da prova<select value={runningDistance} onChange={e=>setRunningDistance(e.target.value)}><option>5 km</option><option>10 km</option><option>15 km</option></select></label>}
-   <label>Meu foco principal<select value={focus} onChange={e=>setFocus(e.target.value as Focus)}>{["Glúteos","Abdômen","Pernas","Braços","Costas","Peito","Corpo inteiro"].map(x=><option key={x}>{x}</option>)}</select></label>
+   <label>Meu foco principal<select value={focus} onChange={e=>setFocus(e.target.value as Focus)}>{["Glúteos","Abdômen","Pernas","Bíceps","Tríceps","Braços","Costas","Peito","Corpo inteiro"].map(x=><option key={x}>{x}</option>)}</select></label>
    <label>Onde vou treinar<select value={place} onChange={e=>setPlace(e.target.value)}><option>Casa</option><option>Academia</option></select></label>
    <label>Nível<select value={level} onChange={e=>setLevel(e.target.value)}>{["Iniciante","Intermediário","Avançado"].map(x=><option key={x}>{x}</option>)}</select></label>
    <label>Dias por semana<select value={days} onChange={e=>setDays(Number(e.target.value))}>{[2,3,4,5].map(x=><option key={x} value={x}>{x} dias</option>)}</select></label>

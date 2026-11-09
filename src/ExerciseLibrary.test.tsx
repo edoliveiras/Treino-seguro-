@@ -8,7 +8,7 @@ describe("nomes simples da biblioteca de exercícios", () => {
     expect(new Set(catalog.map(exercise => exercise.technicalName)).size).toBe(398);
     expect(new Set(catalog.map(exercise => exercise.name)).size).toBe(399);
     for (const exercise of catalog) {
-      expect(exercise.name.trim().split(/\s+/).length).toBeLessThanOrEqual(4);
+      expect(exercise.name.trim().split(/\s+/).length).toBeGreaterThanOrEqual(2);\n      expect(exercise.name.trim().split(/\s+/).length).toBeLessThanOrEqual(4);\n      expect(exercise.name).not.toMatch(/\\b(hack|smith|stiff|sum[oô]|goblet|sissy|hip thrust|leg press|good morning|box jump|TRX|dead bug|bird dog|mountain climber)\\b/i);
       expect(exercise.technicalName.length).toBeGreaterThan(0);
       expect(exercise.explanation).toContain("você sente");
     }

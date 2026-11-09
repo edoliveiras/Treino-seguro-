@@ -586,11 +586,11 @@ export default function ExerciseLibrary({ pains=[] }: { pains?: string[] }){
   </div>
   <p className="library-count">Exibindo {count} de {all.length} exercícios{pains.length>0?" · itens com alerta compatível com suas queixas foram ocultados":""}</p>
   {filtered.map((e,i)=>{const m=metadata(e);return <article className="library-card" key={e.segment+e.activity+e.name+i}>
-   <img src={imageUrl} alt={"Foto ilustrativa de exercício físico: "+e.name} loading="lazy"/>
+   <img src={imageUrl} alt={"Foto ilustrativa de exercício físico: "+e.displayName} loading="lazy"/>
    <div className="library-card-body"><div className="library-tags"><span>{e.segment}</span><span>{e.activity}</span></div><h3>{e.displayName}</h3><small className="technical-exercise-name">Nome técnico: {e.name}</small><p className="exercise-explanation">{e.explanation}</p>
     <div className="library-meta"><span>Nível: <b>{m.level}</b></span><span>Local: <b>{m.place}</b></span><span className={m.alert==="Baixo impacto"?"risk-low":"risk-warn"}>{m.alert}</span></div>
     <p><b>Regressão:</b> {m.regression}. <b>Progressão:</b> {m.progression}.</p>
-    <div className="library-actions"><a href={"https://www.youtube.com/results?search_query="+encodeURIComponent(e.name+" execução correta exercício") } target="_blank" rel="noreferrer"><PlayCircle size={16}/> Vídeo demonstrativo no YouTube</a><a href={"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(e.name+" exercício execução")} target="_blank" rel="noreferrer"><ImageIcon size={16}/> Ver fotos do exercício</a></div>
+    <div className="library-actions"><a href={"https://www.youtube.com/results?search_query="+encodeURIComponent(e.displayName+" "+e.name+" execução correta exercício") } target="_blank" rel="noreferrer"><PlayCircle size={16}/> Vídeo demonstrativo no YouTube</a><a href={"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(e.displayName+" "+e.name+" exercício execução")} target="_blank" rel="noreferrer"><ImageIcon size={16}/> Ver fotos do exercício</a></div>
     <small className="library-warning"><ShieldCheck size={14}/> Procure um profissional de Educação Física ou médico antes de iniciar. Interrompa se sentir dor ou sintomas incomuns.</small>
    </div></article>})}
   {count===0&&<p>Nenhum exercício encontrado. Tente outro termo ou filtro.</p>}

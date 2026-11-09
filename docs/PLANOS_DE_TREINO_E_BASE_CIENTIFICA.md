@@ -44,7 +44,7 @@ Para dor lombar persistente, a OMS admite programas estruturados de exercício c
 
 Fontes:
 - https://www.who.int/news/item/07-12-2023-who-releases-guidelines-on-chronic-low-back-pain
-- https://www.nice.org.uk/guidance/ng59/chapter/recommendations
+- https://www.nice.org.uk/guidance/ng226/chapter/recommendations
 - https://register.awmf.org/assets/guidelines/187_Orthop%C3%A4die_und_Unfallchirurgie/187-050keng_S3_Gonarthrose_2025-05.pdf
 
 ## Ajustes feitos na proposta original

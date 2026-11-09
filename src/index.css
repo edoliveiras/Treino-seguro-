@@ -251,3 +251,6 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
  .student-exercise > .round { grid-column: 2; justify-self: start; }
  .editor-exercise .form-grid { grid-template-columns: 1fr; }
 }
+
+.day-selector { display:flex; flex-wrap:wrap; gap:.5rem; margin:1rem 0; }
+.complete-workout-button { width:100%; margin:1rem 0; }

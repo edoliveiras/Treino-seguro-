@@ -708,7 +708,7 @@ const all = rawEntries.map(entry=>{
  if(!displayName){
   displayName=baseName;
   let variation=2;
-  const prefix=baseName.split(/\\s+/).filter(word=>!["com","de","do","da","dos","das","na","no","para","a","o","e","em","à","ao"].includes(word.toLowerCase())).slice(0,2).join(" ")||"Movimento";
+  const prefix=baseName.split(/\s+/).filter(word=>!["com","de","do","da","dos","das","na","no","para","a","o","e","em","à","ao"].includes(word.toLowerCase())).slice(0,2).join(" ")||"Movimento";
   while(usedDisplayNames.has(displayName)){displayName=`${prefix} opção ${variation++}`;}
   usedDisplayNames.add(displayName);
   displayNamesByExercise.set(exerciseKey,displayName);

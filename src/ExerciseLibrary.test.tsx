@@ -17,7 +17,7 @@ describe("nomes simples da biblioteca de exercícios", () => {
   });
 
   it("traduz os principais nomes técnicos para português simples", () => {
-    expect(getSimpleExerciseName("leg press 45", "Quadríceps")).toBe("Empurrar plataforma");
+    expect(getSimpleExerciseName("leg press 45", "Quadríceps")).toBe("Empurrar plataforma com pernas");
     expect(getSimpleExerciseName("agachamento livre", "Quadríceps")).toBe("Agachar peso nas costas");
     expect(getSimpleExerciseName("agachamento sumô", "Quadríceps")).toBe("Agachar com pernas abertas");
     expect(getSimpleExerciseName("stiff", "Posterior de coxa")).toBe("Descer peso pernas retas");

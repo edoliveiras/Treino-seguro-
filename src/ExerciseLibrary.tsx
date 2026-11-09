@@ -451,7 +451,7 @@ const simpleNames: Record<string,string> = {
 "agachamento com apoio":"Agachar segurando apoio",
 "respiração":"Respirar devagar e profundamente"
 };
-function simpleExerciseName(name:string, segment:string) {
+export function getSimpleExerciseName(name:string, segment:string) {
  const key=name.trim().toLowerCase();
  if(simpleNames[key]) return simpleNames[key];
  const s=segment.toLowerCase();
@@ -471,16 +471,16 @@ function simpleExerciseName(name:string, segment:string) {
  if(/alongamento/.test(s)) return "Alongar com movimento suave";
  return "Mover o corpo com controle";
 }
-function exerciseExplanation(segment:string, simpleName:string) {
+export function getSimpleExerciseExplanation(segment:string, simpleName:string) {
  const where = /peito/.test(segment)?"peito e braços":/costas|trap[eé]zio/.test(segment)?"costas e parte alta do tronco":/ombro/.test(segment)?"ombros":/b[ií]ceps/.test(segment)?"parte da frente dos braços":/tr[ií]ceps/.test(segment)?"parte de trás dos braços":/antebraço/.test(segment)?"antebraços":/quadr[ií]ceps/.test(segment)?"parte da frente das coxas":/posterior/.test(segment)?"parte de trás das coxas":/gl[uú]te/.test(segment)?"glúteos":/panturrilha|tibial/.test(segment)?"panturrilhas e pernas":/adutores|abdutores/.test(segment)?"parte interna e externa das coxas":/abd[oô]men|lombar/.test(segment)?"abdômen e região das costas":/cardio/.test(segment)?"coração, pulmões e pernas":/alongamento/.test(segment)?"músculos alongados":/propriocepção|equilíbrio/.test(segment)?"equilíbrio e controle do corpo":"músculos usados no movimento";
  return `É um movimento para ${simpleName.toLowerCase()}; você sente o trabalho principalmente em ${where}.`;
 }
 const rawEntries: Entry[] = groups.flatMap(([segment,activity,names])=>names.split(";").map(name=>({segment,activity,name:name.trim()})));
 const nameUses = new Map<string,number>();
 const all = rawEntries.map(entry=>{
- const displayName=simpleExerciseName(entry.name,entry.segment);
+ const displayName=getSimpleExerciseName(entry.name,entry.segment);
  const count=(nameUses.get(displayName)||0)+1; nameUses.set(displayName,count);
- return {...entry,displayName:count>1?`${displayName} ${count}`:displayName,explanation:exerciseExplanation(entry.segment,displayName)};
+ return {...entry,displayName:count>1?`${displayName} ${count}`:displayName,explanation:getSimpleExerciseExplanation(entry.segment,displayName)};
 });
 const advanced = /avançado|muscle-up|front lever|handstand push|parada de mão livre|human flag|dragon flag|planche|pistol squat$|shrimp squat$|box jump|salto|snatch|tiros|sprint|windshield|typewriter|archer pull|flexão com palmas|nordic curl/i;
 const lowImpact = /alongamento|mobilidade|bird dog|dead bug|ponte|caminhada|bicicleta|elíptico|natação|hidro|respiração|pallof|isométric|prancha|remo ergométrico|flexora|abdução|adução/i;

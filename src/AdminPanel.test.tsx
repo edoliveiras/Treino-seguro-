@@ -5,8 +5,8 @@ import AdminPanel from "./AdminPanel";
 
 const state = vi.hoisted(() => ({
   accounts: [
-    { id: "admin-1", full_name: "Admin", email: "admin@example.test", whatsapp_e164: "+5511999990001", account_status: "active", email_verified_at: "2026-11-01T00:00:00Z", created_at: "2026-11-01T00:00:00Z" },
-    { id: "user-2", full_name: "Pessoa Usuária", email: "user@example.test", whatsapp_e164: "+5511999990002", account_status: "suspended", email_verified_at: "2026-11-02T00:00:00Z", created_at: "2026-11-02T00:00:00Z" },
+    { id: "admin-1", full_name: "Admin", email: "admin@example.test", phone_e164: "+5511999990001", account_status: "active", email_verified_at: "2026-11-01T00:00:00Z", created_at: "2026-11-01T00:00:00Z" },
+    { id: "user-2", full_name: "Pessoa Usuária", email: "user@example.test", phone_e164: "+5511999990002", account_status: "suspended", email_verified_at: "2026-11-02T00:00:00Z", created_at: "2026-11-02T00:00:00Z" },
   ],
   invoke: vi.fn(async () => ({ data: { success: true }, error: null })),
 }));

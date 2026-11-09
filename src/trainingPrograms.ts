@@ -66,7 +66,7 @@ const lowerDay: ProgramDay = {
 const pushDay: ProgramDay = {
   label:"Peito, ombros e tríceps", focus:"Peito, ombros e tríceps",
   exercises:[
-    ex("Supino reto com barra ou halteres","Supino reto com barra ou halteres","Peito","Supino em banco com barra ou halteres.","Flexão no chão ou em apoio alto, conforme capacidade.","Use apoio alto se necessário e amplitude confortável.","Mantenha pés firmes e lombar confortável no banco.","6–10",3,150),
+    ex("Supino reto","Supino reto","Peito","Supino em banco com barra ou halteres.","Flexão no chão ou em apoio alto, conforme capacidade.","Use apoio alto se necessário e amplitude confortável.","Mantenha pés firmes e lombar confortável no banco.","6–10",3,150),
     ex("Supino inclinado","Supino inclinado","Peito","Empurrar halteres em banco levemente inclinado.","Flexão com mãos em bancada firme.","Evite apoio instável e não force ombro.","Mantenha costelas e quadril alinhados.","8–12",3,120),
     ex("Desenvolvimento de ombros","Desenvolvimento de ombros","Ombros","Empurrar halteres ou máquina acima da cabeça.","Empurrar elástico ou garrafas sentado.","Faça sentado e com amplitude confortável.","Não arqueie a lombar para terminar a repetição.","8–12",3,120),
     ex("Elevação lateral","Elevação lateral","Ombros","Levantar halteres para os lados com controle.","Levantar garrafas pequenas para os lados.","Reduza a altura se houver dor no ombro.","Faça sentado se ajudar a manter o tronco estável.","12–15",2,60),
@@ -109,7 +109,7 @@ export const EXAMPLE_PROGRAMS: ExampleProgram[] = [
     days:[upperDay,lowerDay]
   },
   {
-    id:"avancado-empurrar-puxar-pernas",title:"Avançado — Peito, costas e pernas",level:"Avançado",split:"Peito, costas e pernas",frequency:"4 a 6 dias por semana",
+    id:"avancado-empurrar-puxar-pernas",title:"Avançado — Empurrar, puxar e pernas",level:"Avançado",split:"Empurrar, puxar e pernas",frequency:"4 a 6 dias por semana",
     description:"Ciclo de três sessões: peito, ombros e tríceps; costas e bíceps; pernas. Com seis dias, repita o ciclo duas vezes; com quatro ou cinco dias, continue a sequência sem tentar compensar sessões perdidas.",
     days:[pushDay,pullDay,legsDay]
   }

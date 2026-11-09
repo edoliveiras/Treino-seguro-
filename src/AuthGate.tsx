@@ -9,7 +9,7 @@ type Profile = {
   id: string;
   full_name: string;
   email: string;
-  whatsapp_e164: string;
+  phone_e164: string;
   email_verified_at: string | null;
   account_status: "pending_verification" | "active" | "suspended";
   training_level: "Iniciante" | "Intermediário" | "Avançado";
@@ -49,7 +49,7 @@ export default function AuthGate() {
     }
     const { data, error: profileError } = await supabase
       .from("profiles")
-      .select("id,full_name,email,whatsapp_e164,email_verified_at,account_status,training_level,training_place,training_days")
+      .select("id,full_name,email,phone_e164,email_verified_at,account_status,training_level,training_place,training_days")
       .eq("id", user.id)
       .maybeSingle();
     if (profileError) {
@@ -129,7 +129,7 @@ export default function AuthGate() {
         emailRedirectTo: window.location.origin,
         data: {
           full_name: fullName.trim(),
-          whatsapp_e164: normalizedPhone,
+          phone_e164: normalizedPhone,
           adult_confirmed: "true",
           terms_accepted: "true",
           privacy_accepted: "true",

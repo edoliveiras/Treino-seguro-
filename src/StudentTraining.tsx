@@ -5,7 +5,7 @@ import { getExampleProgram, getWeekPrescription, type ProgramExercise, type Prog
 
 type SavedExercise = { id:string; day_label:string; position:number; exercise_name:string; technical_name:string; muscle_group:string; sets:number; reps:string; rest_seconds:number; tempo:string; gym_version:string; home_version:string; knee_adaptation:string; back_adaptation:string; observation:string; photo_url:string; video_url:string };
 type Assignment = { id: string; plan_id: string; seen_at: string | null; assigned_at: string };
-type Completion = { id: string; exercise_id: string; session_date: string; completed_at: string };
+type Completion = { id:string; assignment_id:string; exercise_id:string; exercise_name:string; session_date:string; completed_at:string };
 
 const photo = "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=720&q=75";
 const youtube = (e: {name:string;technicalName:string}) => "https://www.youtube.com/results?search_query="+encodeURIComponent(e.name+" "+e.technicalName+" execução correta");
@@ -33,13 +33,13 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
         .order("assigned_at",{ascending:false}).limit(1).maybeSingle();
       if(!alive)return;
       if(ae){setError("Não foi possível consultar seu treino atribuído. Mostramos o modelo educativo enquanto isso.");setLoading(false);return;}
-      if(!a){setAssignment(null);setPlan(null);setSavedExercises([]);setSavedDays([]);setCompletions([]);setLoading(false);return;}
+      if(!a){const {data:history}=await supabase.from("workout_completions").select("id,assignment_id,exercise_id,exercise_name,session_date,completed_at").eq("student_id",userId).order("completed_at",{ascending:false}).limit(20);setAssignment(null);setPlan(null);setSavedExercises([]);setSavedDays([]);setCompletions((history??[]) as Completion[]);setLoading(false);return;}
       const current=a as Assignment;
       if(compact){setAssignment(current);setNewNotice(!current.seen_at);setLoading(false);return;}
       const [{data:p,error:pe},{data:items,error:ie},{data:done,error:de}]=await Promise.all([
         supabase.from("workout_plans").select("title,level,description,split_type").eq("id",current.plan_id).maybeSingle(),
-        supabase.from("workout_plan_exercises").select("*").eq("plan_id",current.plan_id).order("day_label").order("position"),
-        supabase.from("workout_completions").select("id,exercise_id,session_date,completed_at").eq("assignment_id",current.id).order("completed_at",{ascending:false})
+        supabase.from("workout_plan_exercises").select("*").eq("plan_id",current.plan_id).eq("is_active",true).order("day_label").order("position"),
+        supabase.from("workout_completions").select("id,assignment_id,exercise_id,exercise_name,session_date,completed_at").eq("student_id",userId).order("completed_at",{ascending:false}).limit(20)
       ]);
       if(!alive)return;
       if(pe||ie||de){setError("Não foi possível carregar todas as informações do treino atribuído.");setLoading(false);return;}
@@ -61,13 +61,13 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
   };
   const toggleDone=async(exercise:SavedExercise|ProgramExercise,key:string)=>{
     if(assignment&&supabase&&"id" in exercise&&exercise.id){
-      const existing=completions.find(x=>x.exercise_id===exercise.id);
+      const existing=completions.find(x=>x.assignment_id===assignment.id&&x.exercise_id===exercise.id);
       if(existing){
         const {error:deleteError}=await supabase.from("workout_completions").delete().eq("id",existing.id);
         if(deleteError){setError("Não foi possível desfazer a marcação.");return;}
         setCompletions(old=>old.filter(x=>x.id!==existing.id));
       }else{
-        const {data,error:insertError}=await supabase.from("workout_completions").insert({assignment_id:assignment.id,exercise_id:exercise.id,student_id:userId}).select("id,exercise_id,session_date,completed_at").single();
+        const exerciseName=("exercise_name" in exercise?exercise.exercise_name:exercise.name);\n        const {data,error:insertError}=await supabase.from("workout_completions").insert({assignment_id:assignment.id,exercise_id:exercise.id,student_id:userId,exercise_name:exerciseName}).select("id,assignment_id,exercise_id,exercise_name,session_date,completed_at").single();
         if(insertError){setError("Não foi possível salvar a conclusão do exercício.");return;}
         setCompletions(old=>[data as Completion,...old]);
       }
@@ -75,7 +75,7 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
   };
   const savedExercisesForDay=(label:string)=>savedExercises.filter(e=>e.day_label===label).sort((a,b)=>a.position-b.position);
   const total=activePlan?savedExercises.length:demoProgram.days.reduce((n,d)=>n+d.exercises.length,0);
-  const doneCount=activePlan?new Set(completions.map(c=>c.exercise_id)).size:demoDone.length;
+  const doneCount=activePlan?new Set(completions.filter(c=>c.assignment_id===assignment?.id).map(c=>c.exercise_id)).size:demoDone.length;
 
   if(loading)return <section className="panel"><p>Carregando o treino da sua conta…</p></section>;
   if(compact)return assignment?<section className="panel student-training-notice"><span className="eyebrow">TREINO DO PROFESSOR</span><h3>{newNotice?"Novo treino do seu professor!":"Seu treino está disponível"}</h3><p>{newNotice?"Seu professor atribuiu um novo treino. Abra para conferir os exercícios.":"Consulte o plano que está atribuído à sua conta."}</p><button type="button" className="primary" onClick={onOpen}>Ver meu treino →</button></section>:null;
@@ -137,7 +137,7 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
         })}
       </article>;
     })}
-    <div className="safety-alert"><b>Como progredir com segurança</b><p>Quando completar o limite superior das repetições em duas sessões seguidas, sem perder a técnica e mantendo 2 a 3 repetições possíveis, o professor pode aumentar a carga em pequenos passos. Não aumente carga e séries ao mesmo tempo.</p><p>Semana 7: reduza a carga em cerca de 10 a 20% e reavalie técnica, conforto e recuperação antes do próximo ciclo.</p></div>
+    {completions.length>0&&<div className="log-list"><h4>Histórico de exercícios concluídos</h4>{completions.slice(0,10).map(c=><p key={c.id}>{c.session_date} · {c.exercise_name||"Exercício concluído"}</p>)}</div>}\n    <div className="safety-alert"><b>Como progredir com segurança</b><p>Quando completar o limite superior das repetições em duas sessões seguidas, sem perder a técnica e mantendo 2 a 3 repetições possíveis, o professor pode aumentar a carga em pequenos passos. Não aumente carga e séries ao mesmo tempo.</p><p>Semana 7: reduza a carga em cerca de 10 a 20% e reavalie técnica, conforto e recuperação antes do próximo ciclo.</p></div>
     <div className="safety-alert"><b><AlertTriangle size={16}/> Aviso importante</b><p>Este plano é educativo e não substitui avaliação de médico, fisioterapeuta ou profissional de Educação Física. Antes de começar, procure orientação profissional, principalmente se estiver acima do peso, for iniciante ou tiver dor, lesão ou condição de saúde. Não force movimentos dolorosos. Se houver dor no peito, tontura, falta de ar intensa ou dor forte/piorando, pare e procure atendimento.</p></div>
   </section>;
 }

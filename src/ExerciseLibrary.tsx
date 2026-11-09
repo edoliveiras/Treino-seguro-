@@ -454,10 +454,65 @@ const simpleNames: Record<string,string> = {
 "gato-camelo":"Arredondar e estender as costas",
 "alongamentos de isquiotibiais e piriforme":"Alongar coxa e glúteos",
 "agachamento com apoio":"Agachar segurando apoio",
-"respiração":"Respirar devagar e profundamente"
+"respiração":"Respirar devagar e profundamente",
+
+"Agachamento livre com barra":"Agachar com barra",
+"Mergulho nas barras paralelas (dips)":"Descer nos apoios",
+"Agachamento pistol assistido":"Agachar em uma perna com apoio",
+"Prancha com toque alternado nos ombros":"Tocar ombros mantendo prancha",
+"Agachamento até a cadeira":"Agachar até a cadeira",
+"Ponte de glúteos":"Subir quadril deitado",
+"Elevação pélvica":"Subir quadril apoiado",
+"Abdução de quadril com faixa":"Abrir pernas com faixa",
+"Levantamento terra romeno com halteres":"Descer pesos com pernas retas",
+"Afundo apoiado":"Dar passo e agachar com apoio",
+"Prancha inclinada":"Sustentar corpo inclinado",
+"Pallof press com faixa/cabo":"Segurar faixa sem girar",
+"Crunch curto":"Encolher tronco deitado",
+"Remada sentada":"Puxar peso sentado",
+"Flexão na parede ou banco":"Empurrar parede ou banco",
+"Supino com halteres ou máquina":"Empurrar peso deitado",
+"Desenvolvimento sentado leve":"Empurrar peso sentado",
+"Rosca bíceps":"Dobrar braços com peso",
+"Tríceps na polia ou extensão com faixa":"Esticar braços com faixa",
+"Agachamento goblet":"Agachar segurando peso",
+"Caminhada ou bicicleta leve":"Caminhar ou pedalar leve",
+"Flexão de braços inclinada ou no solo":"Empurrar apoio inclinado",
+"Remada invertida em barra baixa":"Puxar corpo na barra",
+"Agachamento livre":"Agachar sem peso",
+"Avanço alternado":"Dar passo e agachar",
+"Prancha frontal":"Sustentar corpo alinhado",
+"Bird dog":"Estender braço e perna",
+"Elevação de panturrilhas":"Subir na ponta dos pés",
+"Mountain climber lento":"Levar joelhos ao peito",
+"Burpee sem salto (adaptado)":"Agachar e levantar sem salto",
+"Agachamento isométrico na parede":"Sustentar agachamento na parede",
+"Pike push-up adaptada":"Empurrar com quadril alto",
+"Elevação lateral com halteres":"Levantar braços para os lados",
+"Puxada alta na polia ou faixa":"Puxar peso ao peito",
+"Face pull com faixa ou polia":"Puxar faixa ao rosto",
+"Step-up em degrau baixo":"Subir em degrau baixo",
+"Agachamento sumô":"Agachar pernas abertas",
+"Ponte de glúteos com marcha":"Subir quadril alternando pernas",
+"Prancha lateral com joelhos apoiados":"Sustentar corpo de lado",
+"Polichinelo sem salto (step jack)":"Abrir pernas sem salto",
+"Marcha acelerada no lugar":"Marchar sem sair do lugar",
+"Boxe sombra":"Dar socos no ar",
+"Toque alternado no step baixo":"Tocar degrau alternando pés",
+"Toque de ombros em prancha inclinada":"Tocar ombros inclinado",
+"Agachamento com alcance dos braços":"Agachar estendendo braços",
+"Passada para trás alternada com apoio":"Dar passo atrás com apoio",
+"Passos laterais contínuos":"Caminhar de lado",
+"Elevação alternada de joelhos":"Elevar joelhos alternando",
+"Toque de calcanhar em pé":"Tocar calcanhar à frente",
+"Abdominal em pé com joelho cruzado":"Aproximar cotovelo e joelho",
+"Hip thrust com barra":"Subir quadril com barra",
+"Agachamento búlgaro":"Agachar com um pé atrás",
+"Coice de glúteo na polia":"Levar perna para trás",
+"Leg press":"Empurrar plataforma",
 };
 export const simpleNameLookup = Object.fromEntries(Object.entries(simpleNames).map(([key,value])=>[key.toLowerCase(),value]));
-function getSimpleExerciseName(name:string, segment:string) {
+function rawSimpleExerciseName(name:string, segment:string) {
  const key=name.trim().toLowerCase();
  const s=segment.toLowerCase();
  if(key==="coice na polia" && /tr[ií]ceps/.test(s)) return "Esticar braço com cabo";
@@ -478,8 +533,12 @@ function getSimpleExerciseName(name:string, segment:string) {
  if(/alongamento/.test(s)) return "Alongar com movimento suave";
  return "Mover o corpo com controle";
 }
+export function getSimpleExerciseName(name:string, segment:string) {
+ return rawSimpleExerciseName(name,segment).trim().split(/\s+/).slice(0,4).join(" ");
+}
+
 export function getSimpleExerciseExplanation(segment:string, simpleName:string) {
- const where = /peito/.test(segment)?"peito e braços":/costas|trap[eé]zio/.test(segment)?"costas e parte alta do tronco":/ombro/.test(segment)?"ombros":/b[ií]ceps/.test(segment)?"parte da frente dos braços":/tr[ií]ceps/.test(segment)?"parte de trás dos braços":/antebraço/.test(segment)?"antebraços":/quadr[ií]ceps/.test(segment)?"parte da frente das coxas":/posterior/.test(segment)?"parte de trás das coxas":/gl[uú]te/.test(segment)?"glúteos":/panturrilha|tibial/.test(segment)?"panturrilhas e pernas":/adutores|abdutores/.test(segment)?"parte interna e externa das coxas":/abd[oô]men|lombar/.test(segment)?"abdômen e região das costas":/cardio/.test(segment)?"coração, pulmões e pernas":/alongamento/.test(segment)?"músculos alongados":/propriocepção|equilíbrio/.test(segment)?"equilíbrio e controle do corpo":"músculos usados no movimento";
+ const where = /peito/.test(segment)?"peito e braços":/costas|trap[eé]zio/.test(segment)?"costas e parte alta do tronco":/ombro/.test(segment)?"ombros":/b[ií]ceps/.test(segment)?"parte da frente dos braços":/tr[ií]ceps/.test(segment)?"parte de trás dos braços":/antebraço/.test(segment)?"antebraços":/quadr[ií]ceps/.test(segment)?"parte da frente das coxas":/posterior/.test(segment)?"parte de trás das coxas":/gl[uú]te/.test(segment)?"glúteos":/panturrilha|tibial/.test(segment)?"panturrilhas e pernas":/pernas|quadr[ií]ceps|posterior/.test(segment)?"pernas":/braços/.test(segment)?"braços":/corpo inteiro/.test(segment)?"vários grupos musculares":/adutores|abdutores/.test(segment)?"parte interna e externa das coxas":/abd[oô]men|lombar/.test(segment)?"abdômen e região das costas":/cardio/.test(segment)?"coração, pulmões e pernas":/alongamento/.test(segment)?"músculos alongados":/propriocepção|equilíbrio/.test(segment)?"equilíbrio e controle do corpo":"músculos usados no movimento";
  return `É um movimento para ${simpleName.toLowerCase()}; você sente o trabalho principalmente em ${where}.`;
 }
 const rawEntries: Entry[] = groups.flatMap(([segment,activity,names])=>names.split(";").map(name=>({segment,activity,name:name.trim()})));

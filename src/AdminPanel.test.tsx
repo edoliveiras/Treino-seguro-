@@ -13,11 +13,15 @@ const state = vi.hoisted(() => ({
 
 vi.mock("./lib/supabase", () => ({
   supabase: {
-    from: () => ({
-      select: () => ({
-        order: async () => ({ data: state.accounts, error: null }),
-      }),
-    }),
+    from: (table: string) => {
+      const query: any = {
+        select: () => query,
+        order: () => query,
+        eq: () => query,
+        then: (resolve: (value: any) => unknown) => Promise.resolve({ data: table === "admin_account_directory" ? state.accounts : [], error: null }).then(resolve),
+      };
+      return query;
+    },
     functions: { invoke: state.invoke },
   },
 }));

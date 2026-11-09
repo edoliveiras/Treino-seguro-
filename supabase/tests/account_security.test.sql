@@ -42,6 +42,7 @@ $$;
 \ir ../migrations/20261109184000_training_rpc_invoker_security.sql
 \ir ../migrations/20261109185000_training_rls_and_index_tuning.sql
 \ir ../migrations/20261109186000_email_only_admin_reactivation.sql
+\ir ../migrations/20261109187000_preserve_workout_completion_history.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),

@@ -213,3 +213,20 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .form-grid .focus-checkbox-grid label,.panel .focus-checkbox-grid label{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:9px;width:100%;font-size:14px;font-weight:600;cursor:pointer}
 .focus-checkbox-grid input[type=checkbox]{appearance:auto;width:20px;height:20px;min-width:20px;margin:0;padding:0;accent-color:#1d7048}
 @media(max-width:640px){.focus-checkbox-grid{grid-template-columns:1fr 1fr}.focus-multiselect{padding:12px}}
+
+
+/* Identificação clara do nome popular e do termo técnico opcional. */
+.technical-exercise-name {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted, #64748b);
+  font-size: 0.76rem;
+  line-height: 1.35;
+  font-weight: 400;
+}
+.exercise-explanation {
+  margin: 0.35rem 0 0.55rem;
+  color: var(--text, inherit);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}

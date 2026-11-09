@@ -147,7 +147,7 @@ export default function StudentTraining({userId,level,place,days,compact=false,o
   {error&&<p className="auth-error" role="alert">{error}</p>}
   <div className="workout-meta">
    <div><small>NÍVEL</small><b>{activePlan?plan?.level:demoProgram.level}</b></div>
-   <div><small>FREQUÊNCIA</small><b>{activePlan?`Conforme combinado · ${days} dias/semana`:demoProgram.frequency}</b></div>
+   <div><small>FREQUÊNCIA</small><b>{activePlan?`Disponibilidade: ${days} dias/semana`:demoProgram.frequency}</b></div>
    <div><small>LOCAL</small><b>{place}</b></div>
   </div>
   {daysToShow.length>1&&<div className="day-selector" role="group" aria-label="Escolher dia do treino">{daysToShow.map(d=><button key={d.label} type="button" className={d.label===currentDayLabel?"primary":"secondary"} aria-pressed={d.label===currentDayLabel} onClick={()=>setSelectedDay(d.label)}>{d.label}</button>)}</div>}

@@ -138,7 +138,7 @@ export default function TrainingManager({currentUserId}:{currentUserId:string}) 
   else{setNotice("Modelo excluído.");if(planId===p.id)reset();await load();}
  };
 
- const activeStudents=students.filter(s=>s.account_status==="active"&&s.id!==currentUserId);
+ const activeStudents=students.filter(s=>s.id!==currentUserId);
  const planName=(id:string)=>plans.find(p=>p.id===id)?.title??"Treino";
  return <section className="panel training-manager">
   <div className="admin-panel-heading"><div><span className="eyebrow">TREINOS DO PROFESSOR</span><h2>Montar, salvar e atribuir treinos</h2></div><button className="secondary" type="button" onClick={()=>void load()} disabled={loading}><RefreshCw size={16}/> Atualizar</button></div>
@@ -149,7 +149,7 @@ export default function TrainingManager({currentUserId}:{currentUserId:string}) 
    {loading?<p>Carregando…</p>:activeStudents.length===0?<p>Nenhum aluno ativo cadastrado.</p>:<div className="admin-account-list">{activeStudents.map(s=><article className="admin-account-card" key={s.id}>
     <div className="admin-account-main"><Users size={20}/><div><b>{s.full_name}</b><span>{s.email}</span><small>WhatsApp para contato: {s.phone_e164}</small></div></div>
     <div className="admin-account-meta"><b>{s.training_level||"Iniciante"}</b><small>{s.training_place||"Casa"} · {s.training_days||3} dias disponíveis/semana</small><small>Treino atual: {s.current_workout||"Modelo de exemplo"}</small></div>
-    <label className="student-select"><input type="checkbox" checked={selectedStudents.includes(s.id)} onChange={()=>toggleStudent(s.id)}/> Selecionar aluno</label>
+    <small>{s.account_status==="active"?"Conta ativa":s.account_status==="suspended"?"Acesso suspenso":"Aguardando confirmação de e-mail"}</small><label className="student-select"><input type="checkbox" disabled={s.account_status!=="active"} checked={selectedStudents.includes(s.id)} onChange={()=>toggleStudent(s.id)}/> Selecionar aluno</label>
    </article>)}</div>}
    <p className="muted">O WhatsApp é apenas um contato cadastral. O aplicativo não envia mensagens nem usa telefone para autenticação.</p>
   </div>

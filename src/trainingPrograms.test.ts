@@ -28,5 +28,6 @@ describe("modelos de treino baseados em nível",()=>{
   expect(getWeekPrescription(3,2,"8–12",90).sets).toBe(3);
   expect(getWeekPrescription(6,2,"8–12",90).phase).toBe("Consolidação");
   expect(getWeekPrescription(7,3,"8–12",90).phase).toBe("Recuperação e reavaliação");
+  expect(getWeekPrescription(1,2,"15–25 segundos",90).reps).toBe("10–20 segundos");
  });
 });

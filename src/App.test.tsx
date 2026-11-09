@@ -33,7 +33,7 @@ describe("fluxos de segurança da interface", () => {
     expect(screen.getByText("Comece com segurança")).toBeTruthy();
   });
 
-  it("não mostra exercícios quando a pessoa relata dor ou limitação", () => {
+  it("oculta exercícios com alerta de joelho e mantém opções de baixo impacto", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
     fireEvent.change(screen.getByLabelText("Peso atual (kg)"), { target: { value: "90" } });
@@ -43,8 +43,9 @@ describe("fluxos de segurança da interface", () => {
     fireEvent.click(screen.getByText(/Compreendo que o app é educativo/));
     fireEvent.click(screen.getByRole("button", { name: /Concluir avaliação/ }));
     fireEvent.click(screen.getByRole("button", { name: "Exercícios" }));
-    expect(screen.getByText("Biblioteca temporariamente ocultada")).toBeTruthy();
-    expect(screen.queryByText("Caminhada confortável")).toBeNull();
+    expect(screen.getByText(/itens com alerta compatível com suas queixas foram ocultados/)).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "agachamento livre" })).toBeNull();
+    expect(screen.getByRole("heading", { name: "caminhada leve" })).toBeTruthy();
   });
 });
 
@@ -127,9 +128,11 @@ describe("fluxos de segurança da interface", () => {
     expect(screen.getByText("Comece com segurança")).toBeTruthy();
   });
 
-  it("identifica cada exercício pelo nome para leitores de tela e expõe estado marcado", () => {
+  it("identifica cada exercício do plano pelo nome e expõe o estado marcado", () => {
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "Exercícios" }));
+    fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
+    completeBasicAssessment();
+    fireEvent.click(screen.getByRole("button", { name: "Treino" }));
     const markButton = screen.getByRole("button", { name: "Marcar Caminhada confortável" });
     expect(markButton.getAttribute("aria-pressed")).toBe("false");
     fireEvent.click(markButton);

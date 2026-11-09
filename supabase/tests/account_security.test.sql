@@ -262,4 +262,87 @@ end $rls$;
 reset request.jwt.claim.role;
 reset request.jwt.claim.sub;
 reset request.jwt.claims;
-select 'account_security_and_health_data_sql_tests_passed' as result;
+
+-- Treinos: o professor cria e atribui; cada aluno só lê e registra o próprio treino.
+set role authenticated;
+set request.jwt.claim.role = 'authenticated';
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
+insert into public.workout_plans(id,title,level,split_type,description,created_by)
+values ('10000000-0000-4000-8000-000000000001','Modelo de teste','Iniciante','Corpo inteiro','Plano de demonstração', '00000000-0000-4000-8000-000000000001');
+insert into public.workout_plan_exercises(id,plan_id,day_label,position,exercise_name,technical_name,muscle_group)
+values ('20000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000001','Corpo inteiro',1,'Sentar e levantar','Agachamento com apoio','Pernas');
+insert into public.workout_assignments(id,plan_id,student_id,assigned_by)
+values ('30000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000003','00000000-0000-4000-8000-000000000001');
+reset role;
+
+set role authenticated;
+set request.jwt.claim.role = 'authenticated';
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000003';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000003","role":"authenticated","app_metadata":{"role":"user"}}';
+do $training_student_access$
+declare v_denied boolean := false;
+begin
+  if (select count(*) from public.workout_assignments) <> 1 then
+    raise exception 'student_cannot_read_own_assignment';
+  end if;
+  if (select count(*) from public.workout_plans) <> 1 then
+    raise exception 'student_cannot_read_assigned_plan';
+  end if;
+  if (select count(*) from public.workout_plan_exercises) <> 1 then
+    raise exception 'student_cannot_read_assigned_exercises';
+  end if;
+  update public.workout_assignments set seen_at=now()
+  where id='30000000-0000-4000-8000-000000000001';
+  insert into public.workout_completions(assignment_id,exercise_id,student_id)
+  values ('30000000-0000-4000-8000-000000000001','20000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000003');
+  begin
+    insert into public.workout_assignments(plan_id,student_id,assigned_by)
+    values ('10000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000004','00000000-0000-4000-8000-000000000003');
+  exception when insufficient_privilege then v_denied := true;
+  end;
+  if not v_denied then raise exception 'student_created_assignment'; end if;
+end;
+$training_student_access$;
+reset role;
+
+set role authenticated;
+set request.jwt.claim.role = 'authenticated';
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000004';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000004","role":"authenticated","app_metadata":{"role":"user"}}';
+do $training_isolation$
+begin
+  if (select count(*) from public.workout_assignments) <> 0
+     or (select count(*) from public.workout_plans) <> 0
+     or (select count(*) from public.workout_plan_exercises) <> 0 then
+    raise exception 'student_can_read_another_students_training';
+  end if;
+end;
+$training_isolation$;
+reset role;
+
+set role authenticated;
+set request.jwt.claim.role = 'authenticated';
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
+select public.admin_remove_workout_assignment('30000000-0000-4000-8000-000000000001');
+reset role;
+
+set role authenticated;
+set request.jwt.claim.role = 'authenticated';
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000003';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000003","role":"authenticated","app_metadata":{"role":"user"}}';
+do $training_removal$
+begin
+  if (select count(*) from public.workout_assignments) <> 0
+     or (select count(*) from public.workout_plans) <> 0 then
+    raise exception 'removed_assignment_still_visible_to_student';
+  end if;
+  if (select count(*) from public.workout_completions) <> 1 then
+    raise exception 'removing_assignment_deleted_completion_history';
+  end if;
+end;
+$training_removal$;
+reset role;
+
+select 'account_security_health_data_and_training_sql_tests_passed' as result;

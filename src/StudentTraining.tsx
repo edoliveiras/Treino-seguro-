@@ -79,7 +79,7 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
   const doneCount=activePlan?new Set(completions.filter(c=>c.assignment_id===assignment?.id).map(c=>c.exercise_id)).size:demoDone.length;
 
   if(loading)return <section className="panel"><p>Carregando o treino da sua conta…</p></section>;
-  if(compact)return assignment?<section className="panel student-training-notice"><span className="eyebrow">TREINO DO PROFESSOR</span><h3>{newNotice?"Novo treino do seu professor!":"Seu treino está disponível"}</h3><p>{newNotice?"Seu professor atribuiu um novo treino. Abra para conferir os exercícios.":"Consulte o plano que está atribuído à sua conta."}</p><button type="button" className="primary" onClick={onOpen}>Ver meu treino →</button></section>:null;
+  if(compact)return assignment?<section className="panel student-training-notice"><span className="eyebrow">TREINO DO PROFESSOR</span><h3>{newNotice?"Novo treino do seu professor!":"Seu treino está disponível"}</h3><p>{newNotice?"Seu professor atribuiu um novo treino. Abra para conferir os exercícios.":"Consulte o plano que está atribuído à sua conta."}</p><button type="button" className="primary" onClick={()=>{setNewNotice(false);onOpen?.();}}>Ver meu treino →</button></section>:null;
   return <section className="panel student-training">
     <span className="eyebrow">{activePlan?"TREINO ATRIBUÍDO PELO PROFESSOR":"TREINO DE EXEMPLO"}</span>
     {newNotice&&<div className="success-text" role="status"><b>Novo treino do seu professor!</b><p>Seu professor atribuiu um treino. Confira os exercícios e confirme a leitura.</p><button className="primary" type="button" onClick={()=>void acknowledge()}>Entendi, ver meu treino</button></div>}

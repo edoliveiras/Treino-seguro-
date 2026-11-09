@@ -11,7 +11,7 @@ const photo = "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto
 const youtube = (e: {name:string;technicalName:string}) => "https://www.youtube.com/results?search_query="+encodeURIComponent(e.name+" "+e.technicalName+" execução correta");
 const photoSearch = (e: {name:string;technicalName:string}) => "https://www.google.com/search?tbm=isch&q="+encodeURIComponent(e.name+" "+e.technicalName+" exercício");
 
-export default function StudentTraining({ userId, level, place, days }: { userId?:string; level:string; place:string; days:string }) {
+export default function StudentTraining({ userId, level, place, days, compact=false, onOpen }: { userId?:string; level:string; place:string; days:string; compact?:boolean; onOpen?:()=>void }) {
   const [assignment,setAssignment]=useState<Assignment|null>(null);
   const [plan,setPlan]=useState<{title:string;level:string;description:string;split_type:string}|null>(null);
   const [savedDays,setSavedDays]=useState<ProgramDay[]>([]);
@@ -35,6 +35,7 @@ export default function StudentTraining({ userId, level, place, days }: { userId
       if(ae){setError("Não foi possível consultar seu treino atribuído. Mostramos o modelo educativo enquanto isso.");setLoading(false);return;}
       if(!a){setAssignment(null);setPlan(null);setSavedExercises([]);setSavedDays([]);setCompletions([]);setLoading(false);return;}
       const current=a as Assignment;
+      if(compact){setAssignment(current);setNewNotice(!current.seen_at);setLoading(false);return;}
       const [{data:p,error:pe},{data:items,error:ie},{data:done,error:de}]=await Promise.all([
         supabase.from("workout_plans").select("title,level,description,split_type").eq("id",current.plan_id).maybeSingle(),
         supabase.from("workout_plan_exercises").select("*").eq("plan_id",current.plan_id).order("day_label").order("position"),
@@ -49,7 +50,7 @@ export default function StudentTraining({ userId, level, place, days }: { userId
       setLoading(false);
     })();
     return()=>{alive=false;};
-  },[userId]);
+  },[userId,compact]);
 
   const demoProgram=useMemo(()=>getExampleProgram(level),[level]);
   const activePlan=Boolean(assignment&&plan);
@@ -77,6 +78,7 @@ export default function StudentTraining({ userId, level, place, days }: { userId
   const doneCount=activePlan?new Set(completions.map(c=>c.exercise_id)).size:demoDone.length;
 
   if(loading)return <section className="panel"><p>Carregando o treino da sua conta…</p></section>;
+  if(compact)return assignment?<section className="panel student-training-notice"><span className="eyebrow">TREINO DO PROFESSOR</span><h3>{newNotice?"Novo treino do seu professor!":"Seu treino está disponível"}</h3><p>{newNotice?"Seu professor atribuiu um novo treino. Abra para conferir os exercícios.":"Consulte o plano que está atribuído à sua conta."}</p><button type="button" className="primary" onClick={onOpen}>Ver meu treino →</button></section>:null;
   return <section className="panel student-training">
     <span className="eyebrow">{activePlan?"TREINO ATRIBUÍDO PELO PROFESSOR":"TREINO DE EXEMPLO"}</span>
     {newNotice&&<div className="success-text" role="status"><b>Novo treino do seu professor!</b><p>Seu professor atribuiu um treino. Confira os exercícios e confirme a leitura.</p><button className="primary" type="button" onClick={()=>void acknowledge()}>Entendi, ver meu treino</button></div>}

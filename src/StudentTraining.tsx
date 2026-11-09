@@ -67,7 +67,7 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
         if(deleteError){setError("Não foi possível desfazer a marcação.");return;}
         setCompletions(old=>old.filter(x=>x.id!==existing.id));
       }else{
-        const exerciseName=("exercise_name" in exercise?exercise.exercise_name:exercise.name);
+        const exerciseName=exercise.exercise_name;
         const {data,error:insertError}=await supabase.from("workout_completions").insert({assignment_id:assignment.id,exercise_id:exercise.id,student_id:userId,exercise_name:exerciseName}).select("id,assignment_id,exercise_id,exercise_name,session_date,completed_at").single();
         if(insertError){setError("Não foi possível salvar a conclusão do exercício.");return;}
         setCompletions(old=>[data as Completion,...old]);

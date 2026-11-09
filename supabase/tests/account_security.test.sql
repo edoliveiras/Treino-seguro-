@@ -120,6 +120,10 @@ begin
      and has_function_privilege('service_role','public.verify_phone_otp_challenge(uuid,text)','EXECUTE') then
     raise exception 'legacy_phone_verification_still_executable';
   end if;
+  if to_regprocedure('public.record_phone_otp_delivery(uuid,text,text)') is not null
+     and has_function_privilege('service_role','public.record_phone_otp_delivery(uuid,text,text)','EXECUTE') then
+    raise exception 'legacy_phone_delivery_still_executable';
+  end if;
   if has_table_privilege('service_role','public.phone_otp_challenges','SELECT')
      or has_table_privilege('service_role','public.phone_otp_send_log','SELECT') then
     raise exception 'legacy_phone_verification_tables_still_accessible';

@@ -104,7 +104,7 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
           const baseRest=("rest_seconds" in e?e.rest_seconds:e.restSeconds);
           const prescription=getWeekPrescription(week,e.sets,e.reps,baseRest);
           const key=("id" in e&&e.id)?e.id!:day.label+"-"+i;
-          const done=activePlan?completions.some(c=>c.exercise_id===key):demoDone.includes(key);
+          const done=activePlan?completions.some(c=>c.assignment_id===assignment?.id&&c.exercise_id===key):demoDone.includes(key);
           const name=("exercise_name" in e?e.exercise_name:e.name);
           const technicalName=("technical_name" in e?e.technical_name:e.technicalName);
           const gym=("gym_version" in e?e.gym_version:e.gym);

@@ -67,7 +67,8 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
         if(deleteError){setError("Não foi possível desfazer a marcação.");return;}
         setCompletions(old=>old.filter(x=>x.id!==existing.id));
       }else{
-        const exerciseName=("exercise_name" in exercise?exercise.exercise_name:exercise.name);\n        const {data,error:insertError}=await supabase.from("workout_completions").insert({assignment_id:assignment.id,exercise_id:exercise.id,student_id:userId,exercise_name:exerciseName}).select("id,assignment_id,exercise_id,exercise_name,session_date,completed_at").single();
+        const exerciseName=("exercise_name" in exercise?exercise.exercise_name:exercise.name);
+        const {data,error:insertError}=await supabase.from("workout_completions").insert({assignment_id:assignment.id,exercise_id:exercise.id,student_id:userId,exercise_name:exerciseName}).select("id,assignment_id,exercise_id,exercise_name,session_date,completed_at").single();
         if(insertError){setError("Não foi possível salvar a conclusão do exercício.");return;}
         setCompletions(old=>[data as Completion,...old]);
       }
@@ -100,7 +101,8 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
       return <article className="workout-day" key={day.label}>
         <h3>{day.label}</h3><p className="muted">{day.focus}</p>
         {items.map((e,i)=>{
-          const baseRest=("rest_seconds" in e?e.rest_seconds:e.restSeconds);\n          const prescription=getWeekPrescription(week,e.sets,e.reps,baseRest);
+          const baseRest=("rest_seconds" in e?e.rest_seconds:e.restSeconds);
+          const prescription=getWeekPrescription(week,e.sets,e.reps,baseRest);
           const key=("id" in e&&e.id)?e.id!:day.label+"-"+i;
           const done=activePlan?completions.some(c=>c.exercise_id===key):demoDone.includes(key);
           const name=("exercise_name" in e?e.exercise_name:e.name);
@@ -137,7 +139,8 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
         })}
       </article>;
     })}
-    {completions.length>0&&<div className="log-list"><h4>Histórico de exercícios concluídos</h4>{completions.slice(0,10).map(c=><p key={c.id}>{c.session_date} · {c.exercise_name||"Exercício concluído"}</p>)}</div>}\n    <div className="safety-alert"><b>Como progredir com segurança</b><p>Quando completar o limite superior das repetições em duas sessões seguidas, sem perder a técnica e mantendo 2 a 3 repetições possíveis, o professor pode aumentar a carga em pequenos passos. Não aumente carga e séries ao mesmo tempo.</p><p>Semana 7: reduza a carga em cerca de 10 a 20% e reavalie técnica, conforto e recuperação antes do próximo ciclo.</p></div>
+    {completions.length>0&&<div className="log-list"><h4>Histórico de exercícios concluídos</h4>{completions.slice(0,10).map(c=><p key={c.id}>{c.session_date} · {c.exercise_name||"Exercício concluído"}</p>)}</div>}
+    <div className="safety-alert"><b>Como progredir com segurança</b><p>Quando completar o limite superior das repetições em duas sessões seguidas, sem perder a técnica e mantendo 2 a 3 repetições possíveis, o professor pode aumentar a carga em pequenos passos. Não aumente carga e séries ao mesmo tempo.</p><p>Semana 7: reduza a carga em cerca de 10 a 20% e reavalie técnica, conforto e recuperação antes do próximo ciclo.</p></div>
     <div className="safety-alert"><b><AlertTriangle size={16}/> Aviso importante</b><p>Este plano é educativo e não substitui avaliação de médico, fisioterapeuta ou profissional de Educação Física. Antes de começar, procure orientação profissional, principalmente se estiver acima do peso, for iniciante ou tiver dor, lesão ou condição de saúde. Não force movimentos dolorosos. Se houver dor no peito, tontura, falta de ar intensa ou dor forte/piorando, pare e procure atendimento.</p></div>
   </section>;
 }

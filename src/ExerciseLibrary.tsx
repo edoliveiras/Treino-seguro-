@@ -721,6 +721,7 @@ const distinctExerciseNames: Record<string,string> = {
 "gato-camelo":"Arredondar costas e estender",
 "panturrilha em pé na máquina":"Erguer calcanhares em pé",
 "abdução na máquina":"Abrir pernas na máquina",
+"leg press 45":"Empurrar plataforma com pernas",
 };const distinctExerciseNameLookup = Object.fromEntries(Object.entries(distinctExerciseNames).map(([key,value])=>[key.toLowerCase(),value]));
 const shortNameLookup = Object.fromEntries(Object.entries(shortNameOverrides).map(([key,value])=>[key.toLowerCase(),value]));
 function rawSimpleExerciseName(name:string, segment:string) {

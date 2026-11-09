@@ -13,7 +13,7 @@ describe("treino apresentado ao aluno",()=>{
   expect(screen.getByText(/Adaptação para joelho/)).toBeTruthy();
   expect(screen.getByText(/Adaptação para lombar/)).toBeTruthy();
   expect(screen.getByText(/Aviso importante/)).toBeTruthy();
-  expect(screen.getAllByRole("link",{name:/Ver vídeo no YouTube/}).length).toBe(6);
+  expect(screen.getAllByRole("link",{name:/Buscar vídeo no YouTube/}).length).toBe(6);
  });
  it("seleciona o modelo correspondente ao nível informado",async()=>{
   render(<StudentTraining level="Intermediário" place="Academia" days="4"/>);

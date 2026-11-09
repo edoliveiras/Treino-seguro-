@@ -669,11 +669,56 @@ const shortNameOverrides: Record<string,string> = {
 "agachamento parcial na parede":"Agachar pouco na parede",
 "panturrilha":"Erguer calcanhares"
 };
+const distinctExerciseNames: Record<string,string> = {
+"flexão com pés elevados":"Empurrar com pés altos",
+"chin-up":"Subir barra queixo alto",
+"crucifixo invertido na máquina":"Abrir braços sentado",
+"remada alta":"Puxar peso alto",
+"flexão pike":"Empurrar quadril alto",
+"flexão pike elevada":"Empurrar pés altos",
+"rosca com barra W":"Dobrar braços curva",
+"chin-up com pegada fechada":"Subir barra mãos juntas",
+"extensão overhead com halter":"Esticar braços acima",
+"flexão fechada":"Empurrar mãos juntas",
+"agachamento Zercher":"Agachar peso abraçado",
+"passada":"Avançar e agachar",
+"avanço andando":"Avançar caminhando",
+"glute kickback na máquina":"Levar perna na máquina",
+"coice no quatro apoios":"Chutar para trás apoiado",
+"ponte unilateral":"Subir quadril uma perna",
+"ponte parada":"Sustentar quadril alto",
+"panturrilha unilateral":"Erguer um calcanhar",
+"cadeira abdutora":"Abrir pernas sentado",
+"agachamento lateral (cossaco)":"Agachar para o lado",
+"elevação de pernas deitado":"Elevar pernas deitado",
+"prancha com elevação de perna":"Sustentar corpo levantando perna",
+"reverse hyperextension":"Elevar pernas apoiado",
+"good morning leve":"Inclinar tronco com peso",
+"bird dog":"Estender braço e perna",
+"ponte":"Subir quadril",
+"prancha lateral (série McGill)":"Sustentar corpo de lado",
+"goblet squat":"Agachar segurando peso",
+"corda naval":"Ondular cordas",
+"parada de mão assistida":"Sustentar corpo invertido",
+"parada de mão livre":"Sustentar corpo sem apoio",
+"L-sit":"Sustentar pernas elevadas",
+"front lever tuck":"Sustentar corpo encolhido",
+"human flag":"Sustentar corpo lateral",
+"agachamento unilateral com apoio":"Agachar uma perna apoiado",
+"alongamento de iliopsoas":"Alongar frente do quadril",
+"abdução com elástico":"Abrir pernas com faixa",
+"monster walk":"Andar lateral com faixa",
+"band pull-apart":"Abrir faixa com braços",
+"rotação externa de ombro com elástico":"Girar braço com faixa",
+"panturrilha":"Erguer calcanhares",
+"dead bug":"Estender braço deitado"
+};
+const distinctExerciseNameLookup = Object.fromEntries(Object.entries(distinctExerciseNames).map(([key,value])=>[key.toLowerCase(),value]));
 const shortNameLookup = Object.fromEntries(Object.entries(shortNameOverrides).map(([key,value])=>[key.toLowerCase(),value]));
 function rawSimpleExerciseName(name:string, segment:string) {
  const key=name.trim().toLowerCase();
  const s=segment.toLowerCase();
- if(shortNameLookup[key]) return shortNameLookup[key];
+ if(distinctExerciseNameLookup[key]) return distinctExerciseNameLookup[key];\n if(shortNameLookup[key]) return shortNameLookup[key];
  if(key==="coice na polia" && /tr[ií]ceps/.test(s)) return "Esticar braço com cabo";
  if(simpleNameLookup[key]) return simpleNameLookup[key];
  if(/peito/.test(s)) return /flex|mergulho/.test(key)?"Empurrar o próprio corpo":/cruci|abert/.test(key)?"Abrir braços com controle":"Empurrar peso à frente";
@@ -704,7 +749,7 @@ const rawEntries: Entry[] = groups.flatMap(([segment,activity,names])=>names.spl
 const usedDisplayNames = new Set<string>();
 const displayNamesByExercise = new Map<string,string>();
 const all = rawEntries.map(entry=>{
- const exerciseKey=entry.segment+"|"+entry.name.toLowerCase();
+ const exerciseKey=entry.name.toLowerCase()==="coice na polia"?entry.segment+"|"+entry.name.toLowerCase():entry.name.toLowerCase();
  const baseName=getSimpleExerciseName(entry.name,entry.segment);
  let displayName=displayNamesByExercise.get(exerciseKey);
  if(!displayName){

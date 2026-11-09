@@ -22,6 +22,8 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
   const [loading,setLoading]=useState(Boolean(userId));
   const [newNotice,setNewNotice]=useState(false);
   const [error,setError]=useState("");
+  const now=new Date();
+  const today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
 
   useEffect(()=>{
     let alive=true;
@@ -61,22 +63,36 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
   };
   const toggleDone=async(exercise:SavedExercise|ProgramExercise,key:string)=>{
     if(assignment&&supabase&&"id" in exercise&&exercise.id){
-      const existing=completions.find(x=>x.assignment_id===assignment.id&&x.exercise_id===exercise.id);
+      const existing=completions.find(x=>x.assignment_id===assignment.id&&x.exercise_id===exercise.id&&x.session_date===today);
       if(existing){
         const {error:deleteError}=await supabase.from("workout_completions").delete().eq("id",existing.id);
         if(deleteError){setError("Não foi possível desfazer a marcação.");return;}
         setCompletions(old=>old.filter(x=>x.id!==existing.id));
       }else{
         const exerciseName=exercise.exercise_name;
-        const {data,error:insertError}=await supabase.from("workout_completions").insert({assignment_id:assignment.id,exercise_id:exercise.id,student_id:userId,exercise_name:exerciseName}).select("id,assignment_id,exercise_id,exercise_name,session_date,completed_at").single();
+        const {data,error:insertError}=await supabase.from("workout_completions").insert({assignment_id:assignment.id,exercise_id:exercise.id,student_id:userId,exercise_name:exerciseName,session_date:today}).select("id,assignment_id,exercise_id,exercise_name,session_date,completed_at").single();
         if(insertError){setError("Não foi possível salvar a conclusão do exercício.");return;}
         setCompletions(old=>[data as Completion,...old]);
       }
     }else setDemoDone(old=>old.includes(key)?old.filter(x=>x!==key):[...old,key]);
   };
   const savedExercisesForDay=(label:string)=>savedExercises.filter(e=>e.day_label===label).sort((a,b)=>a.position-b.position);
+  const completeWorkout=async()=>{
+    if(assignment&&supabase&&userId){
+      const completedIds=new Set(completions.filter(c=>c.assignment_id===assignment.id&&c.session_date===today).map(c=>c.exercise_id));
+      const remaining=savedExercises.filter(e=>!completedIds.has(e.id));
+      if(!remaining.length)return;
+      const rows=remaining.map(e=>({assignment_id:assignment.id,exercise_id:e.id,student_id:userId,exercise_name:e.exercise_name,session_date:today}));
+      const {data,error:saveError}=await supabase.from("workout_completions").insert(rows).select("id,assignment_id,exercise_id,exercise_name,session_date,completed_at");
+      if(saveError){setError("Não foi possível salvar a conclusão do treino de hoje.");return;}
+      setCompletions(old=>[...(data??[]) as Completion[],...old]);
+    }else{
+      const all=demoProgram.days.flatMap(d=>d.exercises.map((_,i)=>d.label+"-"+i));
+      setDemoDone(all);
+    }
+  };
   const total=activePlan?savedExercises.length:demoProgram.days.reduce((n,d)=>n+d.exercises.length,0);
-  const doneCount=activePlan?new Set(completions.filter(c=>c.assignment_id===assignment?.id).map(c=>c.exercise_id)).size:demoDone.length;
+  const doneCount=activePlan?new Set(completions.filter(c=>c.assignment_id===assignment?.id&&c.session_date===today).map(c=>c.exercise_id)).size:demoDone.length;
 
   if(loading)return <section className="panel"><p>Carregando o treino da sua conta…</p></section>;
   if(compact)return assignment?<section className="panel student-training-notice"><span className="eyebrow">TREINO DO PROFESSOR</span><h3>{newNotice?"Novo treino do seu professor!":"Seu treino está disponível"}</h3><p>{newNotice?"Seu professor atribuiu um novo treino. Abra para conferir os exercícios.":"Consulte o plano que está atribuído à sua conta."}</p><button type="button" className="primary" onClick={()=>{setNewNotice(false);onOpen?.();}}>Ver meu treino →</button></section>:null;
@@ -104,7 +120,7 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
           const baseRest=("rest_seconds" in e?e.rest_seconds:e.restSeconds);
           const prescription=getWeekPrescription(week,e.sets,e.reps,baseRest);
           const key=("id" in e&&e.id)?e.id!:day.label+"-"+i;
-          const done=activePlan?completions.some(c=>c.assignment_id===assignment?.id&&c.exercise_id===key):demoDone.includes(key);
+          const done=activePlan?completions.some(c=>c.assignment_id===assignment?.id&&c.exercise_id===key&&c.session_date===today):demoDone.includes(key);
           const name=("exercise_name" in e?e.exercise_name:e.name);
           const technicalName=("technical_name" in e?e.technical_name:e.technicalName);
           const gym=("gym_version" in e?e.gym_version:e.gym);
@@ -139,6 +155,7 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
         })}
       </article>;
     })}
+    <button type="button" className="primary complete-workout-button" disabled={doneCount>=total} onClick={()=>void completeWorkout()}>{doneCount>=total?"Treino de hoje concluído":"Marcar treino de hoje como concluído"}</button>
     {completions.length>0&&<div className="log-list"><h4>Histórico de exercícios concluídos</h4>{completions.slice(0,10).map(c=><p key={c.id}>{c.session_date} · {c.exercise_name||"Exercício concluído"}</p>)}</div>}
     <div className="safety-alert"><b>Como progredir com segurança</b><p>Quando completar o limite superior das repetições em duas sessões seguidas, sem perder a técnica e mantendo 2 a 3 repetições possíveis, o professor pode aumentar a carga em pequenos passos. Não aumente carga e séries ao mesmo tempo.</p><p>Semana 7: reduza a carga em cerca de 10 a 20% e reavalie técnica, conforto e recuperação antes do próximo ciclo.</p></div>
     <div className="safety-alert"><b><AlertTriangle size={16}/> Aviso importante</b><p>Este plano é educativo e não substitui avaliação de médico, fisioterapeuta ou profissional de Educação Física. Antes de começar, procure orientação profissional, principalmente se estiver acima do peso, for iniciante ou tiver dor, lesão ou condição de saúde. Não force movimentos dolorosos. Se houver dor no peito, tontura, falta de ar intensa ou dor forte/piorando, pare e procure atendimento.</p></div>

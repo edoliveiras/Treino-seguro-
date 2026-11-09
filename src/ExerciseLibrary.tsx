@@ -724,31 +724,63 @@ const distinctExerciseNames: Record<string,string> = {
 "leg press 45":"Empurrar plataforma com pernas",
 };const distinctExerciseNameLookup = Object.fromEntries(Object.entries(distinctExerciseNames).map(([key,value])=>[key.toLowerCase(),value]));
 const shortNameLookup = Object.fromEntries(Object.entries(shortNameOverrides).map(([key,value])=>[key.toLowerCase(),value]));
-function rawSimpleExerciseName(name:string, segment:string) {
+const canonicalExerciseNames: Record<string,string> = {
+ "leg press 45":"Leg press",
+ "leg press horizontal":"Leg press horizontal",
+ "leg press unilateral":"Leg press unilateral",
+ "supino reto com barra":"Supino reto",
+ "supino reto com halteres":"Supino reto com halteres",
+ "supino inclinado com barra":"Supino inclinado",
+ "supino inclinado com halteres":"Supino inclinado com halteres",
+ "supino na máquina":"Supino na máquina",
+ "rosca bíceps":"Rosca direta",
+ "rosca direta com barra":"Rosca direta",
+ "tríceps pulley":"Tríceps pulley",
+ "stiff":"Stiff",
+ "stiff unilateral com halter":"Stiff unilateral",
+ "agachamento sumô":"Agachamento sumô",
+ "agachamento goblet com halter ou kettlebell":"Agachamento com halter",
+ "goblet squat":"Agachamento com halter",
+ "hack squat":"Agachamento hack",
+ "dead bug":"Abdominal alternado",
+ "bird dog":"Extensão alternada no solo",
+ "mountain climber":"Escalador",
+ "step-up no degrau":"Subida no degrau",
+ "step-up lateral":"Subida lateral no degrau",
+ "box jump":"Salto na caixa",
+ "good morning":"Bom dia",
+ "chin-up":"Barra fixa supinada",
+ "pull-down com corda":"Puxada com corda",
+ "pull-down com braços estendidos":"Puxada com braços estendidos",
+ "face pull":"Puxada para o rosto",
+ "hip thrust unilateral":"Elevação pélvica unilateral",
+ "hip thrust na máquina":"Elevação pélvica na máquina",
+ "glute kickback na máquina":"Coice de glúteos na máquina",
+ "donkey kick":"Coice de glúteos",
+ "frog pump":"Elevação de quadril com pés unidos",
+ "clamshell":"Abertura de quadril deitado",
+ "pallof press (anti-rotação)":"Pallof press",
+ "side bend com halter":"Inclinação lateral com halter",
+ "russian twist":"Rotação de tronco sentado",
+ "v-up":"Abdominal canivete",
+ "l-sit (progressão)":"Isometria em L",
+ "turkish get-up":"Levantamento turco",
+ "kettlebell swing":"Balanço com kettlebell",
+ "kettlebell clean":"Arranco com kettlebell",
+ "kettlebell snatch":"Arranco alto com kettlebell",
+ "battle rope":"Corda naval",
+ "medicine ball throw":"Arremesso de bola medicinal",
+ "sled push":"Empurrar trenó",
+ "tandem stance":"Equilíbrio em linha",
+ "hop and stick (salto e estabilização)":"Salto e estabilização",
+ "star excursion":"Alcance em estrela"
+};
+function rawSimpleExerciseName(name:string, _segment:string) {
  const key=name.trim().toLowerCase();
- const s=segment.toLowerCase();
- if(distinctExerciseNameLookup[key]) return distinctExerciseNameLookup[key];
- if(shortNameLookup[key]) return shortNameLookup[key];
- if(key==="coice na polia" && /tr[ií]ceps/.test(s)) return "Esticar braço com cabo";
- if(simpleNameLookup[key]) return simpleNameLookup[key];
- if(/peito/.test(s)) return /flex|mergulho/.test(key)?"Empurrar o próprio corpo":/cruci|abert/.test(key)?"Abrir braços com controle":"Empurrar peso à frente";
- if(/costas|trap[eé]zio/.test(s)) return /barra fixa|chin/.test(key)?"Subir na barra com apoio":/superman/.test(key)?"Levantar braços e pernas":"Puxar peso ao corpo";
- if(/ombro/.test(s)) return /rota/.test(key)?"Girar braço com controle":"Levantar braços com peso";
- if(/b[ií]ceps/.test(s)) return "Dobrar braços com peso";
- if(/tr[ií]ceps/.test(s)) return "Esticar braços com controle";
- if(/antebraço/.test(s)) return "Dobrar e esticar punhos";
- if(/quadr[ií]ceps/.test(s)) return "Agachar com controle";
- if(/posterior/.test(s)) return "Dobrar pernas com controle";
- if(/gl[uú]te/.test(s)) return "Subir quadril com controle";
- if(/panturrilha|tibial/.test(s)) return "Subir na ponta dos pés";
- if(/adutores|abdutores/.test(s)) return "Abrir e fechar pernas";
- if(/abd[oô]men|lombar/.test(s)) return "Fortalecer barriga e costas";
- if(/cardio/.test(s)) return "Mover o corpo em ritmo contínuo";
- if(/alongamento/.test(s)) return "Alongar com movimento suave";
- return "Mover o corpo com controle";
+ return canonicalExerciseNames[key] ?? name.trim().replace(/\\s+/g," ");
 }
 export function getSimpleExerciseName(name:string, segment:string) {
- return rawSimpleExerciseName(name,segment).trim().split(/\s+/).slice(0,4).join(" ");
+ return rawSimpleExerciseName(name,segment);
 }
 
 export function getSimpleExerciseExplanation(segment:string, simpleName:string) {

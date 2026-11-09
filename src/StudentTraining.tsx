@@ -127,7 +127,7 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
               <p className="muted">{prescription.effort}</p>
               <div className="library-actions">
                 <a href={video} target="_blank" rel="noreferrer"><PlayCircle size={16}/> Ver vídeo no YouTube</a>
-                <a href={photoSearch(e)} target="_blank" rel="noreferrer"><ImageIcon size={16}/> Ver fotos deste movimento</a>
+                <a href={photoSearch({name,technicalName})} target="_blank" rel="noreferrer"><ImageIcon size={16}/> Ver fotos deste movimento</a>
               </div>
             </div>
             <button type="button" className={done?"round done":"round"} aria-pressed={done} aria-label={(done?"Desmarcar ":"Marcar ")+name} onClick={()=>void toggleDone(e,key)}>{done?<CheckCircle2/>:"✓"}</button>

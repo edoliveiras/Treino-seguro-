@@ -37,7 +37,7 @@ const catalogExercises: Exercise[] = getWorkoutCatalog().map(e=>({
  beginner:e.level==="Iniciante", level:e.level, styles:catalogStyles(e.activity), sets:"3", reps:"8–12", rest:"60–90 s",
  cue:"Execute com controle, respeite a amplitude confortável e interrompa se houver dor ou sintomas incomuns."
 }));
-const library: Exercise[] = [
+const library: Exercise[] = ([
 
  {name:"Supino reto com barra",focus:["Peito","Braços"],home:false,gym:true,beginner:false,styles:["Musculação","Full body"],sets:"4",reps:"6–8",rest:"120–150 s",cue:"Mantenha escápulas apoiadas, pés firmes e desça a barra com controle até amplitude confortável."},
  {name:"Mergulho nas barras paralelas (dips)",focus:["Peito","Braços"],home:false,gym:true,beginner:false,styles:["Calistenia","Full body"],sets:"3–4",reps:"6–10",rest:"120 s",cue:"Desça somente até manter controle dos ombros; evite balanço e dor."},

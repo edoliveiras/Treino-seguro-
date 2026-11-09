@@ -1,12 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { RefreshCw, ShieldCheck, UserRound, UserX, UserCheck, Trash2 } from "lucide-react";
 import { supabase } from "./lib/supabase";
+import TrainingManager from "./TrainingManager";
 
 type Account = {
   id: string;
   full_name: string;
   email: string;
-  phone_e164: string;
+  whatsapp_e164: string;
+  training_level: string;
+  training_place: string;
+  training_days: number;
+  current_workout: string | null;
   account_status: "pending_verification" | "active" | "suspended";
   email_verified_at: string | null;
   created_at: string;
@@ -30,7 +35,7 @@ export default function AdminPanel({ currentUserId }: { currentUserId: string })
     try {
       const { data, error: queryError } = await supabase
         .from("admin_account_directory")
-        .select("id,full_name,email,phone_e164,account_status,email_verified_at,created_at")
+        .select("id,full_name,email,whatsapp_e164,account_status,email_verified_at,created_at,training_level,training_place,training_days,current_workout")
         .order("created_at", { ascending: false });
       if (queryError) {
         setError("Não foi possível carregar as contas. Confira se seu perfil tem permissão de administrador.");
@@ -83,11 +88,13 @@ export default function AdminPanel({ currentUserId }: { currentUserId: string })
       {accounts.map(account => <article className="admin-account-card" key={account.id}>
         <div className="admin-account-main">
           <UserRound size={20}/>
-          <div><b>{account.full_name}</b><span>{account.email}</span><small>Telefone de contato: {account.phone_e164}</small></div>
+          <div><b>{account.full_name}</b><span>{account.email}</span><small>WhatsApp para contato: {account.whatsapp_e164}</small></div>
         </div>
         <div className="admin-account-meta">
           <span className={`account-status status-${account.account_status}`}>{account.account_status === "active" ? "Ativa" : account.account_status === "suspended" ? "Suspensa" : "Pendente de e-mail"}</span>
           <small>{account.email_verified_at ? "E-mail confirmado" : "E-mail não confirmado"}</small>
+          <small>{account.training_level} · {account.training_place} · {account.training_days} dias/semana</small>
+          <small>Treino atual: {account.current_workout ?? "Modelo de exemplo"}</small>
         </div>
         <div className="admin-account-actions">
           {account.id === currentUserId
@@ -101,5 +108,5 @@ export default function AdminPanel({ currentUserId }: { currentUserId: string })
         </div>
       </article>)}
     </div>}
-  </section></main>;
+  </section><TrainingManager currentUserId={currentUserId}/></main>;
 }

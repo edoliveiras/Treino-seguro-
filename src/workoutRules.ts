@@ -42,7 +42,7 @@ export function prescriptionForLevel(e: ExerciseLike, rules: WorkoutRules) {
 }
 export function ensureFullBodyGroups(groups: string[], style: string) {
   if (style !== "Full body") return groups;
-  return ["Peito", "Costas", "Pernas", "Quadril/Glúteos", "Ombros", "Core"];
+  return ["Peito", "Costas", "Pernas", "Glúteos", "Ombros", "Abdômen", "Braços"];
 }
 export function safetyNotice() {
   return "Interrompa se houver dor ou sintomas incomuns e procure um profissional.";

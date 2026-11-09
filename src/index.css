@@ -230,3 +230,24 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
   font-size: 0.9rem;
   line-height: 1.45;
 }
+
+
+/* Treinos atribuídos e editor do professor */
+.student-training-notice { border-left: 4px solid var(--accent, #1f8a70); }
+.student-exercise { display: grid; grid-template-columns: 116px minmax(0, 1fr) auto; align-items: start; gap: 1rem; }
+.student-exercise > img { width: 116px; height: 116px; object-fit: cover; border-radius: 14px; }
+.student-exercise .exercise-copy { min-width: 0; }
+.student-exercise .library-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: .75rem; }
+.student-exercise .library-actions a { display: inline-flex; align-items: center; gap: .35rem; }
+.exercise-picker { display: flex; flex-wrap: wrap; gap: .5rem; max-height: 260px; overflow: auto; padding: .5rem 0; }
+.exercise-picker button { text-align: left; max-width: 100%; }
+.exercise-picker button small { display: block; opacity: .75; }
+.editor-exercise { margin: 1rem 0; padding: 1rem; border: 1px solid var(--border, #ddd); border-radius: 14px; }
+.student-select { display: flex; align-items: center; gap: .4rem; }
+.training-manager > .panel { margin-top: 1rem; }
+@media (max-width: 640px) {
+ .student-exercise { grid-template-columns: 76px minmax(0, 1fr); }
+ .student-exercise > img { width: 76px; height: 76px; }
+ .student-exercise > .round { grid-column: 2; justify-self: start; }
+ .editor-exercise .form-grid { grid-template-columns: 1fr; }
+}

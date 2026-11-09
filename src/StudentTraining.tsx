@@ -171,6 +171,8 @@ export default function StudentTraining({userId,level,place,days,compact=false,o
     const muscle=("muscle_group" in e?e.muscle_group:e.muscle);
     const observation=("observation" in e?e.observation:"");
     const video=("video_url" in e?e.video_url:"")||youtube({name,technicalName});
+    const repetitionText=prescription.reps||e.reps;
+    const repetitionLabel=/segundo|minuto|tempo/i.test(repetitionText)?"":" repetições";
     const photoUrl=("photo_url" in e?e.photo_url:"")||photo;
     const done=activePlan
      ?completions.some(c=>c.source==="assigned"&&c.assignment_id===assignment?.id&&c.exercise_id===key&&c.session_date===today)
@@ -182,7 +184,7 @@ export default function StudentTraining({userId,level,place,days,compact=false,o
      <div className="exercise-copy">
       <b>{name}</b><small className="technical-exercise-name">Nome técnico: {technicalName}</small>
       <p><b>{prescription.phase} · Semana {week}</b></p>
-      <p>{prescription.sets||e.sets} séries · {prescription.reps||e.reps} repetições · descanso {prescription.restSeconds||baseRest} segundos</p>
+      <p>{prescription.sets||e.sets} séries · {repetitionText}{repetitionLabel} · descanso {prescription.restSeconds||baseRest} segundos</p>
       <p><b>Ritmo:</b> {prescription.tempo||e.tempo}</p><p><b>O que fazer:</b> {place==="Academia"?gym:home}</p><p><b>Onde sente o esforço:</b> {muscle}</p>
       <p><b>Na academia:</b> {gym}</p><p><b>Em casa:</b> {home}</p>
       <p><b>Adaptação para joelho:</b> {knee}</p><p><b>Adaptação para lombar:</b> {back}</p>

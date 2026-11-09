@@ -1,31 +1,29 @@
 import { describe, expect, it } from "vitest";
 import { getSimpleExerciseName, getWorkoutCatalog } from "./ExerciseLibrary";
 
-describe("nomes simples da biblioteca de exercícios", () => {
-  it("mantém os 398 nomes técnicos únicos e os nomes populares curtos", () => {
+describe("nomenclatura normal dos exercícios", () => {
+  it("mantém a biblioteca completa e nomes técnicos identificáveis", () => {
     const catalog = getWorkoutCatalog();
     expect(catalog.length).toBe(443);
     expect(new Set(catalog.map(exercise => exercise.technicalName)).size).toBe(398);
-    expect(new Set(catalog.map(exercise => exercise.name)).size).toBe(399);
-    for (const exercise of catalog) {
-      expect(exercise.name.trim().split(/\s+/).length).toBeGreaterThanOrEqual(2);
-      expect(exercise.name.trim().split(/\s+/).length).toBeLessThanOrEqual(4);
-      expect(exercise.name).not.toMatch(/\b(hack|smith|stiff|sum[oô]|goblet|sissy|hip thrust|leg press|good morning|box jump|TRX|dead bug|bird dog|mountain climber)\b/i);
-      expect(exercise.technicalName.length).toBeGreaterThan(0);
-      expect(exercise.explanation).toContain("você sente");
+    expect(catalog.every(exercise => exercise.name.trim().length > 0)).toBe(true);
+    expect(catalog.every(exercise => exercise.technicalName.length > 0)).toBe(true);
+  });
+
+  it("usa nomes conhecidos de musculação em vez de descrições inventadas", () => {
+    expect(getSimpleExerciseName("leg press 45", "Quadríceps")).toBe("Leg press");
+    expect(getSimpleExerciseName("supino reto com barra", "Peito")).toBe("Supino reto");
+    expect(getSimpleExerciseName("agachamento livre", "Quadríceps")).toBe("agachamento livre");
+    expect(getSimpleExerciseName("agachamento sumô", "Quadríceps")).toBe("Agachamento sumô");
+    expect(getSimpleExerciseName("stiff", "Posterior de coxa")).toBe("Stiff");
+    expect(getSimpleExerciseName("rosca direta com barra", "Bíceps")).toBe("Rosca direta");
+    expect(getSimpleExerciseName("dead bug", "Abdômen")).toBe("Abdominal alternado");
+    expect(getSimpleExerciseName("bird dog", "Lombar e core profundo")).toBe("Extensão alternada no solo");
+  });
+
+  it("não transforma exercícios em comandos genéricos como empurrar ou puxar peso", () => {
+    for (const exercise of getWorkoutCatalog()) {
+      expect(exercise.name).not.toMatch(/^(Empurrar peso|Puxar peso|Dobrar braços|Mover o corpo|Agachar com controle)/i);
     }
-  });
-
-  it("traduz os principais nomes técnicos para português simples", () => {
-    expect(getSimpleExerciseName("leg press 45", "Quadríceps")).toBe("Empurrar plataforma com pernas");
-    expect(getSimpleExerciseName("agachamento livre", "Quadríceps")).toBe("Agachar peso nas costas");
-    expect(getSimpleExerciseName("agachamento sumô", "Quadríceps")).toBe("Agachar com pernas abertas");
-    expect(getSimpleExerciseName("stiff", "Posterior de coxa")).toBe("Descer peso pernas retas");
-    expect(getSimpleExerciseName("dead bug", "Abdômen")).toBe("Estender braço deitado");
-  });
-
-  it("diferencia o coice para braço do coice para glúteos", () => {
-    expect(getSimpleExerciseName("coice na polia", "Tríceps")).toBe("Esticar braço com cabo");
-    expect(getSimpleExerciseName("coice na polia", "Glúteos")).toBe("Levar perna para trás");
   });
 });

@@ -72,7 +72,7 @@ const simpleNames: Record<string,string> = {
 "peck deck":"Juntar braços sentado",
 "pullover com halter":"Levar peso sobre a cabeça",
 "svend press":"Juntar peso à frente",
-"flexão tradicional":"Empurrar o chão",
+"flexão tradicional":"Empurrar o chão",\n"flexão parada na posição baixa":"Sustentar flexão baixa",\n"prancha alta":"Sustentar corpo com braços retos",\n"prancha com toque no ombro":"Tocar ombros mantendo prancha",\n"flexão fechada parada":"Sustentar flexão com mãos juntas",\n"prancha lateral (série McGill)":"Sustentar corpo de lado",\n"L-sit":"Sustentar pernas elevadas",
 "flexão com joelhos apoiados":"Empurrar o chão ajoelhado",
 "flexão inclinada (mãos no sofá)":"Empurrar apoio elevado",
 "flexão declinada":"Empurrar com pés elevados",
@@ -480,7 +480,7 @@ const nameUses = new Map<string,number>();
 const all = rawEntries.map(entry=>{
  const displayName=getSimpleExerciseName(entry.name,entry.segment);
  const count=(nameUses.get(displayName)||0)+1; nameUses.set(displayName,count);
- return {...entry,displayName:count>1?`${displayName} ${count}`:displayName,explanation:getSimpleExerciseExplanation(entry.segment,displayName)};
+ const uniqueDisplay=count>1?`${displayName.split(" ").slice(0,2).join(" ")} variação ${count}`:displayName;\n return {...entry,displayName:uniqueDisplay,explanation:getSimpleExerciseExplanation(entry.segment,displayName)};
 });
 const advanced = /avançado|muscle-up|front lever|handstand push|parada de mão livre|human flag|dragon flag|planche|pistol squat$|shrimp squat$|box jump|salto|snatch|tiros|sprint|windshield|typewriter|archer pull|flexão com palmas|nordic curl/i;
 const lowImpact = /alongamento|mobilidade|bird dog|dead bug|ponte|caminhada|bicicleta|elíptico|natação|hidro|respiração|pallof|isométric|prancha|remo ergométrico|flexora|abdução|adução/i;

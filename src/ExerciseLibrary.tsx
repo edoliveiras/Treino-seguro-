@@ -699,12 +699,21 @@ export function getSimpleExerciseExplanation(segment:string, simpleName:string) 
  return `É um movimento para ${simpleName.toLowerCase()}; você sente o trabalho principalmente em ${where}.`;
 }
 const rawEntries: Entry[] = groups.flatMap(([segment,activity,names])=>names.split(";").map(name=>({segment,activity,name:name.trim()})));
-const nameUses = new Map<string,number>();
+const usedDisplayNames = new Set<string>();
+const displayNamesByExercise = new Map<string,string>();
 const all = rawEntries.map(entry=>{
- const displayName=getSimpleExerciseName(entry.name,entry.segment);
- const count=(nameUses.get(displayName)||0)+1; nameUses.set(displayName,count);
- const uniqueDisplay=count>1?`${displayName.split(" ").slice(0,2).join(" ")} variação ${count}`:displayName;
- return {...entry,displayName:uniqueDisplay,explanation:getSimpleExerciseExplanation(entry.segment,displayName)};
+ const exerciseKey=entry.segment+"|"+entry.name.toLowerCase();
+ const baseName=getSimpleExerciseName(entry.name,entry.segment);
+ let displayName=displayNamesByExercise.get(exerciseKey);
+ if(!displayName){
+  displayName=baseName;
+  let variation=2;
+  const prefix=baseName.split(/\\s+/).filter(word=>!["com","de","do","da","dos","das","na","no","para","a","o","e","em","à","ao"].includes(word.toLowerCase())).slice(0,2).join(" ")||"Movimento";
+  while(usedDisplayNames.has(displayName)){displayName=`${prefix} opção ${variation++}`;}
+  usedDisplayNames.add(displayName);
+  displayNamesByExercise.set(exerciseKey,displayName);
+ }
+ return {...entry,displayName,explanation:getSimpleExerciseExplanation(entry.segment,baseName)};
 });
 const advanced = /avançado|muscle-up|front lever|handstand push|parada de mão livre|human flag|dragon flag|planche|pistol squat$|shrimp squat$|box jump|salto|snatch|tiros|sprint|windshield|typewriter|archer pull|flexão com palmas|nordic curl/i;
 const lowImpact = /alongamento|mobilidade|bird dog|dead bug|ponte|caminhada|bicicleta|elíptico|natação|hidro|respiração|pallof|isométric|prancha|remo ergométrico|flexora|abdução|adução/i;

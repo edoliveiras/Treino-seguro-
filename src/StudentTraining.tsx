@@ -182,7 +182,7 @@ export default function StudentTraining({userId,level,place,days,compact=false,o
     return <article className="exercise student-exercise" key={key}>
      <div><img src={photoUrl} alt={"Foto ilustrativa do exercício "+name} loading="lazy"/><small className="muted">Foto ilustrativa</small></div>
      <div className="exercise-copy">
-      <b>{name}</b><small className="technical-exercise-name">Nome técnico: {technicalName}</small>
+      <b>{name}</b>
       <p><b>{prescription.phase} · Semana {week}</b></p>
       <p>{prescription.sets||e.sets} séries · {repetitionText}{repetitionLabel} · descanso {prescription.restSeconds||baseRest} segundos</p>
       <p><b>Ritmo:</b> {prescription.tempo||e.tempo}</p><p><b>O que fazer:</b> {place==="Academia"?gym:home}</p><p><b>Onde sente o esforço:</b> {muscle}</p>

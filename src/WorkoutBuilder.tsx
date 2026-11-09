@@ -2,31 +2,39 @@ import { useMemo, useState } from "react";
 import { getWorkoutCatalog } from "./ExerciseLibrary";
 import { Clock3, Target, RotateCcw } from "lucide-react";
 
-type Focus = "Glúteos" | "Abdômen" | "Pernas" | "Braços" | "Bíceps" | "Tríceps" | "Costas" | "Peito" | "Corpo inteiro";
+type Focus = "Glúteos" | "Abdômen" | "Pernas" | "Braços" | "Bíceps" | "Tríceps" | "Costas" | "Peito" | "Ombros" | "Antebraço" | "Trapézio" | "Quadríceps" | "Posterior de coxa" | "Panturrilha" | "Adutores e abdutores" | "Lombar e core profundo" | "Corpo inteiro";
 type Style = "Musculação" | "Full body" | "Calistenia" | "Funcional" | "HIIT" | "Corrida";
-type Exercise = { name: string; focus: Focus[]; home: boolean; gym: boolean; beginner: boolean; styles: Style[]; sets: string; reps: string; rest: string; cue: string };
+type Exercise = { name: string; focus: Focus[]; home: boolean; gym: boolean; beginner: boolean; level?: string; styles: Style[]; sets: string; reps: string; rest: string; cue: string };
 const catalogFocus = (segment:string): Focus[] => {
  const s=segment.toLowerCase();
  if (/gl[uú]te/.test(s)) return ["Glúteos","Pernas"];
- if (/quadr[ií]ceps|posterior|panturrilha|adutores/.test(s)) return ["Pernas"];
- if (/abd[oô]men|lombar|core/.test(s)) return ["Abdômen"];
- if (/peito/.test(s)) return ["Peito","Braços"];
- if (/costas|trap[eé]zio/.test(s)) return ["Costas","Braços"];
- if (/b[ií]ceps/.test(s)) return ["Bíceps"];
- if (/tr[ií]ceps/.test(s)) return ["Tríceps"];
- if (/ombro|antebraço/.test(s)) return ["Braços"];
+ if (/quadr[ií]ceps/.test(s)) return ["Quadríceps","Pernas"];
+ if (/posterior de coxa/.test(s)) return ["Posterior de coxa","Pernas"];
+ if (/panturrilha|tibial/.test(s)) return ["Panturrilha","Pernas"];
+ if (/adutores|abdutores/.test(s)) return ["Adutores e abdutores","Pernas"];
+ if (/abd[oô]men/.test(s)) return ["Abdômen"];
+ if (/lombar|core profundo/.test(s)) return ["Lombar e core profundo","Abdômen"];
+ if (/peito/.test(s)) return ["Peito"];
+ if (/costas/.test(s)) return ["Costas"];
+ if (/trap[eé]zio/.test(s)) return ["Trapézio","Costas"];
+ if (/b[ií]ceps/.test(s)) return ["Bíceps","Braços"];
+ if (/tr[ií]ceps/.test(s)) return ["Tríceps","Braços"];
+ if (/ombro/.test(s)) return ["Ombros","Braços"];
+ if (/antebraço/.test(s)) return ["Antebraço","Braços"];
+ if (/cardio|condicionamento/.test(s)) return ["Corpo inteiro","Pernas"];
  return ["Corpo inteiro"];
 };
 const catalogStyles = (activity:string): Style[] => {
  if (activity==="Musculação") return ["Musculação","Full body"];
- if (activity==="Calistenia" || activity==="Isometria") return ["Calistenia","Full body"];
- if (activity==="Funcional" || activity==="Propriocepção") return ["Funcional","Full body"];
- if (activity==="Cardio") return ["HIIT","Funcional"];
- return ["Funcional","Full body"];
+ if (activity==="Calistenia") return ["Calistenia","Full body"];
+ if (activity==="Isometria") return ["Calistenia","Full body","Funcional"];
+ if (activity==="Funcional" || activity==="Propriocepção" || activity==="Alongamento" || activity==="Treinos especiais") return ["Funcional","Full body"];
+ if (activity==="Cardio") return ["Corrida","HIIT","Funcional"];
+ return ["Full body"];
 };
 const catalogExercises: Exercise[] = getWorkoutCatalog().map(e=>({
  name:e.name, focus:catalogFocus(e.segment), home:e.place!=="Academia", gym:e.place!=="Casa",
- beginner:e.level==="Iniciante", styles:catalogStyles(e.activity), sets:"3", reps:"8–12", rest:"60–90 s",
+ beginner:e.level==="Iniciante", level:e.level, styles:catalogStyles(e.activity), sets:"3", reps:"8–12", rest:"60–90 s",
  cue:"Execute com controle, respeite a amplitude confortável e interrompa se houver dor ou sintomas incomuns."
 }));
 const library: Exercise[] = [
@@ -177,11 +185,19 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   else if(/1 hora|uma hora|sess[aã]o longa/.test(q))setDuration("60");
   const requested: Focus[] = [];
   if(/gl[uú]te|bumbum/.test(q))requested.push("Glúteos");
-  if(/quadr[ií]ceps|posterior de coxa|pernas|membros inferiores/.test(q))requested.push("Pernas");
-  if(/abd[oô]men|core/.test(q))requested.push("Abdômen");
+  if(/quadr[ií]ceps/.test(q))requested.push("Quadríceps");
+  if(/posterior de coxa|isquiotibiais/.test(q))requested.push("Posterior de coxa");
+  if(/panturrilha|tibial/.test(q))requested.push("Panturrilha");
+  if(/adutores|abdutores/.test(q))requested.push("Adutores e abdutores");
+  if(/pernas|membros inferiores/.test(q))requested.push("Pernas");
+  if(/abd[oô]men/.test(q))requested.push("Abdômen");
+  if(/lombar|core profundo/.test(q))requested.push("Lombar e core profundo");
   if(/b[ií]ceps/.test(q))requested.push("Bíceps");
   if(/tr[ií]ceps/.test(q))requested.push("Tríceps");
-  if(/bra[cç]o|ombro/.test(q))requested.push("Braços");
+  if(/ombro/.test(q))requested.push("Ombros");
+  if(/antebraço/.test(q))requested.push("Antebraço");
+  if(/trap[eé]zio/.test(q))requested.push("Trapézio");
+  if(/bra[cç]o/.test(q))requested.push("Braços");
   if(/costas/.test(q))requested.push("Costas");
   if(/peito|peitoral/.test(q))requested.push("Peito");
   if(/corpo inteiro|full.?body/.test(q))requested.push("Corpo inteiro");
@@ -200,12 +216,12 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
  };
  const glutePriority=focus.includes("Glúteos")&&/gl[uú]te|bumbum|perna|inferior|posterior|quadr[ií]ceps/.test(generatedRequest.toLowerCase());
  const sessions=useMemo(()=>{
-  const fullBodyGroups: Focus[]=["Glúteos","Pernas","Costas","Peito","Braços","Bíceps","Tríceps","Abdômen","Corpo inteiro"];
+  const fullBodyGroups: Focus[]=["Glúteos","Pernas","Quadríceps","Posterior de coxa","Panturrilha","Adutores e abdutores","Costas","Trapézio","Peito","Ombros","Braços","Bíceps","Tríceps","Antebraço","Abdômen","Lombar e core profundo","Corpo inteiro"];
   const selectedFocus=focus.includes("Corpo inteiro")?fullBodyGroups:focus;
   const templates: Focus[][] = Array.from({length:days},()=>selectedFocus);
   return templates.map((groups,index)=>{
    
-   const candidates=[...catalogExercises,...library].filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i).filter(e=>(place==="Casa"?e.home:e.gym)&&e.styles.includes(style)&&selectedFocus.some(g=>e.focus.includes(g))&&(level==="Iniciante" ? e.beginner : level==="Intermediário" ? !e.beginner : true));
+   const candidates=[...catalogExercises,...library].filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i).filter(e=>(place==="Casa"?e.home:e.gym)&&e.styles.includes(style)&&selectedFocus.some(g=>e.focus.includes(g))&&(level==="Iniciante" ? (e.level ? e.level==="Iniciante" : e.beginner) : level==="Intermediário" ? (e.level ? e.level==="Intermediário" : !e.beginner && !/pistol|muscle-up|front lever|handstand push|human flag|dragon flag|planche|box jump|snatch|typewriter|archer pull|flexão com palmas|nordic curl/i.test(e.name)) : true));
    const unique=candidates.filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i);
    const preferred=unique.filter(e=>selectedFocus.some(g=>e.focus.includes(g)));
    const gluteOrder=["Hip thrust com barra","Elevação pélvica","Agachamento búlgaro","Levantamento terra romeno com halteres","Agachamento goblet","Leg press","Coice de glúteo na polia","Abdução de quadril com faixa","Mesa flexora","Agachamento sumô","Afundo apoiado"];
@@ -236,7 +252,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   <div className="form-grid">
    <label>Modalidade<select value={style} onChange={e=>setStyle(e.target.value as Style)}>{["Musculação","Full body","Calistenia","Funcional","HIIT","Corrida"].map(x=><option key={x}>{x}</option>)}</select></label>
    {style==="Corrida"&&<label>Distância da prova<select value={runningDistance} onChange={e=>setRunningDistance(e.target.value)}><option>5 km</option><option>10 km</option><option>15 km</option></select></label>}
-   <fieldset className="focus-multiselect"><legend>Quais grupos musculares deseja treinar?</legend><small>Marque quantos grupos quiser. Ex.: Costas + Bíceps + Tríceps.</small><div className="focus-checkbox-grid">{["Glúteos","Pernas","Abdômen","Costas","Peito","Bíceps","Tríceps","Braços","Corpo inteiro"].map(x=><label key={x}><input type="checkbox" checked={focus.includes(x as Focus)} onChange={e=>setFocus(current=>{if(x==="Corpo inteiro")return e.target.checked?["Corpo inteiro"]:[];const next=e.target.checked?[...current.filter(v=>v!=="Corpo inteiro"),x as Focus]:current.filter(v=>v!==x);return next.length?next:current;})}/>{x}</label>)}</div></fieldset>
+   <fieldset className="focus-multiselect"><legend>Quais grupos musculares deseja treinar?</legend><small>Marque quantos grupos quiser. Ex.: Costas + Bíceps + Tríceps.</small><div className="focus-checkbox-grid">{["Glúteos","Pernas","Quadríceps","Posterior de coxa","Panturrilha","Adutores e abdutores","Abdômen","Lombar e core profundo","Costas","Trapézio","Peito","Ombros","Bíceps","Tríceps","Antebraço","Braços","Corpo inteiro"].map(x=><label key={x}><input type="checkbox" checked={focus.includes(x as Focus)} onChange={e=>setFocus(current=>{if(x==="Corpo inteiro")return e.target.checked?["Corpo inteiro"]:[];const next=e.target.checked?[...current.filter(v=>v!=="Corpo inteiro"),x as Focus]:current.filter(v=>v!==x);return next.length?next:current;})}/>{x}</label>)}</div></fieldset>
    <label>Onde vou treinar<select value={place} onChange={e=>setPlace(e.target.value)}><option>Casa</option><option>Academia</option></select></label>
    <label>Nível<select value={level} onChange={e=>setLevel(e.target.value)}>{["Iniciante","Intermediário","Avançado"].map(x=><option key={x}>{x}</option>)}</select></label>
    <label>Dias por semana<select value={days} onChange={e=>setDays(Number(e.target.value))}>{[2,3,4,5].map(x=><option key={x} value={x}>{x} dias</option>)}</select></label>

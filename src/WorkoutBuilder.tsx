@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
-import { getWorkoutCatalog } from "./ExerciseLibrary";
+import { getWorkoutCatalog, getSimpleExerciseName, getSimpleExerciseExplanation } from "./ExerciseLibrary";
 import { Clock3, Target, RotateCcw } from "lucide-react";
 
 type Focus = "Glúteos" | "Abdômen" | "Pernas" | "Braços" | "Bíceps" | "Tríceps" | "Costas" | "Peito" | "Ombros" | "Antebraço" | "Trapézio" | "Quadríceps" | "Posterior de coxa" | "Panturrilha" | "Adutores e abdutores" | "Lombar e core profundo" | "Corpo inteiro";
 type Style = "Musculação" | "Full body" | "Calistenia" | "Funcional" | "HIIT" | "Corrida";
-type Exercise = { name: string; focus: Focus[]; home: boolean; gym: boolean; beginner: boolean; level?: string; styles: Style[]; sets: string; reps: string; rest: string; cue: string };
+type Exercise = { name: string; technicalName: string; explanation: string; focus: Focus[]; home: boolean; gym: boolean; beginner: boolean; level?: string; styles: Style[]; sets: string; reps: string; rest: string; cue: string };
 const catalogFocus = (segment:string): Focus[] => {
  const s=segment.toLowerCase();
  if (/gl[uú]te/.test(s)) return ["Glúteos","Pernas"];
@@ -33,7 +33,7 @@ const catalogStyles = (activity:string): Style[] => {
  return ["Full body"];
 };
 const catalogExercises: Exercise[] = getWorkoutCatalog().map(e=>({
- name:e.name, focus:catalogFocus(e.segment), home:e.place!=="Academia", gym:e.place!=="Casa",
+ name:e.name, technicalName:e.technicalName, explanation:e.explanation, focus:catalogFocus(e.segment), home:e.place!=="Academia", gym:e.place!=="Casa",
  beginner:e.level==="Iniciante", level:e.level, styles:catalogStyles(e.activity), sets:"3", reps:"8–12", rest:"60–90 s",
  cue:"Execute com controle, respeite a amplitude confortável e interrompa se houver dor ou sintomas incomuns."
 }));
@@ -104,7 +104,7 @@ const library: Exercise[] = [
  {name:"Agachamento búlgaro",focus:["Glúteos","Pernas"],home:true,gym:true,beginner:false,styles:["Musculação"],sets:"3",reps:"8–10 por lado",rest:"120 s",cue:"Use apoio se necessário, incline levemente o tronco e desça apenas mantendo equilíbrio e joelho alinhado."},
  {name:"Coice de glúteo na polia",focus:["Glúteos"],home:false,gym:true,beginner:true,styles:["Musculação"],sets:"3",reps:"12–15 por lado",rest:"60–75 s",cue:"Mantenha o tronco estável e mova a perna pelo quadril, sem compensar com a lombar."},
  {name:"Leg press",focus:["Pernas","Glúteos"],home:false,gym:true,beginner:true,styles:["Musculação"],sets:"3",reps:"10–12",rest:"120 s",cue:"Ajuste a amplitude sem tirar o quadril do encosto; mantenha joelhos acompanhando os pés."},
-];
+].map(e=>{const segment=e.focus[0]??"Corpo inteiro";const simpleName=getSimpleExerciseName(e.name,segment);return {...e,technicalName:e.name,name:simpleName,explanation:getSimpleExerciseExplanation(segment,simpleName)};});
 const split: Record<number, Focus[][]> = {
  2:[["Glúteos","Pernas","Abdômen"],["Costas","Peito","Braços","Abdômen"]],
  3:[["Glúteos","Pernas","Abdômen"],["Costas","Peito","Braços"],["Glúteos","Pernas","Abdômen"]],
@@ -221,11 +221,11 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   const templates: Focus[][] = Array.from({length:days},()=>selectedFocus);
   return templates.map((groups,index)=>{
    
-   const candidates=[...catalogExercises,...library].filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i).filter(e=>(place==="Casa"?e.home:e.gym)&&e.styles.includes(style)&&selectedFocus.some(g=>e.focus.includes(g))&&(level==="Iniciante" ? (e.level ? e.level==="Iniciante" : e.beginner) : level==="Intermediário" ? (e.level ? e.level==="Intermediário" : !e.beginner && !/pistol|muscle-up|front lever|handstand push|human flag|dragon flag|planche|box jump|snatch|typewriter|archer pull|flexão com palmas|nordic curl/i.test(e.name)) : true));
+   const candidates=[...catalogExercises,...library].filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i).filter(e=>(place==="Casa"?e.home:e.gym)&&e.styles.includes(style)&&selectedFocus.some(g=>e.focus.includes(g))&&(level==="Iniciante" ? (e.level ? e.level==="Iniciante" : e.beginner) : level==="Intermediário" ? (e.level ? e.level==="Intermediário" : !e.beginner && !/pistol|muscle-up|front lever|handstand push|human flag|dragon flag|planche|box jump|snatch|typewriter|archer pull|flexão com palmas|nordic curl/i.test(e.technicalName)) : true));
    const unique=candidates.filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i);
    const preferred=unique.filter(e=>selectedFocus.some(g=>e.focus.includes(g)));
    const gluteOrder=["Hip thrust com barra","Elevação pélvica","Agachamento búlgaro","Levantamento terra romeno com halteres","Agachamento goblet","Leg press","Coice de glúteo na polia","Abdução de quadril com faixa","Mesa flexora","Agachamento sumô","Afundo apoiado"];
-   const glutePreferred=glutePriority&&focus.includes("Glúteos")&&style==="Musculação"?gluteOrder.map(n=>unique.find(e=>e.name===n)).filter((e):e is Exercise=>Boolean(e)):[];
+   const glutePreferred=glutePriority&&focus.includes("Glúteos")&&style==="Musculação"?gluteOrder.map(n=>unique.find(e=>e.technicalName===n||e.name===n)).filter((e):e is Exercise=>Boolean(e)):[];
    // A prioridade escolhida nunca é retirada pela rotação: primeiro entram os exercícios do foco,
    // depois os complementares. A variação acontece dentro de cada grupo, sem descaracterizar o pedido.
    const priority=glutePreferred.length?glutePreferred:preferred;
@@ -267,7 +267,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    <button type="button" className="secondary workout-day-toggle" aria-expanded={expanded===index} onClick={()=>setExpanded(expanded===index?null:index)}><span><b>{session.title} · Dia {index+1}</b><small>{session.groups.join(" · ")}</small></span><span>{expanded===index?"−":"+"}</span></button>
    {expanded===index&&<div className="workout-day-content">
     <p><b>Aquecimento:</b> 8–10 minutos de caminhada/bicicleta leve e mobilidade dinâmica confortável. Não pule esta etapa.</p>
-    {session.pairs.map((pair,pairIndex)=><div className="conjugate-block" key={pairIndex}><b>{pair.length===2?`Bloco conjugado ${pairIndex+1} · alternância A/B`:`Exercício complementar ${pairIndex+1}`}</b>{pair.map((e,i)=><div className="planned-exercise" key={e.name}><div><b>{pair.length===2?`Exercício ${i===0?"A":"B"}: ${e.name}`:`Exercício: ${e.name}`}</b><p>{e.cue}</p><small>{Math.min(5,Number.parseInt(e.sets,10)+(level==="Iniciante"?0:level==="Intermediário"?1:2))} séries · {e.reps} repetições/tempo · descanso {e.rest}</small><a className="exercise-demo-link" href={`https://www.youtube.com/results?search_query=${encodeURIComponent(e.name+" execução correta")}`} target="_blank" rel="noreferrer">▶ Ver execução em vídeo</a></div></div>)}<p className="muted">{pair.length===2?"Faça 1 série do exercício A e, logo em seguida, 1 série do exercício B. Isso completa uma volta. Descanse 60–90 segundos e repita a sequência até completar as séries prescritas dos dois exercícios. Exemplo: rosca bíceps → agachamento → descanso → repetir.":"Faça as séries deste exercício com a pausa indicada."} Se a técnica cair, aumente a pausa ou reduza a carga.</p></div>)}
+    {session.pairs.map((pair,pairIndex)=><div className="conjugate-block" key={pairIndex}><b>{pair.length===2?`Bloco conjugado ${pairIndex+1} · alternância A/B`:`Exercício complementar ${pairIndex+1}`}</b>{pair.map((e,i)=><div className="planned-exercise" key={e.name}><div><b>{pair.length===2?`Exercício ${i===0?"A":"B"}: ${e.name}`:`Exercício: ${e.name}`}</b><small className="technical-exercise-name">Nome técnico: {e.technicalName}</small><p className="exercise-explanation">{e.explanation}</p><p>{e.cue}</p><small>{Math.min(5,Number.parseInt(e.sets,10)+(level==="Iniciante"?0:level==="Intermediário"?1:2))} séries · {e.reps} repetições/tempo · descanso {e.rest}</small><a className="exercise-demo-link" href={`https://www.youtube.com/results?search_query=${encodeURIComponent((e.technicalName||e.name)+" execução correta")}`} target="_blank" rel="noreferrer">▶ Ver execução em vídeo</a></div></div>)}<p className="muted">{pair.length===2?"Faça 1 série do exercício A e, logo em seguida, 1 série do exercício B. Isso completa uma volta. Descanse 60–90 segundos e repita a sequência até completar as séries prescritas dos dois exercícios. Exemplo: rosca bíceps → agachamento → descanso → repetir.":"Faça as séries deste exercício com a pausa indicada."} Se a técnica cair, aumente a pausa ou reduza a carga.</p></div>)}
     <p><b>Finalização:</b> 5–8 minutos de caminhada leve, respiração e mobilidade suave. Registre cargas e repetições.</p>
    </div>}
   </article>)}

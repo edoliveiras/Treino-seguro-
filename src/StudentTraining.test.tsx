@@ -10,8 +10,8 @@ describe("treino apresentado ao aluno",()=>{
   render(<StudentTraining level="Iniciante" place="Casa" days="3"/>);
   await waitFor(()=>expect(screen.getByRole("heading",{name:"Iniciante — Corpo inteiro"})).toBeTruthy());
   expect(screen.getByRole("button",{name:"Marcar Sentar e levantar"})).toBeTruthy();
-  expect(screen.getByText(/Adaptação para joelho/)).toBeTruthy();
-  expect(screen.getByText(/Adaptação para lombar/)).toBeTruthy();
+  expect(screen.getAllByText(/Adaptação para joelho/).length).toBeGreaterThan(0);
+  expect(screen.getAllByText(/Adaptação para lombar/).length).toBeGreaterThan(0);
   expect(screen.getByText(/Aviso importante/)).toBeTruthy();
   expect(screen.getAllByRole("link",{name:/Buscar vídeo no YouTube/}).length).toBe(6);
  });

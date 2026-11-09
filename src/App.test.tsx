@@ -45,7 +45,7 @@ describe("fluxos de segurança da interface", () => {
     fireEvent.click(screen.getByRole("button", { name: "Exercícios" }));
     expect(screen.getByText(/itens com alerta compatível com suas queixas foram ocultados/)).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "agachamento livre" })).toBeNull();
-    expect(screen.getByRole("heading", { name: "caminhada leve" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Caminhar em ritmo leve" })).toBeTruthy();
   });
 });
 

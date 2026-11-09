@@ -44,6 +44,7 @@ $$;
 \ir ../migrations/20261109186000_email_only_admin_reactivation.sql
 \ir ../migrations/20261109187000_preserve_workout_completion_history.sql
 \ir ../migrations/20261109188000_atomic_plan_save_preserve_history.sql
+\ir ../migrations/20261109189000_one_completion_per_exercise_per_day.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),

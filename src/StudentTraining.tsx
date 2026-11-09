@@ -128,7 +128,7 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
               <p><b>Adaptação para joelho:</b> {knee}</p><p><b>Adaptação para lombar:</b> {back}</p>
               <p className="muted">{prescription.effort}</p>{observation&&<p><b>Observação do professor:</b> {observation}</p>}
               <div className="library-actions">
-                <a href={video} target="_blank" rel="noreferrer"><PlayCircle size={16}/> Ver vídeo no YouTube</a>
+                <a href={video} target="_blank" rel="noreferrer"><PlayCircle size={16}/> Buscar vídeo no YouTube</a>
                 <a href={photoSearch({name,technicalName})} target="_blank" rel="noreferrer"><ImageIcon size={16}/> Ver fotos deste movimento</a>
               </div>
             </div>

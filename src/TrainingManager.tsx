@@ -66,7 +66,7 @@ export default function TrainingManager({currentUserId}:{currentUserId:string}) 
  const openPlan=async(p:Plan)=>{
   if(!supabase)return;
   setBusy(true);setError("");setNotice("");
-  const {data,error:e}=await supabase.from("workout_plan_exercises").select("*").eq("plan_id",p.id).order("day_label").order("position");
+  const {data,error:e}=await supabase.from("workout_plan_exercises").select("*").eq("plan_id",p.id).eq("is_active",true).order("day_label").order("position");
   if(e){setError("Não foi possível abrir os exercícios deste plano.");setBusy(false);return;}
   setPlanId(p.id);setTitle(p.title);setLevel(p.level);setSplit(p.split_type);setDescription(p.description);setIsTemplate(p.is_template);
   setItems((data??[]).map((x:any)=>({...x,key:x.id})));
@@ -92,22 +92,23 @@ export default function TrainingManager({currentUserId}:{currentUserId:string}) 
  const savePlan=async()=>{
   if(!supabase||!title.trim()||items.length===0){setError("Informe o nome do treino e adicione pelo menos um exercício.");return;}
   setBusy(true);setError("");setNotice("");
-  const values={title:title.trim(),level,split_type:split,description,duration_weeks:7,is_template:isTemplate,created_by:currentUserId};
-  let id=planId;
-  if(id){
-   const {error:e}=await supabase.from("workout_plans").update({title:values.title,level,split_type:split,description,is_template:isTemplate}).eq("id",id);
-   if(e){setError("Não foi possível atualizar o treino.");setBusy(false);return;}
-   const {error:delError}=await supabase.from("workout_plan_exercises").delete().eq("plan_id",id);
-   if(delError){setError("O treino foi atualizado, mas não foi possível substituir a lista de exercícios.");setBusy(false);return;}
-  }else{
-   const {data,error:e}=await supabase.from("workout_plans").insert(values).select("id").single();
-   if(e||!data){setError("Não foi possível salvar o novo treino.");setBusy(false);return;}
-   id=data.id;
-  }
-  const rows=items.map((x,i)=>({plan_id:id,day_label:x.day_label.trim()||"Dia 1",position:i+1,exercise_name:x.exercise_name,technical_name:x.technical_name,muscle_group:x.muscle_group,sets:x.sets,reps:x.reps,rest_seconds:x.rest_seconds,tempo:x.tempo,gym_version:x.gym_version,home_version:x.home_version,knee_adaptation:x.knee_adaptation,back_adaptation:x.back_adaptation,observation:x.observation,photo_url:x.photo_url,video_url:x.video_url}));
-  const {error:insertError}=await supabase.from("workout_plan_exercises").insert(rows);
-  if(insertError){setError("O treino foi salvo, mas houve erro ao gravar os exercícios.");setBusy(false);return;}
-  setPlanId(id);setNotice("Treino salvo. Se já estiver atribuído, as alterações aparecerão para os alunos automaticamente.");
+  const positions=new Map<string,number>();
+  const rows=items.map(x=>{
+   const day=x.day_label.trim()||"Dia 1";
+   const position=(positions.get(day)??0)+1;
+   positions.set(day,position);
+   return {day_label:day,position,exercise_name:x.exercise_name,technical_name:x.technical_name,muscle_group:x.muscle_group,sets:x.sets,reps:x.reps,rest_seconds:x.rest_seconds,tempo:x.tempo,gym_version:x.gym_version,home_version:x.home_version,knee_adaptation:x.knee_adaptation,back_adaptation:x.back_adaptation,observation:x.observation,photo_url:x.photo_url,video_url:x.video_url};
+  });
+  const {data:id,error:e}=await supabase.rpc("admin_save_workout_plan",{
+   p_plan_id:planId||null,p_title:title.trim(),p_level:level,p_split_type:split,
+   p_description:description,p_is_template:isTemplate,p_exercises:rows
+  });
+  if(e||!id){setError("Não foi possível salvar o treino. Confira os exercícios e tente novamente.");setBusy(false);return;}
+  const {data:savedRows,error:loadError}=await supabase.from("workout_plan_exercises").select("*").eq("plan_id",id).eq("is_active",true).order("day_label").order("position");
+  if(loadError){setError("O treino foi salvo, mas não foi possível atualizar a lista do editor.");setBusy(false);return;}
+  setPlanId(id as string);
+  setItems((savedRows??[]).map((x:any)=>({...x,key:x.id})));
+  setNotice("Treino salvo. O histórico de exercícios concluídos foi preservado. Se já estiver atribuído, as alterações aparecerão para os alunos automaticamente.");
   await load();setBusy(false);
  };
  const toggleStudent=(id:string)=>setSelectedStudents(old=>old.includes(id)?old.filter(x=>x!==id):[...old,id]);
@@ -128,7 +129,9 @@ export default function TrainingManager({currentUserId}:{currentUserId:string}) 
  };
  const deletePlan=async(p:Plan)=>{
   if(!supabase)return;
-  if(assignments.some(a=>a.plan_id===p.id)){setError("Este treino ainda está atribuído. Retire as atribuições antes de excluir o modelo.");return;}
+  const {data:usage,error:usageError}=await supabase.from("workout_assignments").select("id").eq("plan_id",p.id).limit(1);
+  if(usageError){setError("Não foi possível conferir o histórico deste treino.");return;}
+  if(usage?.length){setError("Este treino já foi atribuído. Para preservar o histórico, retire a atribuição e mantenha o modelo salvo.");return;}
   if(!window.confirm("Excluir este modelo de treino e seus exercícios?"))return;
   const {error:e}=await supabase.from("workout_plans").delete().eq("id",p.id);
   if(e)setError("Não foi possível excluir o modelo.");

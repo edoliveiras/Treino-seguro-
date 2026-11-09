@@ -12,6 +12,9 @@ type Profile = {
   whatsapp_e164: string;
   email_verified_at: string | null;
   account_status: "pending_verification" | "active" | "suspended";
+  training_level: "Iniciante" | "Intermediário" | "Avançado";
+  training_place: "Casa" | "Academia";
+  training_days: number;
 };
 
 const normalizePhone = (raw: string) => {
@@ -46,7 +49,7 @@ export default function AuthGate() {
     }
     const { data, error: profileError } = await supabase
       .from("profiles")
-      .select("id,full_name,email,whatsapp_e164,email_verified_at,account_status")
+      .select("id,full_name,email,whatsapp_e164,email_verified_at,account_status,training_level,training_place,training_days")
       .eq("id", user.id)
       .maybeSingle();
     if (profileError) {
@@ -177,7 +180,7 @@ export default function AuthGate() {
         {isAdmin && <button type="button" onClick={() => setAdminOpen(value => !value)}>{adminOpen ? "Voltar ao aplicativo" : "Administração"}</button>}
         <button onClick={() => void supabase!.auth.signOut()}>Sair da conta</button>
       </div></div>
-      {isAdmin && adminOpen ? <AdminPanel currentUserId={profile.id} /> : <App userId={profile.id} />}
+      {isAdmin && adminOpen ? <AdminPanel currentUserId={profile.id} /> : <App userId={profile.id} initialLevel={profile.training_level} initialPlace={profile.training_place} initialDays={String(profile.training_days)} />}
     </>;
   }
 

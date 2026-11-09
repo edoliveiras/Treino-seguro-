@@ -88,7 +88,7 @@ export default function StudentTraining({ userId, level, place, days, compact=fa
     {error&&<p className="auth-error" role="alert">{error}</p>}
     <div className="workout-meta">
       <div><small>NÍVEL</small><b>{activePlan?plan?.level:demoProgram.level}</b></div>
-      <div><small>FREQUÊNCIA</small><b>{activePlan?"Conforme combinado":demoProgram.frequency}</b></div>
+      <div><small>FREQUÊNCIA</small><b>{activePlan?`Conforme combinado · ${days} dias/semana`:demoProgram.frequency}</b></div>
       <div><small>LOCAL</small><b>{place}</b></div>
     </div>
     <div className="form-grid">

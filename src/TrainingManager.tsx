@@ -179,7 +179,7 @@ export default function TrainingManager({currentUserId}:{currentUserId:string}) 
    <h4>Exercícios do plano ({items.length})</h4>
    {items.length===0?<p className="muted">Copie um modelo ou adicione exercícios pela busca acima.</p>:items.map((x,index)=><article className="planned-exercise editor-exercise" key={x.key}>
     <div className="admin-panel-heading"><b>{index+1}. {x.exercise_name}</b><button type="button" className="danger-button" onClick={()=>setItems(old=>old.filter(v=>v.key!==x.key))}><Trash2 size={15}/> Remover</button></div>
-    <small className="technical-exercise-name">Nome técnico: {x.technical_name} · {x.muscle_group}</small>
+    <small>{x.muscle_group}</small>
     <div className="form-grid">
      <label>Dia<input value={x.day_label} onChange={e=>updateItem(x.key,{day_label:e.target.value})}/></label>
      <label>Séries<input type="number" min="1" max="8" value={x.sets} onChange={e=>updateItem(x.key,{sets:Math.max(1,Math.min(8,Number(e.target.value)||1))})}/></label>

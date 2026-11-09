@@ -38,6 +38,8 @@ $$;
 \ir ../migrations/20261109180000_training_programs_and_assignments.sql
 \ir ../migrations/20261109181000_admin_remove_workout_assignment.sql
 \ir ../migrations/20261109182000_atomic_workout_assignment.sql
+\ir ../migrations/20261109183000_rebuild_admin_account_directory.sql
+\ir ../migrations/20261109184000_training_rpc_invoker_security.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),

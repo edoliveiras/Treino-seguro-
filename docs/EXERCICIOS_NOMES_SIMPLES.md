@@ -190,7 +190,7 @@ A biblioteca contém 443 ocorrências de exercícios e variações, 398 nomes t�
 | agachamento com pausa | Agachar e fazer pausa |
 | agachamento Zercher | Agachar peso abraçado |
 | agachamento sissy | Agachar inclinando o corpo |
-| leg press 45 | Empurrar plataforma |
+| leg press 45 | Empurrar plataforma com pernas |
 | leg press horizontal | Empurrar plataforma sentado |
 | leg press unilateral | Empurrar plataforma uma perna |
 | cadeira extensora | Esticar pernas sentado |

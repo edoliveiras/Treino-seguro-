@@ -58,7 +58,7 @@ const lowerDay: ProgramDay = {
     ex("Empurrar plataforma","Leg press","Coxas e glúteos","Empurrar a plataforma com os pés, sem travar os joelhos.","Sentar e levantar de cadeira ou agachar com apoio.","Reduza a amplitude e a carga se houver desconforto; não aproxime demais os joelhos do peito.","Mantenha quadril e costas apoiados no encosto.","10–12",3,120),
     ex("Dobrar pernas sentado","Cadeira flexora","Posterior de coxa","Dobrar os joelhos na máquina sentado.","Deitado de barriga para baixo, dobrar uma perna de cada vez sem peso ou com elástico leve.","Use amplitude confortável e sem dor no joelho.","Mantenha o quadril apoiado e não force a lombar.","10–12",2,90),
     ex("Subir quadril apoiado","Elevação pélvica","Glúteos","Subir o quadril com a parte alta das costas apoiada em banco.","Ponte de glúteos no chão.","Se deitar incomodar, escolha outra opção com orientação.","Suba sem arquear excessivamente a lombar; pare antes de perder o controle.","10–12",3,90),
-    ex("Subir na ponta dos pés","Elevação de panturrilhas","Panturrilhas","Subir e descer os calcanhares segurando apoio ou máquina.","Subir na ponta dos pés segurando cadeira ou parede.","Faça sentado se houver dor ou dificuldade de equilíbrio.","Mantenha tronco estável e evite inclinar o corpo.","12–15",2,60),
+    ex("Subir calcanhares","Elevação de panturrilhas","Panturrilhas","Subir e descer os calcanhares segurando apoio ou máquina.","Subir na ponta dos pés segurando cadeira ou parede.","Faça sentado se houver dor ou dificuldade de equilíbrio.","Mantenha tronco estável e evite inclinar o corpo.","12–15",2,60),
     ex("Abrir pernas sentado","Abdução de quadril","Quadril e glúteos","Abrir as pernas na máquina com carga leve.","Sentado, afastar os joelhos com faixa elástica leve.","Não force abertura nem provoque dor no quadril ou joelho.","Mantenha tronco apoiado e estável.","12–15",2,60)
   ]
 };
@@ -79,10 +79,10 @@ const pullDay: ProgramDay = {
   exercises:[
     ex("Puxar peso para baixo","Puxada frontal","Costas","Puxar barra da máquina em direção ao peito.","Puxar elástico preso acima da cabeça.","Não balance o corpo nem force ombros.","Mantenha tronco estável e sem inclinar demais.","8–12",3,120),
     ex("Puxar peso sentado","Remada baixa","Costas","Puxar cabo em direção ao abdômen.","Puxar elástico preso à frente ou mochila leve.","Apoie os pés e use carga controlável.","Coluna confortável, sem arredondar ou girar o tronco.","8–12",3,120),
-    ex("Puxar peso com um braço","Remada unilateral","Costas","Puxar halter apoiando uma mão em banco firme.","Puxar mochila ou elástico com um braço, apoiando a outra mão.","Use base estável e carga leve.","Apoie o tronco e evite girar a lombar.","10–12",2,90),
+    ex("Puxar peso apoiado","Remada unilateral","Costas","Puxar halter apoiando uma mão em banco firme.","Puxar mochila ou elástico com um braço, apoiando a outra mão.","Use base estável e carga leve.","Apoie o tronco e evite girar a lombar.","10–12",2,90),
     ex("Puxar corda ao rosto","Puxada alta para o rosto","Costas e ombros","Puxar corda em direção ao rosto com carga leve.","Puxar elástico preso na altura dos olhos.","Mantenha postura estável.","Evite projetar a cabeça e arquear a lombar.","12–15",2,60),
     ex("Dobrar braços com peso","Rosca direta","Bíceps","Dobrar cotovelos com barra ou halteres.","Dobrar cotovelos com elástico ou garrafas.","Faça sentado se necessário.","Não balance o tronco para ajudar.","8–12",3,75),
-    ex("Dobrar braços com pegada neutra","Rosca martelo","Bíceps e antebraço","Dobrar cotovelos com halteres na posição neutra.","Dobrar cotovelos segurando garrafas ou elástico.","Use carga leve e sem impulso.","Mantenha cotovelos próximos ao corpo.","10–12",2,60)
+    ex("Dobrar braços neutro","Rosca martelo","Bíceps e antebraço","Dobrar cotovelos com halteres na posição neutra.","Dobrar cotovelos segurando garrafas ou elástico.","Use carga leve e sem impulso.","Mantenha cotovelos próximos ao corpo.","10–12",2,60)
   ]
 };
 const legsDay: ProgramDay = {
@@ -90,10 +90,10 @@ const legsDay: ProgramDay = {
   exercises:[
     ex("Agachar com peso","Agachamento com barra","Coxas e glúteos","Agachar com barra leve e supervisão.","Agachar segurando mochila leve junto ao peito ou sentar e levantar.","Use amplitude individual sem dor; não é obrigatório agachar fundo.","Mantenha tronco firme e carga compatível com a técnica.","6–10",3,150),
     ex("Empurrar plataforma","Leg press","Coxas e glúteos","Empurrar a plataforma com controle e sem travar joelhos.","Agachar com apoio ou sentar e levantar com carga leve.","Reduza amplitude se o joelho incomodar; sem dor crescente.","Mantenha quadril e costas apoiados no encosto.","8–12",3,120),
-    ex("Descer peso com pernas quase retas","Levantamento terra romeno","Posterior de coxa e glúteos","Levar quadril para trás com pesos próximos às pernas.","Levar quadril para trás com mochila leve ou sem peso.","Joelhos destravados; reduza amplitude se houver desconforto.","Coluna neutra e carga próxima; não desça além do controle.","8–10",3,150),
+    ex("Descer peso pernas retas","Levantamento terra romeno","Posterior de coxa e glúteos","Levar quadril para trás com pesos próximos às pernas.","Levar quadril para trás com mochila leve ou sem peso.","Joelhos destravados; reduza amplitude se houver desconforto.","Coluna neutra e carga próxima; não desça além do controle.","8–10",3,150),
     ex("Dobrar pernas sentado","Cadeira flexora","Posterior de coxa","Dobrar joelhos na máquina sentado.","Dobrar uma perna de cada vez com elástico leve.","Movimento controlado e sem dor.","Mantenha quadril apoiado.","10–12",2,90),
     ex("Subir quadril apoiado","Elevação pélvica","Glúteos","Subir quadril com costas apoiadas e peso leve/moderado.","Ponte de glúteos no chão.","Escolha amplitude confortável.","Evite hiperestender a lombar no alto.","8–12",3,120),
-    ex("Subir na ponta dos pés","Elevação de panturrilhas","Panturrilhas","Subir e descer calcanhares na máquina ou com apoio.","Subir na ponta dos pés segurando parede ou cadeira.","Faça sentado se houver dor ou instabilidade.","Tronco estável, sem balanço.","12–15",3,60)
+    ex("Subir calcanhares","Elevação de panturrilhas","Panturrilhas","Subir e descer calcanhares na máquina ou com apoio.","Subir na ponta dos pés segurando parede ou cadeira.","Faça sentado se houver dor ou instabilidade.","Tronco estável, sem balanço.","12–15",3,60)
   ]
 };
 

@@ -146,7 +146,7 @@ function buildConjugatePairs(items: Exercise[], seed = 0) {
 export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa", initialLevel = "Iniciante", initialGoal = "Condicionamento", initialBmi = 0 }: { initialDays?: string; initialPlace?: string; initialLevel?: string; initialGoal?: string; initialBmi?: number }) {
  const goalFocus: Focus = initialGoal === "Força" ? "Corpo inteiro" : initialGoal === "Mobilidade e bem-estar" ? "Corpo inteiro" : initialGoal === "Emagrecer" ? "Corpo inteiro" : "Corpo inteiro";
  const goalStyle: Style = initialGoal === "Começar a correr" ? "Corrida" : initialGoal === "Força" ? "Musculação" : initialGoal === "Mobilidade e bem-estar" ? "Funcional" : "Full body";
- const [focus,setFocus]=useState<Focus>(goalFocus);
+ const [focus,setFocus]=useState<Focus[]>([goalFocus]);
  const [style,setStyle]=useState<Style>(goalStyle);
  const [days,setDays]=useState(Math.min(5,Math.max(2,Number(initialDays)||3)));
  const [place,setPlace]=useState(initialPlace==="Academia"?"Academia":"Casa");
@@ -175,15 +175,17 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   else if(/quarenta/.test(q))setDuration("40");
   else if(/cinquenta/.test(q))setDuration("50");
   else if(/1 hora|uma hora|sess[aã]o longa/.test(q))setDuration("60");
-  if(/gl[uú]te|bumbum/.test(q))setFocus("Glúteos");
-  else if(/quadr[ií]ceps|posterior de coxa|pernas|membros inferiores/.test(q))setFocus("Pernas");
-  else if(/abd[oô]men|core/.test(q))setFocus("Abdômen");
-  else if(/b[ií]ceps/.test(q))setFocus("Bíceps");
-  else if(/tr[ií]ceps/.test(q))setFocus("Tríceps");
-  else if(/bra[cç]o|ombro/.test(q))setFocus("Braços");
-  else if(/costas/.test(q))setFocus("Costas");
-  else if(/peito|peitoral/.test(q))setFocus("Peito");
-  else if(/corpo inteiro|full.?body/.test(q))setFocus("Corpo inteiro");
+  const requested: Focus[] = [];
+  if(/gl[uú]te|bumbum/.test(q))requested.push("Glúteos");
+  if(/quadr[ií]ceps|posterior de coxa|pernas|membros inferiores/.test(q))requested.push("Pernas");
+  if(/abd[oô]men|core/.test(q))requested.push("Abdômen");
+  if(/b[ií]ceps/.test(q))requested.push("Bíceps");
+  if(/tr[ií]ceps/.test(q))requested.push("Tríceps");
+  if(/bra[cç]o|ombro/.test(q))requested.push("Braços");
+  if(/costas/.test(q))requested.push("Costas");
+  if(/peito|peitoral/.test(q))requested.push("Peito");
+  if(/corpo inteiro|full.?body/.test(q))requested.push("Corpo inteiro");
+  if(requested.length)setFocus(requested.includes("Corpo inteiro")?["Corpo inteiro"]:requested);
   if(/corrida|correr|5\s?km|10\s?km|15\s?km/.test(q)){
    setStyle("Corrida");
    setRunningDistance(/15\s?km/.test(q)?"15 km":/10\s?km/.test(q)?"10 km":"5 km");
@@ -196,23 +198,22 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   setVariation(v=>v+1);
   setExpanded(0);
  };
- const glutePriority=/gl[uú]te|bumbum|perna|inferior|posterior|quadr[ií]ceps/.test(generatedRequest.toLowerCase());
+ const glutePriority=focus.includes("Glúteos")&&/gl[uú]te|bumbum|perna|inferior|posterior|quadr[ií]ceps/.test(generatedRequest.toLowerCase());
  const sessions=useMemo(()=>{
-  const fullBodyGroups: Focus[]=["Glúteos","Pernas","Costas","Peito","Braços","Abdômen","Corpo inteiro"];
-  const templates: Focus[][] = style==="Musculação" ? split[days] :
-    style==="Corrida" ? Array.from({length:days},()=>fullBodyGroups) :
-    Array.from({length:days},()=>fullBodyGroups);
+  const fullBodyGroups: Focus[]=["Glúteos","Pernas","Costas","Peito","Braços","Bíceps","Tríceps","Abdômen","Corpo inteiro"];
+  const selectedFocus=focus.includes("Corpo inteiro")?fullBodyGroups:focus;
+  const templates: Focus[][] = Array.from({length:days},()=>selectedFocus);
   return templates.map((groups,index)=>{
-   const specificArmFocus=focus==="Bíceps"||focus==="Tríceps";
-   const candidates=[...catalogExercises,...library].filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i).filter(e=>(place==="Casa"?e.home:e.gym)&&e.styles.includes(style)&&(groups.some(g=>e.focus.includes(g))||(specificArmFocus&&e.focus.includes(focus)))&&(level==="Iniciante" ? e.beginner : level==="Intermediário" ? !e.beginner : true));
+   
+   const candidates=[...catalogExercises,...library].filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i).filter(e=>(place==="Casa"?e.home:e.gym)&&e.styles.includes(style)&&selectedFocus.some(g=>e.focus.includes(g))&&(level==="Iniciante" ? e.beginner : level==="Intermediário" ? !e.beginner : true));
    const unique=candidates.filter((e,i,a)=>a.findIndex(x=>x.name===e.name)===i);
-   const preferred=unique.filter(e=>e.focus.includes(focus));
+   const preferred=unique.filter(e=>selectedFocus.some(g=>e.focus.includes(g)));
    const gluteOrder=["Hip thrust com barra","Elevação pélvica","Agachamento búlgaro","Levantamento terra romeno com halteres","Agachamento goblet","Leg press","Coice de glúteo na polia","Abdução de quadril com faixa","Mesa flexora","Agachamento sumô","Afundo apoiado"];
-   const glutePreferred=glutePriority&&focus==="Glúteos"&&style==="Musculação"?gluteOrder.map(n=>unique.find(e=>e.name===n)).filter((e):e is Exercise=>Boolean(e)):[];
+   const glutePreferred=glutePriority&&focus.includes("Glúteos")&&style==="Musculação"?gluteOrder.map(n=>unique.find(e=>e.name===n)).filter((e):e is Exercise=>Boolean(e)):[];
    // A prioridade escolhida nunca é retirada pela rotação: primeiro entram os exercícios do foco,
    // depois os complementares. A variação acontece dentro de cada grupo, sem descaracterizar o pedido.
    const priority=glutePreferred.length?glutePreferred:preferred;
-   const secondary=specificArmFocus?[]:unique.filter(e=>!priority.includes(e));
+   const secondary=unique.filter(e=>!priority.includes(e));
    const rotate=(items:Exercise[],offset:number)=>items.length?[...items.slice(offset%items.length),...items.slice(0,offset%items.length)]:[];
    const priorityRotated=rotate(priority,index+variation);
    const secondaryRotated=rotate(secondary,index*2+variation);
@@ -237,13 +238,13 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   <div className="form-grid">
    <label>Modalidade<select value={style} onChange={e=>setStyle(e.target.value as Style)}>{["Musculação","Full body","Calistenia","Funcional","HIIT","Corrida"].map(x=><option key={x}>{x}</option>)}</select></label>
    {style==="Corrida"&&<label>Distância da prova<select value={runningDistance} onChange={e=>setRunningDistance(e.target.value)}><option>5 km</option><option>10 km</option><option>15 km</option></select></label>}
-   <label>Meu foco principal<select value={focus} onChange={e=>setFocus(e.target.value as Focus)}>{["Glúteos","Abdômen","Pernas","Bíceps","Tríceps","Braços","Costas","Peito","Corpo inteiro"].map(x=><option key={x}>{x}</option>)}</select></label>
+   <fieldset className="focus-multiselect"><legend>Quais grupos musculares deseja treinar?</legend><small>Marque quantos grupos quiser. Ex.: Costas + Bíceps + Tríceps.</small><div className="focus-checkbox-grid">{["Glúteos","Pernas","Abdômen","Costas","Peito","Bíceps","Tríceps","Braços","Corpo inteiro"].map(x=><label key={x}><input type="checkbox" checked={focus.includes(x as Focus)} onChange={e=>setFocus(current=>{if(x==="Corpo inteiro")return e.target.checked?["Corpo inteiro"]:[];const next=e.target.checked?[...current.filter(v=>v!=="Corpo inteiro"),x as Focus]:current.filter(v=>v!==x);return next;})}/>{x}</label>)}</div></fieldset>
    <label>Onde vou treinar<select value={place} onChange={e=>setPlace(e.target.value)}><option>Casa</option><option>Academia</option></select></label>
    <label>Nível<select value={level} onChange={e=>setLevel(e.target.value)}>{["Iniciante","Intermediário","Avançado"].map(x=><option key={x}>{x}</option>)}</select></label>
    <label>Dias por semana<select value={days} onChange={e=>setDays(Number(e.target.value))}>{[2,3,4,5].map(x=><option key={x} value={x}>{x} dias</option>)}</select></label>
    <label>Duração desejada<select value={duration} onChange={e=>setDuration(e.target.value)}><option value="40">40 minutos</option><option value="50">50 minutos</option><option value="60">60 minutos</option></select></label>
   </div>
-  <div className="bmi"><Target/><div><b>Foco selecionado: {focus}</b><p>Os pares conjugados alternam exercícios de grupos musculares diferentes: faça uma série de A, depois uma série de B, descanse e repita a sequência. Exercícios abdominais fortalecem o core, mas não eliminam gordura localizada.</p></div></div>
+  <div className="bmi"><Target/><div><b>Grupos selecionados: {focus.length?focus.join(" · "):"Nenhum — marque ao menos um grupo"}</b><p>Os pares conjugados alternam exercícios de grupos musculares diferentes: faça uma série de A, depois uma série de B, descanse e repita a sequência. Exercícios abdominais fortalecem o core, mas não eliminam gordura localizada.</p></div></div>
   {style==="Corrida"&&<div className="safety-alert"><b>Plano progressivo para corrida de rua — {runningDistance}</b><p>Treino educativo para quem já consegue caminhar sem desconforto e não apresenta contraindicação. Faça três sessões não consecutivas por semana, com ritmo leve em que consiga conversar. Se estiver começando do zero, alterne corrida leve e caminhada; não tente cumprir os tempos correndo sem pausas.</p><p><b>Semana 1:</b> 1 min de trote + 2 min caminhando, repetir 8 vezes.</p><p><b>Semana 2:</b> 2 min de trote + 2 min caminhando, repetir 7 vezes.</p><p><b>Semana 3:</b> 3 min de trote + 2 min caminhando, repetir 6 vezes.</p><p><b>Semana 4:</b> 5 min de trote + 2 min caminhando, repetir 5 vezes.</p><p><b>Semana 5:</b> 8 min de trote + 2 min caminhando, repetir 4 vezes.</p><p><b>Semana 6:</b> 10 min de trote + 2 min caminhando, repetir 3 vezes.</p><p><b>Semana 7:</b> 15 min de corrida leve + 2 min caminhando, repetir 2 vezes.</p><p><b>Semana 8:</b> corrida leve contínua de até 30 min, somente se as semanas anteriores foram confortáveis.</p><p><b>Meta escolhida:</b> {runningDistance}. Para 5 km, consolide as 8 semanas acima e só avance quando conseguir correr 30 minutos confortavelmente. Para 10 km, depois dessa base, faça mais 4 semanas: longão leve de 35, 40, 45 e 50 minutos, respectivamente. Para 15 km, depois da base de 5 km, faça mais 8 semanas: longão leve de 40, 45, 50, 55, 60, 65, 70 e 55 minutos, respectivamente; a última semana reduz o volume para recuperação. Aumente apenas se estiver recuperado e sem dor; não há prazo garantido para completar a distância.</p><p><b>Fortalecimento conjugado 2 vezes por semana:</b> {level==="Iniciante" ? "faça 2–3 séries alternadas: A) agachamento até a cadeira + B) elevação de panturrilhas; A) ponte de glúteos + B) bird dog; A) step-up baixo + B) prancha inclinada." : "faça 3 séries alternadas: A) agachamento goblet ou agachamento búlgaro + B) elevação de panturrilhas; A) levantamento terra romeno + B) prancha com toque alternado nos ombros; A) avanço alternado + B) remada invertida. Ajuste a carga para terminar cada série com 1–3 repetições possíveis, mantendo a técnica."} Complete uma série de A e uma de B antes da pausa de 60–90 segundos.</p><p><b>Distribuição sugerida:</b> Dia 1 intervalos corrida/caminhada; Dia 2 caminhada confortável e fortalecimento; Dia 3 corrida leve mais longa. Deixe ao menos um dia de recuperação entre corridas.</p><p>Interrompa se houver dor que altere a passada, tontura, dor no peito ou falta de ar fora do esperado. Procure avaliação profissional antes de iniciar se houver doença, lesão, dor persistente, gravidez ou longo período de sedentarismo.</p></div>}
   <h3>Seu planejamento semanal</h3>
   <p className="muted">{style==="Full body"?"Full body: cada sessão trabalha os principais grupos musculares, com alternância de exercícios e recuperação entre dias.":style==="Calistenia"?"Calistenia: exercícios com o peso do corpo, com progressões e regressões conforme o nível.":style==="Funcional"?"Funcional: movimentos integrados para força, estabilidade e coordenação.":style==="HIIT"?"HIIT: blocos curtos de esforço alternados com recuperação; ajuste a intensidade ao condicionamento.":"Musculação: foco em força e hipertrofia com exercícios de resistência."}</p>
@@ -260,6 +261,6 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
   <p className="muted"><Clock3 size={15}/> O tempo total inclui 8–10 min de aquecimento, as séries conjugadas de cada bloco, alternando A e B com pausas entre voltas e 5–8 min de finalização. Para 40/50/60 min, o plano agora seleciona até 6/8/10 exercícios principais; o tempo real varia conforme ritmo, carga e pausas. Não acelere a execução para caber no relógio.</p>
   {initialBmi >= 35 && <div className="safety-alert"><b>Adaptação importante</b><p>Como o IMC informado está na faixa de 35 ou mais, este plano não inclui corrida nem saltos como recomendação automática. Priorize movimentos confortáveis e obtenha orientação profissional individual antes de aumentar a intensidade.</p></div>}
   <p className="muted">Este é um plano educativo inicial baseado nas respostas da avaliação, não uma prescrição clínica. Se houver dor, limitação, condição clínica ou dúvida sobre a execução, suspenda o exercício e procure avaliação individual de profissional de Educação Física e/ou saúde. A seleção automática não substitui avaliação presencial.</p>
-  <button type="button" className="secondary" onClick={()=>{setFocus("Glúteos");setStyle("Musculação");setDays(3);setPlace("Casa");setLevel("Iniciante");setDuration("50");setRunningDistance("5 km");setVariation(0);setGeneratedRequest("");setAiRequest("");setExpanded(0)}}><RotateCcw size={16}/> Restaurar opções iniciais</button>
+  <button type="button" className="secondary" onClick={()=>{setFocus(["Glúteos"]);setStyle("Musculação");setDays(3);setPlace("Casa");setLevel("Iniciante");setDuration("50");setRunningDistance("5 km");setVariation(0);setGeneratedRequest("");setAiRequest("");setExpanded(0)}}><RotateCcw size={16}/> Restaurar opções iniciais</button>
  </section>;
 }

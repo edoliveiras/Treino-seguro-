@@ -9,6 +9,8 @@ describe("modelos de treino baseados em nível",()=>{
    expect(day.exercises.length).toBeLessThanOrEqual(7);
    for(const e of day.exercises) {
     expect(e.name.trim().split(/\s+/).length).toBeGreaterThanOrEqual(2);
+    expect(e.name.trim().split(/\s+/).length).toBeLessThanOrEqual(4);
+    expect(e.name).not.toMatch(/\\b(leg press|stiff|sum[oô]|goblet|hip thrust|box jump|dead bug|mountain climber|smith|hack)\\b/i);
     expect(e.gym.length).toBeGreaterThan(0);
     expect(e.home.length).toBeGreaterThan(0);
     expect(e.knee.length).toBeGreaterThan(0);

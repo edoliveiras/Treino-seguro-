@@ -21,7 +21,7 @@ describe("regras complementares do gerador de treinos",()=>{
   expect(isSafeForRules(ex("Elevação de quadril"),rules)).toBe(true);
  });
  it("impede barra livre e conjugados nas duas primeiras semanas do iniciante",()=>{
-  const rules={level:"Iniciante" as const,place:"Academia" as const,duration:40 as const,week:1};
+  const rules={level:"Iniciante" as const,place:"Academia" as const,duration:30 as const,week:1};
   expect(isSafeForRules(ex("Supino com barra livre",false,false),rules)).toBe(false);
   expect(prescriptionForLevel(ex("Leg press"),rules).conjugates).toBe(false);
   expect(prescriptionForLevel(ex("Leg press"),{...rules,week:3}).conjugates).toBe(true);

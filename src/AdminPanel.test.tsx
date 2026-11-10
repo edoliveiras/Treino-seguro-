@@ -32,7 +32,7 @@ describe("painel administrativo", () => {
 
   it("lista somente dados cadastrais e não oferece excluir a própria conta", async () => {
     render(<AdminPanel currentUserId="admin-1" />);
-    await waitFor(() => expect(screen.getByText("Pessoa Usuária")).toBeTruthy());
+    await waitFor(() => expect(screen.getAllByText("Pessoa Usuária").length).toBeGreaterThan(0));
     expect(screen.getByText("user@example.test")).toBeTruthy();
     expect(screen.getByText("Suspensa")).toBeTruthy();
     expect(screen.getAllByRole("button", { name: "Excluir" })).toHaveLength(1);

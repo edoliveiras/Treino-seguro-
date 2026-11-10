@@ -33,7 +33,9 @@ describe("painel administrativo", () => {
   it("lista somente dados cadastrais e não oferece excluir a própria conta", async () => {
     render(<AdminPanel currentUserId="admin-1" />);
     await waitFor(() => expect(screen.getAllByText("Pessoa Usuária").length).toBeGreaterThan(0));
-    const accountCard = screen.getByText("Pessoa Usuária").closest("article");
+    const accountName = screen.getAllByText("Pessoa Usuária").find(element => element.closest(".admin-account-card"));
+    expect(accountName).toBeDefined();
+    const accountCard = accountName!.closest("article");
     expect(accountCard).not.toBeNull();
     expect(within(accountCard as HTMLElement).getByText("user@example.test")).toBeTruthy();
     expect(within(accountCard as HTMLElement).getByText("Suspensa")).toBeTruthy();

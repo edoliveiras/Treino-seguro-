@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { STRICT_EXERCISES } from "./strictExerciseLibrary";
 import { Search, PlayCircle, ShieldCheck, Dumbbell, Image as ImageIcon } from "lucide-react";
 
 type Entry = { segment:string; activity:string; name:string };
@@ -824,31 +825,41 @@ export function getWorkoutCatalog(): WorkoutCatalogEntry[] {
 }
 const imageUrl="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=720&q=75";
 export default function ExerciseLibrary({ pains=[] }: { pains?: string[] }){
- const [query,setQuery]=useState(""),[segment,setSegment]=useState("Todos"),[activity,setActivity]=useState("Todos"),[risk,setRisk]=useState("Todos");
- const segments=useMemo(()=>["Todos",...Array.from(new Set(all.map(x=>x.segment)))],[ ]);
- const activities=["Todos","Musculação","Calistenia","Isometria","Funcional","Cardio","Propriocepção","Alongamento","Treinos especiais"];
- const hiddenByPain=(e:Entry)=>{const a=metadata(e).alert;return (pains.includes("Joelho")&&a==="Atenção joelho")||(pains.includes("Lombar")&&a==="Atenção lombar");};
- const filtered=useMemo(()=>all.filter(e=>!hiddenByPain(e)&&(segment==="Todos"||e.segment===segment)&&(activity==="Todos"||e.activity===activity)&&(risk==="Todos"||metadata(e).alert===risk)&&(!query||[e.displayName,e.name,e.segment,e.activity].join(" ").toLowerCase().includes(query.toLowerCase()))),[query,segment,activity,risk,pains]);
- const count=filtered.length;
+ const [query,setQuery]=useState("");
+ const [group,setGroup]=useState("Todos");
+ const [level,setLevel]=useState("Todos");
+ const [place,setPlace]=useState("Todos");
+ const groups=useMemo(()=>["Todos",...Array.from(new Set(STRICT_EXERCISES.map(e=>e.group)))],[]);
+ const filtered=useMemo(()=>STRICT_EXERCISES.filter(e=>{
+  const painMap:Record<string,string>={J:"Joelho",L:"Lombar",O:"Ombro"};
+  return (!pains.length||!e.pains.some(p=>pains.includes(painMap[p]))) &&
+   (group==="Todos"||e.group===group) &&
+   (level==="Todos"||e.level===level) &&
+   (place==="Todos"||(place==="Casa"?e.home:true)) &&
+   (!query||[e.name,e.group,e.level].join(" ").toLowerCase().includes(query.toLowerCase()));
+ }),[query,group,level,place,pains]);
  return <section className="panel exercise-library">
-  <span className="eyebrow">BIBLIOTECA COMPLETA · {all.length} EXERCÍCIOS E VARIAÇÕES</span><h2>Exercícios por segmento muscular</h2>
-  <p>Consulte cada movimento, veja uma imagem ilustrativa e abra uma busca de demonstrações em vídeo. Os níveis e alertas são classificações educativas iniciais, não liberação clínica individual. Exercícios sinalizados para joelho ou lombar são ocultados quando a respectiva queixa foi informada na avaliação.</p>
+  <span className="eyebrow">BIBLIOTECA OFICIAL · {STRICT_EXERCISES.length} EXERCÍCIOS</span>
+  <h2>Exercícios por grupo muscular</h2>
+  <p>Cada exercício pertence a um único grupo muscular. O nível, o local e as restrições são os mesmos usados pelo gerador de treinos.</p>
   <div className="library-filters">
-   <label className="library-search"><Search size={17}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Buscar exercício ou músculo"/></label>
-   <label>Segmento<select value={segment} onChange={e=>setSegment(e.target.value)}>{segments.map(s=><option key={s}>{s}</option>)}</select></label>
-   <label>Tipo de atividade<select value={activity} onChange={e=>setActivity(e.target.value)}>{activities.map(s=><option key={s}>{s}</option>)}</select></label>
-   <label>Alerta<select value={risk} onChange={e=>setRisk(e.target.value)}>{["Todos","Baixo impacto","Atenção joelho","Atenção lombar"].map(s=><option key={s}>{s}</option>)}</select></label>
+   <label className="library-search"><Search size={17}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Buscar exercício ou grupo"/></label>
+   <label>Grupo muscular<select value={group} onChange={e=>setGroup(e.target.value)}>{groups.map(g=><option key={g}>{g}</option>)}</select></label>
+   <label>Nível<select value={level} onChange={e=>setLevel(e.target.value)}>{["Todos","Iniciante","Intermediário","Avançado"].map(v=><option key={v}>{v}</option>)}</select></label>
+   <label>Local<select value={place} onChange={e=>setPlace(e.target.value)}>{["Todos","Casa","Academia"].map(v=><option key={v}>{v}</option>)}</select></label>
   </div>
-  <p className="library-count">Exibindo {count} de {all.length} exercícios{pains.length>0?" · itens com alerta compatível com suas queixas foram ocultados":""}</p>
-  {filtered.map((e,i)=>{const m=metadata(e);return <article className="library-card" key={e.segment+e.activity+e.name+i}>
-   <img src={imageUrl} alt={"Foto ilustrativa de exercício físico: "+e.displayName} loading="lazy"/>
-   <div className="library-card-body"><div className="library-tags"><span>{e.segment}</span><span>{e.activity}</span></div><h3>{e.displayName}</h3><small className="technical-exercise-name">Nome técnico: {e.name}</small><p className="exercise-explanation">{e.explanation}</p>
-    <div className="library-meta"><span>Nível: <b>{m.level}</b></span><span>Local: <b>{m.place}</b></span><span className={m.alert==="Baixo impacto"?"risk-low":"risk-warn"}>{m.alert}</span></div>
-    <p><b>Regressão:</b> {m.regression}. <b>Progressão:</b> {m.progression}.</p>
-    <div className="library-actions"><a href={"https://www.youtube.com/results?search_query="+encodeURIComponent(e.displayName+" "+e.name+" execução correta exercício") } target="_blank" rel="noreferrer"><PlayCircle size={16}/> Vídeo demonstrativo no YouTube</a><a href={"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(e.displayName+" "+e.name+" exercício execução")} target="_blank" rel="noreferrer"><ImageIcon size={16}/> Ver fotos do exercício</a></div>
-    <small className="library-warning"><ShieldCheck size={14}/> Procure um profissional de Educação Física ou médico antes de iniciar. Interrompa se sentir dor ou sintomas incomuns.</small>
-   </div></article>})}
-  {count===0&&<p>Nenhum exercício encontrado. Tente outro termo ou filtro.</p>}
-  <div className="safety-alert"><b>Filtro de segurança por queixas informadas</b><p>Exercícios com alertas de joelho ou lombar são identificados para revisão. Em caso de dor ou diagnóstico, não use a biblioteca como autorização: é necessária avaliação individual. Gestantes devem ter liberação médica e acompanhamento profissional.</p></div>
+  <p className="library-count">Exibindo {filtered.length} de {STRICT_EXERCISES.length} exercícios</p>
+  {filtered.map(e=><article className="library-card" key={e.group+e.level+e.name}>
+   <div className="library-card-body">
+    <div className="library-tags"><span>{e.group}</span><span>{e.level}</span></div>
+    <h3>{e.name}</h3>
+    <div className="library-meta"><span>Local: <b>{e.home?"Casa e academia":"Somente academia"}</b></span>
+     {e.pains.map(flag=><span className="risk-warn" key={flag}>Atenção: {flag==="J"?"joelho":flag==="L"?"lombar":"ombro"}</span>)}
+    </div>
+    <small>O exercício não será incluído quando a limitação correspondente estiver marcada.</small>
+   </div>
+  </article>)}
+  {filtered.length===0&&<p>Nenhum exercício disponível com esses filtros e limitações.</p>}
+  <div className="safety-alert"><b>Orientação de segurança</b><p>Procure um profissional de educação física antes de começar. Interrompa se houver dor ou sintomas incomuns.</p></div>
  </section>;
 }

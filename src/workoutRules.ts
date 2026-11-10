@@ -1,11 +1,11 @@
 export type WorkoutLevel = "Iniciante" | "Intermediário" | "Avançado";
 export type TrainingPlace = "Casa" | "Academia";
 export type HomeEquipment = "Peso do corpo" | "Elásticos" | "Halteres";
-export type PainArea = "Joelho" | "Lombar";
+export type PainArea = "Joelho" | "Lombar" | "Ombro";
 export type ExerciseLike = { name: string; technicalName?: string; focus: string[]; home: boolean; gym: boolean; beginner: boolean; styles: string[]; sets?: string; reps?: string; rest?: string; cue?: string };
-export type WorkoutRules = { level: WorkoutLevel; place: TrainingPlace; duration: 40 | 50 | 60; equipment?: readonly HomeEquipment[]; pains?: readonly PainArea[]; overweight?: boolean; week?: number; style?: string };
+export type WorkoutRules = { level: WorkoutLevel; place: TrainingPlace; duration: 30 | 45 | 60; equipment?: readonly HomeEquipment[]; pains?: readonly PainArea[]; overweight?: boolean; week?: number; style?: string };
 const text = (e: ExerciseLike) => `${e.name} ${e.technicalName ?? ""}`.toLowerCase();
-export function requiredExerciseCount(level: WorkoutLevel, duration: 40 | 50 | 60) {
+export function requiredExerciseCount(level: WorkoutLevel, duration: 30 | 45 | 60) {
   if (level === "Iniciante") return duration === 40 ? 6 : 7;
   if (duration === 40) return 6;
   if (duration === 50) return 8;
@@ -30,6 +30,7 @@ export function isSafeForRules(e: ExerciseLike, rules: WorkoutRules): boolean {
   if (rules.level === "Iniciante" && (!e.beginner || /barra livre|com barra|agachamento livre|terra com barra|pistol|afundo|avan[cç]o|burpee|pike|declinada|arqueira|mergulho|dips|barra fixa/i.test(n))) return false;
   if (rules.pains?.includes("Joelho") && /agachamento fundo|agachamento livre|agachamento sum[oô]|afundo|avan[cç]o|passada|salto|jump|pistol|step-up|burpee|polichinelo|pular/i.test(n)) return false;
   if (rules.pains?.includes("Lombar") && /remada curvada|terra pesado|levantamento terra|stiff|good morning|hiperextens[aã]o/i.test(n)) return false;
+  if (rules.pains?.includes("Ombro") && /supino|crucifixo|flexão|desenvolvimento|remada alta|mergulho|parada de mão/i.test(n)) return false;
   if (rules.overweight && rules.level === "Iniciante" && /salto|jump|burpee|polichinelo|pistol|afundo|avan[cç]o|mountain climber/i.test(n)) return false;
   if (rules.overweight && /dead bug|bird dog|ponte de gl[uú]teos|prancha frontal|prancha lateral|crunch|abdominal no ch[aã]o/i.test(n)) return false;
   return true;

@@ -6,10 +6,9 @@ export type ExerciseLike = { name: string; technicalName?: string; focus: string
 export type WorkoutRules = { level: WorkoutLevel; place: TrainingPlace; duration: 30 | 45 | 60; equipment?: readonly HomeEquipment[]; pains?: readonly PainArea[]; overweight?: boolean; week?: number; style?: string };
 const text = (e: ExerciseLike) => `${e.name} ${e.technicalName ?? ""}`.toLowerCase();
 export function requiredExerciseCount(level: WorkoutLevel, duration: 30 | 45 | 60) {
-  if (level === "Iniciante") return duration === 40 ? 6 : 7;
-  if (duration === 40) return 6;
-  if (duration === 50) return 8;
-  return level === "Avançado" ? 10 : 9;
+  if (duration === 30) return 5;
+  if (duration === 45) return 7;
+  return level === "Iniciante" ? 8 : 9;
 }
 export function exerciseEquipment(e: ExerciseLike): HomeEquipment[] {
   const n = text(e);
@@ -37,9 +36,9 @@ export function isSafeForRules(e: ExerciseLike, rules: WorkoutRules): boolean {
 }
 export function prescriptionForLevel(e: ExerciseLike, rules: WorkoutRules) {
   const week = Math.max(1, Math.min(7, rules.week ?? 1));
-  if (rules.level === "Iniciante") return { sets: week < 3 ? "2–3" : "2–3", reps: "10–15", rest: "60–90 s", effort: "Termine sentindo que conseguiria fazer mais 3–4 repetições.", conjugates: week >= 3 };
-  if (rules.level === "Intermediário") return { sets: "3–4", reps: "8–12", rest: "60–90 s", effort: "Termine com 2–3 repetições de reserva.", conjugates: true };
-  return { sets: "3–5", reps: "6–12", rest: "60–120 s", effort: week <= 2 || week === 6 ? "Termine com 1–2 repetições de reserva; sem chegar à falha." : "Termine com 1–2 repetições de reserva.", conjugates: true };
+  if (rules.level === "Iniciante") return { sets: week < 3 ? "2" : "3", reps: "10–15", rest: "60–90 s", effort: "Termine sentindo que conseguiria fazer mais 3–4 repetições.", conjugates: week >= 3 };
+  if (rules.level === "Intermediário") return { sets: "3", reps: "8–12", rest: "60–90 s", effort: "Termine com 2–3 repetições de reserva.", conjugates: true };
+  return { sets: "3–4", reps: "6–12", rest: "60–120 s", effort: week <= 2 || week === 6 ? "Termine com 1–2 repetições de reserva; sem chegar à falha." : "Termine com 1–2 repetições de reserva.", conjugates: true };
 }
 export function ensureFullBodyGroups(groups: string[], style: string) {
   if (style !== "Full body") return groups;

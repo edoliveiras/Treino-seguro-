@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import AdminPanel from "./AdminPanel";
 
 const state = vi.hoisted(() => ({
@@ -33,8 +33,10 @@ describe("painel administrativo", () => {
   it("lista somente dados cadastrais e não oferece excluir a própria conta", async () => {
     render(<AdminPanel currentUserId="admin-1" />);
     await waitFor(() => expect(screen.getAllByText("Pessoa Usuária").length).toBeGreaterThan(0));
-    expect(screen.getByText("user@example.test")).toBeTruthy();
-    expect(screen.getByText("Suspensa")).toBeTruthy();
+    const accountCard = screen.getByText("Pessoa Usuária").closest("article");
+    expect(accountCard).not.toBeNull();
+    expect(within(accountCard as HTMLElement).getByText("user@example.test")).toBeTruthy();
+    expect(within(accountCard as HTMLElement).getByText("Suspensa")).toBeTruthy();
     expect(screen.getAllByRole("button", { name: "Excluir" })).toHaveLength(1);
     expect(screen.getByText("Sua conta de administrador")).toBeTruthy();
     expect(screen.getByText(/Avaliações e informações de saúde não aparecem/)).toBeTruthy();

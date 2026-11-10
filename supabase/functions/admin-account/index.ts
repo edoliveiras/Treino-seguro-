@@ -1,7 +1,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
+const allowedOrigin = Deno.env.get("APP_ORIGIN") ?? "https://treino-seguro.vercel.app";
 const corsHeaders = {
-  "Access-Control-Allow-Origin": Deno.env.get("APP_ORIGIN") ?? "null",
+  "Access-Control-Allow-Origin": allowedOrigin,
   "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Vary": "Origin",
@@ -22,9 +23,8 @@ Deno.serve(async (request) => {
   }
   if (request.method !== "POST") return json(405, { error: "method_not_allowed" });
 
-  const allowedOrigin = Deno.env.get("APP_ORIGIN");
   const origin = request.headers.get("origin");
-  if (!allowedOrigin || !origin || origin !== allowedOrigin) {
+  if (!origin || origin !== allowedOrigin) {
     return json(403, { error: "origin_not_allowed" });
   }
 

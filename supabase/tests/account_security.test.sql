@@ -296,13 +296,6 @@ values ('10000000-0000-4000-8000-000000000001','Modelo de teste','Iniciante','Co
 insert into public.workout_plan_exercises(id,plan_id,day_label,position,exercise_name,technical_name,muscle_group)
 values ('20000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000001','Corpo inteiro',1,'Sentar e levantar','Agachamento com apoio','Pernas');
 select public.admin_assign_workout_plan('10000000-0000-4000-8000-000000000001',array['00000000-0000-4000-8000-000000000003'::uuid]);
-select id as assignment_id
-from public.workout_assignments
-where plan_id='10000000-0000-4000-8000-000000000001'
-  and student_id='00000000-0000-4000-8000-000000000003'
-  and status='active'
-order by assigned_at desc limit 1
-\gset
 reset role;
 
 set role authenticated;
@@ -310,8 +303,17 @@ set request.jwt.claim.role = 'authenticated';
 set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000003';
 set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000003","role":"authenticated","app_metadata":{"role":"user"}}';
 do $training_student_access$
-declare v_denied boolean := false;
+declare
+  v_denied boolean := false;
+  v_assignment_id uuid;
 begin
+  select id into v_assignment_id
+  from public.workout_assignments
+  where plan_id='10000000-0000-4000-8000-000000000001'
+    and student_id='00000000-0000-4000-8000-000000000003'
+    and status='active'
+  order by assigned_at desc limit 1;
+  if v_assignment_id is null then raise exception 'assignment_not_created'; end if;
   if (select count(*) from public.workout_assignments) <> 1 then
     raise exception 'student_cannot_read_own_assignment';
   end if;
@@ -322,9 +324,9 @@ begin
     raise exception 'student_cannot_read_assigned_exercises';
   end if;
   update public.workout_assignments set seen_at=now()
-  where id=:'assignment_id';
+  where id=v_assignment_id;
   insert into public.workout_completions(assignment_id,exercise_id,student_id,exercise_name)
-  values (:'assignment_id','20000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000003','Sentar e levantar');
+  values (v_assignment_id,'20000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000003','Sentar e levantar');
   begin
     insert into public.workout_assignments(plan_id,student_id,assigned_by)
     values ('10000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000004','00000000-0000-4000-8000-000000000003');
@@ -382,7 +384,13 @@ set role authenticated;
 set request.jwt.claim.role = 'authenticated';
 set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
 set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
-select public.admin_remove_workout_assignment(:'assignment_id');
+select public.admin_remove_workout_assignment((
+  select id from public.workout_assignments
+  where plan_id='10000000-0000-4000-8000-000000000001'
+    and student_id='00000000-0000-4000-8000-000000000003'
+    and status='active'
+  order by assigned_at desc limit 1
+));
 reset role;
 
 set role authenticated;

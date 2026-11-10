@@ -1,7 +1,7 @@
 export type StrictLevel = "Iniciante" | "Intermediário" | "Avançado";
 export type StrictGroup = "Peito" | "Costas" | "Ombros" | "Bíceps" | "Tríceps" | "Antebraço" | "Quadríceps" | "Posterior de coxa" | "Glúteos" | "Panturrilha" | "Abdômen" | "Lombar e core profundo" | "Cardio" | "Alongamento" | "Equilíbrio";
 export type StrictExercise = { name:string; group:StrictGroup; level:StrictLevel; home:boolean; pains:string[] };
-const rows = [
+const rows: [string,string,string][] = [
 ["Peito","I","Flexão na parede~C;Flexão com mãos no sofá~C;Flexão com joelhos no chão~C;Supino na máquina;Voador na máquina"],
 ["Peito","M","Supino reto com halteres~O;Supino inclinado com halteres~O;Flexão no chão~CO;Crucifixo com halteres~O;Cruzamento na polia"],
 ["Peito","A","Supino reto com barra~O;Supino inclinado com barra~O;Flexão com pés elevados~CO;Mergulho nas paralelas para peito~O;Flexão explosiva~CO"],
@@ -13,17 +13,17 @@ const rows = [
 ["Ombros","A","Desenvolvimento com barra~OL;Desenvolvimento Arnold~O;Crucifixo invertido com halteres;Parada de mão na parede~CO"],
 ["Bíceps","I","Rosca direta leve~C;Rosca com elástico~C;Rosca na máquina;Rosca alternada~C"],
 ["Bíceps","M","Rosca martelo~C;Rosca na polia;Rosca com barra reta;Rosca scott;Rosca concentrada;Rosca com barra W"],
-["Bíceps","A","C","Rosca inclinada no banco;Rosca 21;Rosca na barra fixa com pegada invertida"],
+["Bíceps","A","Rosca inclinada no banco;Rosca 21;Rosca na barra fixa com pegada invertida"],
 ["Tríceps","I","Tríceps na polia com corda;Tríceps com elástico~C;Tríceps no banco com joelhos dobrados~CO;Tríceps na máquina"],
 ["Tríceps","M","Tríceps testa com halteres;Tríceps francês~O;Tríceps na polia com barra reta;Tríceps coice~C;Flexão fechada~CO"],
 ["Tríceps","A","Tríceps testa com barra W;Mergulho nas paralelas para tríceps~O;Tríceps no banco com pés elevados~CO;Supino fechado~O"],
-["Antebraço","I","C","Apertar bolinha ou toalha;Rosca de punho leve"],
-["Antebraço","M","C","Rosca de punho invertida;Caminhada do fazendeiro carregando peso"],
-["Antebraço","A","C","Pendurar na barra o máximo de tempo"],
+["Antebraço","I","Apertar bolinha ou toalha~C;Rosca de punho leve~C"],
+["Antebraço","M","Rosca de punho invertida~C;Caminhada do fazendeiro carregando peso~C"],
+["Antebraço","A","Pendurar na barra o máximo de tempo~C"],
 ["Quadríceps","I","Sentar e levantar da cadeira~C;Leg press leve~J;Cadeira extensora leve~J;Agachamento com apoio~CJ"],
 ["Quadríceps","M","Agachamento livre~CJ;Agachamento até sentar no banco~CJ;Avanço~CJ;Afundo~CJ;Subida no degrau com halteres~CJ"],
 ["Quadríceps","A","Agachamento búlgaro~CJ;Agachamento com barra~JL;Hack na máquina~J;Agachamento com salto~CJ"],
-["Posterior de coxa","I","G","Mesa flexora;Cadeira flexora"],
+["Posterior de coxa","I","Mesa flexora;Cadeira flexora"],
 ["Posterior de coxa","M","Flexora em pé na polia;Stiff com halteres~L;Flexora deslizando toalha~C"],
 ["Posterior de coxa","A","Stiff com barra~L;Terra romeno~L;Flexora nórdica~C"],
 ["Glúteos","I","Ponte de glúteo~C;Glúteo de quatro apoios~C;Abdução na máquina;Passo lateral com elástico~C"],
@@ -37,7 +37,7 @@ const rows = [
 ["Abdômen","A","Abdominal na polia;Elevação de pernas na barra fixa;Roda abdominal~L;Prancha com toque nos ombros~C"],
 ["Lombar e core profundo","I","Gato-camelo~C;Pássaro-cachorro~C"],
 ["Lombar e core profundo","M","Superman leve no chão~CL;Extensão lombar na máquina~L"],
-["Lombar e core profundo","A","C","Extensão lombar no banco romano~L"],
+["Lombar e core profundo","A","Extensão lombar no banco romano~L"],
 ["Cardio","I","Caminhada leve 20–30 min~C;Bicicleta ergométrica;Elíptico;Caminhada rápida~C"],
 ["Cardio","M","Caminhada + trote, 1 min trota e 2 min anda~CJ;Corrida leve~CJ"],
 ["Cardio","A","Tiros 30 s forte e 90 s leve~CJ;Corrida intervalada~CJ;Pular corda~CJ"],
@@ -45,7 +45,7 @@ const rows = [
 ["Equilíbrio","I","Um pé só com apoio~C;Andar na linha reta~C"],
 ["Equilíbrio","M","Um pé só sem apoio~C"],
 ["Equilíbrio","A","Um pé só de olhos fechados~C;Um pé só em almofada~C"]
-] as const;
+];
 const levelMap:Record<string,StrictLevel>={I:"Iniciante",M:"Intermediário",A:"Avançado"};
 export const STRICT_EXERCISES:StrictExercise[] = rows.flatMap(([group,level,names]) =>
  names.split(";").map(raw=>{const [name,flags=""]=raw.split("~");return {name,group:group as StrictGroup,level:levelMap[level],home:flags.includes("C"),pains:[...flags].filter(flag=>flag!=="C")};})

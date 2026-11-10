@@ -66,22 +66,22 @@ const lowerDay: ProgramDay = {
 const pushDay: ProgramDay = {
   label:"Peito, ombros e tríceps", focus:"Peito, ombros e tríceps",
   exercises:[
-    ex("Supino reto","Supino reto","Peito","Supino em banco com barra ou halteres.","Flexão no chão ou em apoio alto, conforme capacidade.","Use apoio alto se necessário e amplitude confortável.","Mantenha pés firmes e lombar confortável no banco.","6–10",3,150),
+    ex("Supino reto com halteres","Supino reto com halteres","Peito","Supino em banco com barra ou halteres.","Flexão no chão ou em apoio alto, conforme capacidade.","Use apoio alto se necessário e amplitude confortável.","Mantenha pés firmes e lombar confortável no banco.","6–10",3,150),
     ex("Supino inclinado com halteres","Supino inclinado com halteres","Peito","Empurrar halteres em banco levemente inclinado.","Flexão com mãos em bancada firme.","Evite apoio instável e não force ombro.","Mantenha costelas e quadril alinhados.","8–12",3,120),
-    ex("Desenvolvimento de ombros","Desenvolvimento de ombros","Ombros","Empurrar halteres ou máquina acima da cabeça.","Empurrar elástico ou garrafas sentado.","Faça sentado e com amplitude confortável.","Não arqueie a lombar para terminar a repetição.","8–12",3,120),
+    ex("Desenvolvimento com halteres sentado","Desenvolvimento com halteres sentado","Ombros","Empurrar halteres ou máquina acima da cabeça.","Empurrar elástico ou garrafas sentado.","Faça sentado e com amplitude confortável.","Não arqueie a lombar para terminar a repetição.","8–12",3,120),
     ex("Elevação lateral com halteres","Elevação lateral com halteres","Ombros","Levantar halteres para os lados com controle.","Levantar garrafas pequenas para os lados.","Reduza a altura se houver dor no ombro.","Faça sentado se ajudar a manter o tronco estável.","12–15",2,60),
-    ex("Extensão de tríceps na polia","Extensão de tríceps na polia","Tríceps","Esticar os cotovelos empurrando a corda para baixo.","Esticar braços com elástico preso acima.","Fique em posição estável, sem ajoelhar.","Evite inclinar o tronco e mantenha abdômen firme.","10–12",3,90),
+    ex("Tríceps na polia com corda","Tríceps na polia com corda","Tríceps","Esticar os cotovelos empurrando a corda para baixo.","Esticar braços com elástico preso acima.","Fique em posição estável, sem ajoelhar.","Evite inclinar o tronco e mantenha abdômen firme.","10–12",3,90),
     ex("Tríceps francês","Tríceps francês","Tríceps","Estender os cotovelos segurando um halter leve acima da cabeça.","Esticar elástico acima da cabeça ou fazer extensão sentado.","Use amplitude sem dor no ombro.","Mantenha tronco apoiado e não arqueie a lombar.","10–12",2,90)
   ]
 };
 const pullDay: ProgramDay = {
   label:"Costas e bíceps", focus:"Costas e bíceps",
   exercises:[
-    ex("Puxada frontal","Puxada frontal","Costas","Puxar barra da máquina em direção ao peito.","Puxar elástico preso acima da cabeça.","Não balance o corpo nem force ombros.","Mantenha tronco estável e sem inclinar demais.","8–12",3,120),
-    ex("Remada baixa","Remada baixa","Costas","Puxar cabo em direção ao abdômen.","Puxar elástico preso à frente ou mochila leve.","Apoie os pés e use carga controlável.","Coluna confortável, sem arredondar ou girar o tronco.","8–12",3,120),
+    ex("Puxada na frente","Puxada na frente","Costas","Puxar barra da máquina em direção ao peito.","Puxar elástico preso acima da cabeça.","Não balance o corpo nem force ombros.","Mantenha tronco estável e sem inclinar demais.","8–12",3,120),
+    ex("Remada baixa na polia","Remada baixa na polia","Costas","Puxar cabo em direção ao abdômen.","Puxar elástico preso à frente ou mochila leve.","Apoie os pés e use carga controlável.","Coluna confortável, sem arredondar ou girar o tronco.","8–12",3,120),
     ex("Remada com halteres apoiado no banco","Remada com halteres apoiado no banco","Costas","Puxar halter apoiando uma mão em banco firme.","Puxar mochila ou elástico com um braço, apoiando a outra mão.","Use base estável e carga leve.","Apoie o tronco e evite girar a lombar.","10–12",2,90),
-    ex("Puxada alta para o rosto","Puxada alta para o rosto","Costas e ombros","Puxar corda em direção ao rosto com carga leve.","Puxar elástico preso na altura dos olhos.","Mantenha postura estável.","Evite projetar a cabeça e arquear a lombar.","12–15",2,60),
-    ex("Rosca direta","Rosca direta","Bíceps","Dobrar cotovelos com barra ou halteres.","Dobrar cotovelos com elástico ou garrafas.","Faça sentado se necessário.","Não balance o tronco para ajudar.","8–12",3,75),
+    ex("Crucifixo invertido na máquina","Crucifixo invertido na máquina","Ombros","Puxar corda em direção ao rosto com carga leve.","Puxar elástico preso na altura dos olhos.","Mantenha postura estável.","Evite projetar a cabeça e arquear a lombar.","12–15",2,60),
+    ex("Rosca com barra reta","Rosca com barra reta","Bíceps","Dobrar cotovelos com barra ou halteres.","Dobrar cotovelos com elástico ou garrafas.","Faça sentado se necessário.","Não balance o tronco para ajudar.","8–12",3,75),
     ex("Rosca martelo","Rosca martelo","Bíceps","Dobrar cotovelos com halteres na posição neutra.","Dobrar cotovelos segurando garrafas ou elástico.","Use carga leve e sem impulso.","Mantenha cotovelos próximos ao corpo.","10–12",2,60)
   ]
 };
@@ -89,11 +89,11 @@ const legsDay: ProgramDay = {
   label:"Pernas", focus:"Coxas, posterior, glúteos e panturrilhas",
   exercises:[
     ex("Agachamento com barra","Agachamento com barra","Quadríceps","Agachar com barra leve e supervisão.","Agachar segurando mochila leve junto ao peito ou sentar e levantar.","Use amplitude individual sem dor; não é obrigatório agachar fundo.","Mantenha tronco firme e carga compatível com a técnica.","6–10",3,150),
-    ex("Leg press","Leg press","Coxas e glúteos","Empurrar a plataforma com controle e sem travar joelhos.","Agachar com apoio ou sentar e levantar com carga leve.","Reduza amplitude se o joelho incomodar; sem dor crescente.","Mantenha quadril e costas apoiados no encosto.","8–12",3,120),
+    ex("Leg press","Leg press","Quadríceps","Empurrar a plataforma com controle e sem travar joelhos.","Agachar com apoio ou sentar e levantar com carga leve.","Reduza amplitude se o joelho incomodar; sem dor crescente.","Mantenha quadril e costas apoiados no encosto.","8–12",3,120),
     ex("Levantamento terra romeno","Levantamento terra romeno","Posterior de coxa","Levar quadril para trás com pesos próximos às pernas.","Levar quadril para trás com mochila leve ou sem peso.","Joelhos destravados; reduza amplitude se houver desconforto.","Coluna neutra e carga próxima; não desça além do controle.","8–10",3,150),
     ex("Cadeira flexora","Cadeira flexora","Posterior de coxa","Dobrar joelhos na máquina sentado.","Dobrar uma perna de cada vez com elástico leve.","Movimento controlado e sem dor.","Mantenha quadril apoiado.","10–12",2,90),
-    ex("Elevação pélvica","Elevação pélvica","Glúteos","Subir quadril com costas apoiadas e peso leve/moderado.","Ponte de glúteos no chão.","Escolha amplitude confortável.","Evite hiperestender a lombar no alto.","8–12",3,120),
-    ex("Elevação de panturrilhas","Elevação de panturrilhas","Panturrilhas","Subir e descer calcanhares na máquina ou com apoio.","Subir na ponta dos pés segurando parede ou cadeira.","Faça sentado se houver dor ou instabilidade.","Tronco estável, sem balanço.","12–15",3,60)
+    ex("Hip thrust com barra","Hip thrust com barra","Glúteos","Subir quadril com costas apoiadas e peso leve/moderado.","Ponte de glúteos no chão.","Escolha amplitude confortável.","Evite hiperestender a lombar no alto.","8–12",3,120),
+    ex("Panturrilha em pé na máquina","Panturrilha em pé na máquina","Panturrilha","Subir e descer calcanhares na máquina ou com apoio.","Subir na ponta dos pés segurando parede ou cadeira.","Faça sentado se houver dor ou instabilidade.","Tronco estável, sem balanço.","12–15",3,60)
   ]
 };
 

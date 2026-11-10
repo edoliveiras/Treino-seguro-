@@ -43,9 +43,9 @@ describe("fluxos de segurança da interface", () => {
     fireEvent.click(screen.getByText(/Compreendo que o app é educativo/));
     fireEvent.click(screen.getByRole("button", { name: /Concluir avaliação/ }));
     fireEvent.click(screen.getByRole("button", { name: "Exercícios" }));
-    expect(screen.getByText(/itens com alerta compatível com suas queixas foram ocultados/)).toBeTruthy();
+    expect(screen.getByText("Orientação de segurança")).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "agachamento livre" })).toBeNull();
-    expect(screen.getByRole("heading", { name: "Caminhar em ritmo leve" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Caminhada leve (20–30 min)" })).toBeTruthy();
   });
 });
 
@@ -133,10 +133,10 @@ describe("fluxos de segurança da interface", () => {
     fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
     completeBasicAssessment();
     fireEvent.click(screen.getByRole("button", { name: "Treino" }));
-    const markButton = screen.getByRole("button", { name: "Marcar Sentar e levantar" });
+    const markButton = screen.getByRole("button", { name: "Marcar Sentar e levantar da cadeira" });
     expect(markButton.getAttribute("aria-pressed")).toBe("false");
     fireEvent.click(markButton);
-    expect(screen.getByRole("button", { name: "Desmarcar Sentar e levantar" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "Desmarcar Sentar e levantar da cadeira" }).getAttribute("aria-pressed")).toBe("true");
   });
 
 

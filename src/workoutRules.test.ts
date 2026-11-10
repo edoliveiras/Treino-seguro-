@@ -3,18 +3,18 @@ import { ensureFullBodyGroups, isSafeForRules, prescriptionForLevel, requiredExe
 const ex=(name:string,home=true,beginner=true)=>({name,focus:["Pernas"],home,gym:true,beginner,styles:["Full body"]});
 describe("regras complementares do gerador de treinos",()=>{
  it("limita a quantidade de exercícios por nível e duração",()=>{
-  expect(requiredExerciseCount("Iniciante",40)).toBe(6);
-  expect(requiredExerciseCount("Iniciante",50)).toBe(7);
-  expect(requiredExerciseCount("Avançado",60)).toBe(10);
+  expect(requiredExerciseCount("Iniciante",30)).toBe(5);
+  expect(requiredExerciseCount("Iniciante",45)).toBe(7);
+  expect(requiredExerciseCount("Avançado",60)).toBe(9);
  });
  it("não inclui equipamento inexistente no treino em casa",()=>{
-  const rules={level:"Intermediário" as const,place:"Casa" as const,duration:50 as const,equipment:["Peso do corpo"] as const};
+  const rules={level:"Intermediário" as const,place:"Casa" as const,duration:45 as const,equipment:["Peso do corpo"] as const};
   expect(isSafeForRules(ex("Flexão na parede"),rules)).toBe(true);
   expect(isSafeForRules(ex("Rosca com halteres"),rules)).toBe(false);
   expect(isSafeForRules(ex("Remada com elástico"),rules)).toBe(false);
  });
  it("retira agachamento fundo, afundo e saltos quando há dor no joelho",()=>{
-  const rules={level:"Iniciante" as const,place:"Casa" as const,duration:40 as const,equipment:["Peso do corpo"] as const,pains:["Joelho"] as const,overweight:true};
+  const rules={level:"Iniciante" as const,place:"Casa" as const,duration:30 as const,equipment:["Peso do corpo"] as const,pains:["Joelho"] as const,overweight:true};
   expect(isSafeForRules(ex("Agachamento fundo"),rules)).toBe(false);
   expect(isSafeForRules(ex("Afundo"),rules)).toBe(false);
   expect(isSafeForRules(ex("Polichinelo com salto"),rules)).toBe(false);

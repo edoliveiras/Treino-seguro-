@@ -34,18 +34,18 @@ $$;
 \ir ../migrations/20261108154504_rls_performance_and_fk_indexes.sql
 \ir ../migrations/20261108154727_health_records_delete_for_suspended_accounts.sql
 \ir ../migrations/20261108155740_secure_first_admin_bootstrap.sql
-\ir ../migrations/20261109110000_phone_contact_only.sql
-\ir ../migrations/20261109180000_training_programs_and_assignments.sql
-\ir ../migrations/20261109181000_admin_remove_workout_assignment.sql
-\ir ../migrations/20261109182000_atomic_workout_assignment.sql
-\ir ../migrations/20261109183000_rebuild_admin_account_directory.sql
-\ir ../migrations/20261109184000_training_rpc_invoker_security.sql
-\ir ../migrations/20261109185000_training_rls_and_index_tuning.sql
-\ir ../migrations/20261109186000_email_only_admin_reactivation.sql
-\ir ../migrations/20261109187000_preserve_workout_completion_history.sql
-\ir ../migrations/20261109188000_atomic_plan_save_preserve_history.sql
-\ir ../migrations/20261109189000_one_completion_per_exercise_per_day.sql
-\ir ../migrations/20261109190000_persist_example_workout_history.sql
+\ir ../migrations/20261109180703_phone_contact_only.sql
+\ir ../migrations/20261109180059_training_programs_and_assignments.sql
+\ir ../migrations/20261109180115_admin_remove_workout_assignment.sql
+\ir ../migrations/20261109180541_atomic_workout_assignment.sql
+\ir ../migrations/20261109180708_rebuild_admin_account_directory.sql
+\ir ../migrations/20261109180733_training_rpc_invoker_security.sql
+\ir ../migrations/20261109180958_training_rls_and_index_tuning.sql
+\ir ../migrations/20261109181028_email_only_admin_reactivation.sql
+\ir ../migrations/20261109181137_preserve_workout_completion_history.sql
+\ir ../migrations/20261109181208_atomic_plan_save_preserve_history.sql
+\ir ../migrations/20261109181919_one_completion_per_exercise_per_day.sql
+\ir ../migrations/20261109182011_persist_example_workout_history.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),

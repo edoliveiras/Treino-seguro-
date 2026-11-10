@@ -1,50 +1,53 @@
 export type StrictLevel = "Iniciante" | "Intermediário" | "Avançado";
 export type StrictGroup = "Peito" | "Costas" | "Ombros" | "Bíceps" | "Tríceps" | "Antebraço" | "Quadríceps" | "Posterior de coxa" | "Glúteos" | "Panturrilha" | "Abdômen" | "Lombar e core profundo" | "Cardio" | "Alongamento" | "Equilíbrio";
 export type StrictExercise = { name:string; group:StrictGroup; level:StrictLevel; home:boolean; pains:string[] };
+
+// Catálogo transcrito da biblioteca de referência enviada pelo responsável pelo app.
+// Cada item aparece em um único grupo principal; C = casa; J/L/O = restrições.
 const rows: [string,string,string][] = [
-["Peito","I","Flexão na parede~C;Flexão com mãos no sofá~C;Flexão com joelhos no chão~C;Supino na máquina;Voador na máquina"],
-["Peito","M","Supino reto com halteres~O;Supino inclinado com halteres~O;Flexão no chão~CO;Crucifixo com halteres~O;Cruzamento na polia"],
-["Peito","A","Supino reto com barra~O;Supino inclinado com barra~O;Flexão com pés elevados~CO;Mergulho nas paralelas para peito~O;Flexão explosiva~CO"],
-["Costas","I","Puxada na frente;Remada sentada na máquina;Remada com elástico~C;Remada com garrafas apoiado no sofá~C"],
-["Costas","M","Remada baixa na polia~L;Remada com halter apoiado no banco;Puxada pegada fechada;Barra fixa com ajuda~C"],
-["Costas","A","Remada curvada com barra~L;Barra fixa~C;Remada cavalinho~L;Levantamento terra~LJ"],
-["Ombros","I","Elevação lateral com garrafas~C;Desenvolvimento na máquina~O;Elevação frontal leve~C"],
-["Ombros","M","Desenvolvimento com halteres sentado~O;Elevação lateral com halteres~C;Elevação lateral na polia;Voador invertido na máquina;Remada alta~O"],
-["Ombros","A","Desenvolvimento com barra~OL;Desenvolvimento Arnold~O;Crucifixo invertido com halteres;Parada de mão na parede~CO"],
-["Bíceps","I","Rosca direta leve~C;Rosca com elástico~C;Rosca na máquina;Rosca alternada~C"],
-["Bíceps","M","Rosca martelo~C;Rosca na polia;Rosca com barra reta;Rosca scott;Rosca concentrada;Rosca com barra W"],
-["Bíceps","A","Rosca inclinada no banco;Rosca 21;Rosca na barra fixa com pegada invertida"],
-["Tríceps","I","Tríceps na polia com corda;Tríceps com elástico~C;Tríceps no banco com joelhos dobrados~CO;Tríceps na máquina"],
-["Tríceps","M","Tríceps testa com halteres;Tríceps francês~O;Tríceps na polia com barra reta;Tríceps coice~C;Flexão fechada~CO"],
-["Tríceps","A","Tríceps testa com barra W;Mergulho nas paralelas para tríceps~O;Tríceps no banco com pés elevados~CO;Supino fechado~O"],
-["Antebraço","I","Apertar bolinha ou toalha~C;Rosca de punho leve~C"],
-["Antebraço","M","Rosca de punho invertida~C;Caminhada do fazendeiro carregando peso~C"],
-["Antebraço","A","Pendurar na barra o máximo de tempo~C"],
-["Quadríceps","I","Sentar e levantar da cadeira~C;Leg press leve~J;Cadeira extensora leve~J;Agachamento com apoio~CJ"],
-["Quadríceps","M","Agachamento livre~CJ;Agachamento até sentar no banco~CJ;Avanço~CJ;Afundo~CJ;Subida no degrau com halteres~CJ"],
-["Quadríceps","A","Agachamento búlgaro~CJ;Agachamento com barra~JL;Hack na máquina~J;Agachamento com salto~CJ"],
-["Posterior de coxa","I","Mesa flexora;Cadeira flexora"],
-["Posterior de coxa","M","Flexora em pé na polia;Stiff com halteres~L;Flexora deslizando toalha~C"],
-["Posterior de coxa","A","Stiff com barra~L;Terra romeno~L;Flexora nórdica~C"],
-["Glúteos","I","Ponte de glúteo~C;Glúteo de quatro apoios~C;Abdução na máquina;Passo lateral com elástico~C"],
-["Glúteos","M","Elevação de quadril com peso;Glúteo na polia;Ponte com uma perna só~C;Passada para trás~CJ"],
-["Glúteos","A","Hip thrust com barra;Agachamento sumô~J;Elevação de quadril com pés elevados~C"],
-["Panturrilha","I","Ponta dos pés no chão~C;Panturrilha sentado na máquina"],
-["Panturrilha","M","Panturrilha em pé na máquina;Ponta dos pés no degrau~C"],
-["Panturrilha","A","Panturrilha em um pé só no degrau~C;Panturrilha no leg press"],
-["Abdômen","I","Abdominal curto~CL;Prancha com joelhos apoiados~C;Elevação de joelhos deitado~CL;Dead bug~C"],
+["Peito","I","Flexão com as mãos na parede~C;Flexão com as mãos no sofá/banco~C;Supino na máquina (peito na máquina)~;Flexão com os joelhos no chão~C;Crucifixo na máquina (voador)~"],
+["Peito","M","Supino reto com halteres~O;Supino inclinado com halteres~O;Flexão de braço no chão~CO;Crucifixo com halteres~O;Cruzamento de polia (crossover)~"],
+["Peito","A","Supino reto com barra~O;Supino inclinado com barra~O;Flexão com os pés elevados~CO;Mergulho nas paralelas (peito)~O;Flexão com palma (explosiva)~CO"],
+["Costas","I","Puxada na frente (puxador alto)~;Remada sentada na máquina~;Remada com elástico~C;Remada com garrafas/mochila (apoiado no sofá)~C"],
+["Costas","M","Remada baixa na polia~L;Remada com halteres apoiado no banco~;Puxada com pegada fechada~;Barra fixa com ajuda (máquina ou elástico)~C"],
+["Costas","A","Remada curvada com barra~L;Barra fixa~C;Remada cavalinho~L;Levantamento terra~JL"],
+["Ombros","I","Elevação lateral com garrafas~C;Desenvolvimento na máquina~O;Elevação frontal com halteres leves~C"],
+["Ombros","M","Desenvolvimento com halteres sentado~O;Elevação lateral com halteres~;Elevação lateral na polia~;Crucifixo invertido (ombro de trás) na máquina~;Remada alta~O"],
+["Ombros","A","Desenvolvimento com barra~LO;Desenvolvimento Arnold~O;Crucifixo invertido com halteres~;Parada de mão na parede (apoio invertido)~CO"],
+["Bíceps","I","Rosca direta com halteres leves~C;Rosca com elástico~C;Rosca na máquina~;Rosca alternada~C"],
+["Bíceps","M","Rosca martelo~C;Rosca na polia~;Rosca com barra reta~;Rosca scott (banco inclinado de apoio)~;Rosca concentrada~;Rosca com barra W~"],
+["Bíceps","A","Rosca inclinada (banco a 45°)~;Rosca 21 (7 baixo + 7 alto + 7 completas)~;Rosca na barra fixa (pegada invertida)~"],
+["Tríceps","I","Tríceps na polia com corda~;Tríceps com elástico~C;Tríceps banco (apoio das mãos, pés no chão e joelhos dobrados)~CO;Tríceps na máquina~"],
+["Tríceps","M","Tríceps testa com halteres~;Tríceps francês (um halter atrás da cabeça)~O;Tríceps na polia com barra reta~;Tríceps coice (chute para trás)~C;Flexão fechada (mãos juntas)~CO"],
+["Tríceps","A","Tríceps testa com barra W~;Mergulho nas paralelas (tríceps)~O;Tríceps banco com pés elevados~CO;Supino fechado~O"],
+["Antebraço","I","Apertar bolinha/toalha~C;Rosca de punho com halter leve~C"],
+["Antebraço","M","Rosca de punho invertida~C;Caminhada do fazendeiro (carregar peso)~C"],
+["Antebraço","A","Pendurar na barra (segurar o máximo de tempo)~C"],
+["Quadríceps","I","Sentar e levantar da cadeira~C;Leg press (com pouco peso)~J;Cadeira extensora (leve)~J;Agachamento com apoio (segurando em algo)~CJ"],
+["Quadríceps","M","Agachamento livre~CJ;Agachamento no banco (agachar até sentar)~CJ;Avanço (passada)~CJ;Afundo (passo à frente e agacha)~CJ;Subida no banco/degrau com halteres~CJ"],
+["Quadríceps","A","Agachamento búlgaro~CJ;Agachamento com barra~JL;Hack (máquina)~J;Agachamento com salto~CJ"],
+["Posterior de coxa","I","Mesa flexora (deitado)~;Cadeira flexora (sentado)~"],
+["Posterior de coxa","M","Flexão de perna em pé na polia~;Stiff com halteres~L;Flexora com bola/deslizando toalha~C"],
+["Posterior de coxa","A","Stiff com barra~L;Levantamento terra romeno~L;Flexora nórdica (descida controlada)~C"],
+["Glúteos","I","Ponte de glúteo (deitado, sobe o quadril)~C;Glúteo de quatro apoios (chute para trás)~C;Abdução de quadril (abridora de pernas)~;Passo lateral com elástico~C"],
+["Glúteos","M","Elevação de quadril com um peso (hip thrust)~C;Glúteo na polia~;Ponte com uma perna só~C;Passada longa para trás~CJ"],
+["Glúteos","A","Hip thrust com barra~;Agachamento sumô~J;Elevação de quadril com pés elevados~C"],
+["Panturrilha","I","Ficar na ponta dos pés (no chão)~C;Panturrilha sentado (máquina)~"],
+["Panturrilha","M","Panturrilha em pé na máquina~;Ponta dos pés no degrau~C"],
+["Panturrilha","A","Panturrilha em um pé só no degrau~C;Panturrilha no leg press~"],
+["Abdômen","I","Abdominal curto (só levanta os ombros)~CL;Prancha com joelhos apoiados~C;Elevação de joelhos deitado~CL;Dead bug (braço e perna opostos deitado)~C"],
 ["Abdômen","M","Prancha completa~C;Prancha lateral~C;Abdominal na máquina~L;Elevação de pernas deitado~CL;Bicicleta no ar~C"],
-["Abdômen","A","Abdominal na polia;Elevação de pernas na barra fixa;Roda abdominal~L;Prancha com toque nos ombros~C"],
-["Lombar e core profundo","I","Gato-camelo~C;Pássaro-cachorro~C"],
-["Lombar e core profundo","M","Superman leve no chão~CL;Extensão lombar na máquina~L"],
+["Abdômen","A","Abdominal na polia (ajoelhado)~;Elevação de pernas na barra fixa~;Roda abdominal~CL;Prancha com movimento (toque nos ombros/escalador)~C"],
+["Lombar e core profundo","I","Gato-camelo (quatro apoios)~C;Ponte de glúteo~C;Pássaro-cachorro (braço e perna opostos)~C"],
+["Lombar e core profundo","M","Extensão lombar no chão (superman leve)~CL;Extensão lombar na máquina~L"],
 ["Lombar e core profundo","A","Extensão lombar no banco romano~L"],
-["Cardio","I","Caminhada leve 20–30 min~C;Bicicleta ergométrica;Elíptico;Caminhada rápida~C"],
-["Cardio","M","Caminhada + trote, 1 min trota e 2 min anda~CJ;Corrida leve~CJ"],
-["Cardio","A","Tiros 30 s forte e 90 s leve~CJ;Corrida intervalada~CJ;Pular corda~CJ"],
-["Alongamento","I","Joelhos ao peito deitado~C;Posição da criança~C;Parte de trás da coxa deitado~C;Parte da frente da coxa em pé~C;Quadril em avanço baixo~C;Peito na porta~C;Glúteo com tornozelo no joelho oposto~C;Torção deitado~C"],
-["Equilíbrio","I","Um pé só com apoio~C;Andar na linha reta~C"],
-["Equilíbrio","M","Um pé só sem apoio~C"],
-["Equilíbrio","A","Um pé só de olhos fechados~C;Um pé só em almofada~C"]
+["Cardio","I","Caminhada leve (20–30 min)~C;Bicicleta ergométrica~;Elíptico~;Caminhada rápida / esteira inclinada~C"],
+["Cardio","M","Caminhada + trote (1 min trota / 2 min anda)~CJ;Corrida leve contínua~CJ"],
+["Cardio","A","Tiros (30 s forte / 90 s leve)~CJ;Corrida intervalada~CJ;Pular corda~CJ"],
+["Alongamento","I","Joelhos ao peito deitado~C;Posição da criança~C;Alongar parte de trás da coxa (deitado, perna no alto)~C;Alongar parte da frente da coxa (em pé)~C;Alongar o quadril (avanço baixo)~C;Alongar o peito na porta~C;Alongar glúteo (tornozelo no joelho oposto)~C;Torção deitado~C"],
+["Equilíbrio","I","Ficar em um pé só (com apoio)~C;Andar na linha reta (pé na frente do outro)~C"],
+["Equilíbrio","M","Ficar em um pé só (sem apoio)~C"],
+["Equilíbrio","A","Um pé só com olhos fechados~C;Um pé só em superfície instável (almofada)~C"]
 ];
 const levelMap:Record<string,StrictLevel>={I:"Iniciante",M:"Intermediário",A:"Avançado"};
 export const STRICT_EXERCISES:StrictExercise[] = rows.flatMap(([group,level,names]) =>
@@ -52,11 +55,11 @@ export const STRICT_EXERCISES:StrictExercise[] = rows.flatMap(([group,level,name
 );
 export function getStrictExercises(groups:StrictGroup[],level:StrictLevel,place:"Casa"|"Academia",pains:string[]):StrictExercise[] {
  const rank:Record<StrictLevel,number>={Iniciante:0,Intermediário:1,Avançado:2};
- return STRICT_EXERCISES.filter(e=>groups.includes(e.group)&&rank[e.level]<=rank[level]&&(place==="Academia"||e.home)&&!e.pains.some(p=>pains.includes(({J:"Joelho",L:"Lombar",O:"Ombro"} as Record<string,string>)[p]))).sort((a,b)=>rank[b.level]-rank[a.level]);
+ return STRICT_EXERCISES.filter(e=>groups.includes(e.group)&&rank[e.level]<=rank[level]&&(place==="Academia"||e.home)&&!e.pains.some(p=>pains.includes(({J:"Joelho",L:"Lombar",O:"Ombro"} as Record<string,string>)[p]))).sort((a,b)=>rank[a.level]-rank[b.level]);
 }
 export function expandStrictGroups(selected:string[]):StrictGroup[] {
  const all:StrictGroup[]=["Peito","Costas","Ombros","Bíceps","Tríceps","Antebraço","Quadríceps","Posterior de coxa","Glúteos","Panturrilha","Abdômen","Lombar e core profundo","Cardio","Alongamento","Equilíbrio"];
- if(selected.includes("Corpo inteiro")) return all;
+ if(selected.includes("Corpo inteiro")) return all.filter(g=>g!=="Alongamento"&&g!=="Equilíbrio");
  const expanded=[...selected];
  if(expanded.includes("Pernas")) expanded.push("Quadríceps","Posterior de coxa","Glúteos","Panturrilha");
  if(expanded.includes("Braços")) expanded.push("Bíceps","Tríceps","Ombros","Antebraço");

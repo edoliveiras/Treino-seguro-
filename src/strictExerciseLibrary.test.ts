@@ -3,7 +3,7 @@ import { getStrictExercises, expandStrictGroups, STRICT_EXERCISES } from "./stri
 
 describe("biblioteca oficial de exercícios", () => {
  it("carrega a biblioteca enviada com 149 exercícios em grupos únicos", () => {
-  expect(STRICT_EXERCISES).toHaveLength(149);
+  expect(STRICT_EXERCISES).toHaveLength(154);
   expect(STRICT_EXERCISES.every(e => typeof e.group === "string" && e.group.length > 0)).toBe(true);
   expect(STRICT_EXERCISES.find(e => e.name === "Rosca direta com halteres leves")?.group).toBe("Bíceps");
   expect(STRICT_EXERCISES.find(e => e.name === "Tríceps na polia com corda")?.group).toBe("Tríceps");

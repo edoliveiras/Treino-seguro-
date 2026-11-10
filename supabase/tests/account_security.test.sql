@@ -18,9 +18,9 @@ $$;
 create function auth.role() returns text language sql stable as $$
   select nullif(current_setting('request.jwt.claim.role', true), '')
 $$;
-create function auth.jwt() returns jsonb language sql stable as $
+create function auth.jwt() returns jsonb language sql stable as $$
   select coalesce(nullif(current_setting('request.jwt.claims', true), '')::jsonb, '{}'::jsonb)
-$;
+$$;
 
 -- Supabase grants authenticated roles access to the auth helper functions.
 grant usage on schema auth to anon, authenticated, service_role;

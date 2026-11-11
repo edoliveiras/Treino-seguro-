@@ -47,6 +47,6 @@ Deno.serve(async (request) => {
     const deleted = await deleteUserFoodPhotos(adminClient.storage, authData.user.id);
     return json(200, { success: true, consent: "withdrawn", deleted });
   } catch {
-    return json(503, { error: "consent_revoked_photo_cleanup_pending", revoked: true });
+    return json(200, { success: false, consent: "withdrawn", revoked: true, cleanupPending: true });
   }
 });

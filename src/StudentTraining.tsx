@@ -188,6 +188,7 @@ export default function StudentTraining({userId,level,place,days,compact=false,o
     return <article className="exercise student-exercise" key={key}>
      <div><img src={photoUrl} alt={"Foto ilustrativa do exercício "+name} loading="lazy"/><small className="muted">Foto ilustrativa</small></div>
      <div className="exercise-copy">
+      <span className="student-exercise-number" aria-label={`Exercício ${i+1}`}>{String(i+1).padStart(2,"0")}</span>
       <b>{name}</b>
       <p><b>{prescription.phase} · Semana {week}</b></p>
       <p>{prescription.sets||e.sets} séries · {repetitionText}{repetitionLabel} · descanso {prescription.restSeconds||baseRest} segundos</p>

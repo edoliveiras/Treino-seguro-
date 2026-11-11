@@ -112,7 +112,9 @@ export function useHealthDataPersistence(
     const client = supabase;
     if (!userId || !client) return false;
     let photoCleanupPending = false;
-    const { data: photoData, error: photoError } = await client.functions.invoke("food-photo-consent", { body: { action: "revoke" } });
+    const photoResult = client.functions?.invoke ? await client.functions.invoke("food-photo-consent", { body: { action: "revoke" } }) : { data: null, error: new Error("photo_cleanup_unavailable") };
+    const photoData = photoResult.data;
+    const photoError = photoResult.error;
     if (photoData?.revoked || photoData?.consent === "withdrawn") setPhotoConsent(false);
     photoCleanupPending = Boolean(photoError || !photoData?.success);
     const { error } = await client.from("account_consent_events").insert({
@@ -148,7 +150,9 @@ export function useHealthDataPersistence(
   const revokePhotoConsent = useCallback(async () => {
     const client = supabase;
     if (!userId || !client) return false;
-    const { data, error } = await client.functions.invoke("food-photo-consent", { body: { action: "revoke" } });
+    const photoResult = client.functions?.invoke ? await client.functions.invoke("food-photo-consent", { body: { action: "revoke" } }) : { data: null, error: new Error("photo_cleanup_unavailable") };
+    const data = photoResult.data;
+    const error = photoResult.error;
     if (data?.revoked || data?.consent === "withdrawn") setPhotoConsent(false);
     if (data?.revoked && !data?.success) {
       setStatus("Autorização revogada e acesso bloqueado. A limpeza das fotos ficou pendente; use novamente a opção de concluir exclusão.");

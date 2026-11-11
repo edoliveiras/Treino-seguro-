@@ -22,7 +22,7 @@ Deno.serve(async (request) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!url || !anonKey || !serviceKey) return json(503, { error: "service_unavailable" });
 
-  const userClient = createClient(url, anonKey, { global: { headers: { Authorization: authorization } }, auth: { persistSession: false } });
+  let body: { confirm?: unknown };\n  try { body = await request.json(); } catch { return json(400, { error: "invalid_request" }); }\n  if (body.confirm !== true) return json(400, { error: "confirmation_required" });\n\n  const userClient = createClient(url, anonKey, { global: { headers: { Authorization: authorization } }, auth: { persistSession: false } });
   const adminClient = createClient(url, serviceKey, { auth: { persistSession: false } });
   const token = authorization.slice(7);
   const { data: authData, error: authError } = await userClient.auth.getUser(token);

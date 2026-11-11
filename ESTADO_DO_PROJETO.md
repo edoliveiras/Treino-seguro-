@@ -3,7 +3,7 @@
 ## Atualização de privacidade e segurança — 11/11/2026
 
 - O bucket `food-photos` foi criado no Supabase como privado, com limite de 5 MB e MIME types JPEG/PNG/WebP. O bucket está vazio neste momento.
-- Foram aplicadas três novas migrações (28 no total): bucket privado e políticas RLS, registro independente de aceite/recusa para fotos, e exigência simultânea de consentimento de saúde e de fotos para leitura/gravação.
+- Foram aplicadas quatro novas migrações (28 no total): bucket privado e políticas RLS, registro independente de aceite/recusa para fotos, e exigência simultânea de consentimento de saúde e de fotos para leitura/gravação.
 - As políticas em `storage.objects` restringem leitura, gravação e atualização à pasta `auth.uid()`; a exclusão fica permitida ao proprietário mesmo após revogação. A leitura também exige conta ativa, e-mail confirmado e os dois consentimentos vigentes.
 - A interface foi atualizada para usar imagens redimensionadas até 1600 px, regravadas para remover metadados EXIF/GPS, e URLs assinadas de 60 segundos. A sincronização exige consentimento de saúde e consentimento separado de fotos. Fotos são anexos; calorias dependem da escolha manual do alimento e da quantidade.
 - A função `food-photo-consent` está ativa, exige JWT e registra concessão/retirada. A retirada bloqueia a leitura e aciona a remoção de todos os objetos da pasta do usuário; há tentativa segura de repetição se a limpeza falhar.

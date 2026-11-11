@@ -16,6 +16,14 @@ npm run build
 
 O CI executa testes do aplicativo, compilação, verificação de tipos da função administrativa e testes SQL das migrações em um PostgreSQL temporário com stubs mínimos de Supabase Auth. Essa simulação verifica regras SQL, mas não substitui homologação em um projeto Supabase real.
 
+## Fotos de alimentos e privacidade
+- O bucket de fotos é privado. Cada usuário acessa somente a própria pasta; links de visualização expiram em 60 segundos.
+- Envio permitido apenas para JPEG, PNG e WebP até 5 MB. A imagem é reprocessada até 1600 px para remover metadados EXIF/GPS.
+- Fotos exigem consentimento próprio e consentimento de dados de saúde. Recusar não bloqueia o uso básico. Revogar a autorização bloqueia a leitura e aciona a remoção das fotos enviadas.
+- A foto é somente um anexo visual; calorias dependem da escolha manual do alimento e da quantidade.
+- A área de Privacidade oferece exportação e exclusão da conta. A exclusão administrativa de contas de administrador continua restrita.
+- A triagem inicial de saúde exige leitura do aviso quando alguma resposta indicar risco. Todo conteúdo de treino e alimentação está PENDENTE DE REVISÃO CLÍNICA.
+
 ## Acessibilidade
 - Atalho visível ao receber foco para pular diretamente ao conteúdo principal.
 - Seção ativa anunciada por tecnologia assistiva na navegação principal e móvel.
@@ -27,8 +35,8 @@ O CI executa testes do aplicativo, compilação, verificação de tipos da funç
 - IMC é apenas triagem. IMC ≥ 35 não gera recomendação automática para corrida.
 - Dor no peito, falta de ar intensa/incomum, tontura, desmaio, fraqueza/formigamento novo ou dor forte/piorando exigem interrupção e avaliação.
 - Cadastro e login usam e-mail e senha, com liberação após confirmação do e-mail. O telefone informado é somente um dado de contato; não há confirmação por telefone nem integração com serviços de mensagens ou SMS.
-- Avaliações, treinos, refeições, peso e medidas podem ser sincronizados na conta somente após autorização específica de dados de saúde. RLS limita leitura e gravação à própria conta, ativa e com e-mail confirmado; retirar a autorização bloqueia novas leituras/gravações. Fotos de evolução ainda não têm upload ou armazenamento habilitado.
-- As telas iniciais de Termos e Política exigem revisão jurídica antes da publicação. Não use o aplicativo como serviço clínico ou para inserir dados sensíveis reais até concluir homologação e revisão.
+- Avaliações, treinos, refeições, peso e medidas podem ser sincronizados na conta somente após autorização específica de dados de saúde. RLS limita leitura e gravação à própria conta, ativa e com e-mail confirmado; retirar a autorização bloqueia novas leituras/gravações. Fotos de evolução ainda não têm upload ou armazenamento habilitado. As fotos de alimentos usam armazenamento privado e exigem consentimento independente.
+- As telas iniciais de Termos e Política exigem revisão jurídica antes da publicação. A proteção contra senhas vazadas e as URLs de autenticação de produção ainda precisam ser confirmadas no Supabase. Não use o aplicativo como serviço clínico ou para inserir dados sensíveis reais até concluir homologação e revisão.
 
 ## Fontes
 - Bull FC et al. WHO 2020 guidelines. https://bjsm.bmj.com/content/54/24/1451

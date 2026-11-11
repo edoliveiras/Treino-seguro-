@@ -34,9 +34,17 @@ export function useHealthDataPersistence(
         if (active) setLoading(false);
         return;
       }
+      const { data: photoEvents, error: photoConsentError } = await supabase
+        .from("account_consent_events")
+        .select("action")
+        .eq("user_id", userId)
+        .eq("consent_type", "food_photos")
+        .order("occurred_at", { ascending: false })
+        .limit(1);
       const granted = events?.[0]?.action === "granted";
       if (!active) return;
       setConsent(granted);
+      setPhotoConsent(!photoConsentError && photoEvents?.[0]?.action === "granted");
       if (granted) {
         const { data, error } = await supabase
           .from("health_data_records")

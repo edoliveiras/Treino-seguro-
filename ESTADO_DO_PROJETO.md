@@ -13,7 +13,7 @@
 - Inspeção direta: as 11 tabelas públicas têm RLS habilitado e ao menos uma política. As duas tabelas históricas de OTP por telefone permanecem sem uso pela interface; telefone segue apenas como contato. Busca no repositório não encontrou valores de chaves de serviço; referências a `SUPABASE_SERVICE_ROLE_KEY` existem somente como leitura de variável de ambiente em funções de servidor.
 - Não havia fotos legadas nos dois registros de saúde existentes; nenhum registro ou índice foi removido.
 - Bloqueios ainda existentes: URLs de autenticação e provedor SMTP não puderam ser conferidos/alterados pela conexão disponível; proteção contra senhas vazadas segue desativada no Supabase; não foram feitos testes reais de e-mail, nem homologação com duas contas reais. Revisões clínica, jurídica/LGPD e independente de segurança continuam pendentes.
-- O domínio de produção está verificado, mas o projeto de hospedagem aparece sem implantação de produção ativa (`live=false`). A versão desta alteração está em revisão e não foi publicada em produção.
+- O domínio de produção está verificado e a versão atualmente na branch principal tem implantação de produção READY associada ao domínio. As alterações desta revisão ainda estão em branch de revisão e não foram incorporadas nem publicadas em produção.
 
 Última atualização: 11/11/2026
 

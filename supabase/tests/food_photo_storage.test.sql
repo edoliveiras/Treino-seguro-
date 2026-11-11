@@ -33,7 +33,9 @@ alter role service_role bypassrls;
 insert into public.account_consent_events(user_id,consent_type,action,policy_version)
 values
 ('00000000-0000-4000-8000-000000000001','food_photos','granted','photo-v1'),
-('00000000-0000-4000-8000-000000000003','food_photos','granted','photo-v1');
+('00000000-0000-4000-8000-000000000003','food_photos','granted','photo-v1'),
+('00000000-0000-4000-8000-000000000001','health_data','granted','health-v1'),
+('00000000-0000-4000-8000-000000000003','health_data','granted','health-v1');
 
 do $bucket_check$
 begin
@@ -97,7 +99,8 @@ reset role;
 
 -- After withdrawal, reads are blocked immediately and the owner can still delete.
 insert into public.account_consent_events(user_id,consent_type,action,policy_version)
-values ('00000000-0000-4000-8000-000000000001','food_photos','withdrawn','photo-v1');
+values ('00000000-0000-4000-8000-000000000001','food_photos','withdrawn','photo-v1'),
+('00000000-0000-4000-8000-000000000001','health_data','withdrawn','health-v1');
 set role authenticated;
 set request.jwt.claim.role = 'authenticated';
 set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';

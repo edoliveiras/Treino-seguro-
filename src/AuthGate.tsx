@@ -17,6 +17,8 @@ type Profile = {
   training_days: number;
 };
 
+const PRODUCTION_ORIGIN = "https://treino-seguro.vercel.app";
+
 const normalizePhone = (raw: string) => {
   const digits = raw.replace(/\D/g, "");
   if (digits.startsWith("55")) return "+" + digits;
@@ -146,7 +148,7 @@ export default function AuthGate() {
       email: normalizedEmail,
       password,
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: PRODUCTION_ORIGIN,
         data: {
           full_name: fullName.trim(),
           phone_e164: normalizedPhone,
@@ -163,6 +165,7 @@ export default function AuthGate() {
     });
     if (signupError) throw signupError;
     setMode("login");
+    setEmailCooldown(60);
     setNotice("Cadastro iniciado. Aguarde a mensagem de confirmação; a entrega depende da configuração do serviço de e-mail. Verifique também a caixa de spam. O telefone informado fica apenas como contato; não enviaremos mensagens.");
   };
 
@@ -181,7 +184,7 @@ export default function AuthGate() {
 
   const sendRecovery = async () => {
     if (!supabase) return;
-    const { error: recoveryError } = await supabase!.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: window.location.origin + "/?flow=recovery" });
+    const { error: recoveryError } = await supabase!.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: PRODUCTION_ORIGIN + "/?flow=recovery" });
     if (recoveryError) throw recoveryError;
     setEmailCooldown(60);
     setNotice("Solicitação de recuperação aceita. Confira sua caixa de entrada e o spam; a entrega depende da configuração de e-mail do serviço.");
@@ -206,6 +209,23 @@ export default function AuthGate() {
     await supabase!.auth.signOut();
   };
 
+  const requestEmailChange = async () => {
+    if (!supabase || !newEmail.trim()) return;
+    setEmailChangeError("");
+    setEmailChangeMessage("");
+    const { error } = await supabase.auth.updateUser(
+      { email: newEmail.trim().toLowerCase() },
+      { emailRedirectTo: window.location.origin },
+    );
+    if (error) {
+      setEmailChangeError("Não foi possível registrar a troca de e-mail. Confira o endereço e tente novamente.");
+      return;
+    }
+    setEmailCooldown(60);
+    setEmailChangeMessage("Pedido de troca registrado. A alteração só será concluída após a confirmação exigida pelo serviço de autenticação. A entrega do e-mail depende da configuração do remetente.");
+    setNewEmail("");
+  };
+
   if (!supabaseConfigured || !supabase) return <main className="auth-shell"><section className="auth-card"><div className="auth-brand">Treino Seguro</div><h1>Estamos preparando seu acesso</h1><p>O aplicativo ainda precisa da configuração segura de conexão para liberar cadastro e login. Nenhum dado pessoal será solicitado nesta etapa.</p></section></main>;
   if (loading) return <main className="auth-shell"><section className="auth-card"><h1>Treino Seguro</h1><p>Verificando seu acesso com segurança…</p></section></main>;
 
@@ -226,25 +246,11 @@ export default function AuthGate() {
 
   if (session && profile) return <main className="auth-shell"><section className="auth-card"><div className="auth-brand">Treino Seguro</div><h1>Confirme seu e-mail</h1><p className="auth-muted">Por segurança, o acesso ao aplicativo é liberado após a confirmação do endereço de e-mail. O telefone informado no cadastro é somente um contato; não fazemos integração nem enviamos mensagens.</p><div className="verification-row"><b>E-mail</b><span>{profile.email_verified_at ? "Confirmado" : "Aguardando confirmação"}</span></div>{!profile.email_verified_at ? <p>Quando receber a mensagem de confirmação, abra o link e depois volte para entrar. A entrega depende da configuração do serviço de e-mail.</p> : <><p>Seu e-mail foi confirmado. Estamos atualizando o acesso da sua conta.</p><button className="auth-button secondary" onClick={() => void loadProfile(session.user)}>Atualizar acesso</button></>}{error&&<p className="auth-error">{error}</p>}{notice&&<p className="auth-success">{notice}</p>}<button className="auth-link" onClick={() => void supabase!.auth.signOut()}>Sair</button></section></main>;
 
-  const requestEmailChange = async () => {
-    if (!supabase || !newEmail.trim()) return;
-    setEmailChangeError("");
-    setEmailChangeMessage("");
-    const { error } = await supabase.auth.updateUser(
-      { email: newEmail.trim().toLowerCase() },
-      { emailRedirectTo: window.location.origin },
-    );
-    if (error) {
-      setEmailChangeError("Não foi possível registrar a troca de e-mail. Confira o endereço e tente novamente.");
-      return;
-    }
-    setEmailChangeMessage("Pedido de troca registrado. A alteração só será concluída após a confirmação exigida pelo serviço de autenticação. A entrega do e-mail depende da configuração do remetente.");
-    setNewEmail("");
-  };
+
 
   const title = mode === "signup" ? "Criar sua conta" : mode === "forgot" ? "Recuperar acesso" : mode === "recovery" ? "Criar nova senha" : "Entre na sua conta";
   return <main className="auth-shell"><section className="auth-card"><div className="auth-brand">Treino Seguro</div><span className="auth-eyebrow">SAÚDE EM MOVIMENTO</span><h1>{title}</h1><p className="auth-muted">Um espaço de orientação para adultos, com cuidado e respeito ao seu ritmo.</p>
     {mode === "signup" ? <form onSubmit={(e)=>void run(e,signUp)}><label>Nome completo<input autoComplete="name" value={fullName} onChange={e=>setFullName(e.target.value)} required minLength={2}/></label><label>E-mail<input type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} required/></label><label>Telefone para contato<input type="tel" autoComplete="tel" placeholder="31 99999-9999" value={phone} onChange={e=>setPhone(e.target.value)} required/></label><label>Senha (mínimo de 8 caracteres)<input type="password" autoComplete="new-password" value={password} onChange={e=>setPassword(e.target.value)} minLength={8} required/></label><p className="muted" aria-live="polite">Força da senha: {password.length < 8 ? "fraca — use pelo menos 8 caracteres" : password.length >= 12 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password) ? "forte" : "média — combine letras maiúsculas, minúsculas, números e símbolos"}.</p>
-      <div className="auth-consents"><label><input type="checkbox" checked={adult} onChange={e=>setAdult(e.target.checked)}/> Confirmo que tenho 18 anos ou mais.</label><label><input type="checkbox" checked={terms} onChange={e=>setTerms(e.target.checked)}/> Aceito os <a href="/termos" target="_blank" rel="noreferrer">Termos de Uso</a>.</label><label><input type="checkbox" checked={privacy} onChange={e=>setPrivacy(e.target.checked)}/> Li e aceito a <a href="/privacidade" target="_blank" rel="noreferrer">Política de Privacidade</a>.</label><hr/><p>Autorizações opcionais — você pode continuar sem marcar:</p><label><input type="checkbox" checked={healthConsent} onChange={e=>setHealthConsent(e.target.checked)}/> Autorizo o tratamento de dados de saúde para as funções que dependem deles.</label><label><input type="checkbox" checked={foodPhotoConsent} onChange={e=>setFoodPhotoConsent(e.target.checked)}/> Autorizo separadamente o envio e armazenamento privado de fotos de alimentos.</label><p className="muted">As duas autorizações são independentes. Você pode recusar qualquer uma e continuar usando as funções básicas. Fotos são anexos visuais; calorias dependem da escolha manual do alimento e da quantidade.</p></div><button className="auth-button" disabled={busy}>{busy?"Aguarde…":"Criar conta"}</button></form> : mode === "recovery" ? <form onSubmit={(e)=>void run(e,updatePassword)}><label>Nova senha<input type="password" autoComplete="new-password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} minLength={8} required/></label><button className="auth-button" disabled={busy}>Salvar nova senha</button></form> : <form onSubmit={(e)=>void run(e,mode==="forgot"?sendRecovery:signIn)}><label>E-mail<input type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} required/></label>{mode!=="forgot"&&<label>Senha<input type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} required/></label>}<button className="auth-button" disabled={busy || (mode==="login" && loginCooldown > 0) || (mode==="forgot" && emailCooldown > 0)}>{busy?"Aguarde…":mode==="forgot" ? (emailCooldown > 0 ? `Aguarde ${emailCooldown}s` : "Enviar link de recuperação") : loginCooldown > 0 ? `Tente novamente em ${loginCooldown}s` : "Entrar"}</button></form>}
+      <div className="auth-consents"><label><input type="checkbox" checked={adult} onChange={e=>setAdult(e.target.checked)}/> Confirmo que tenho 18 anos ou mais.</label><label><input type="checkbox" checked={terms} onChange={e=>setTerms(e.target.checked)}/> Aceito os <a href="/termos" target="_blank" rel="noreferrer">Termos de Uso</a>.</label><label><input type="checkbox" checked={privacy} onChange={e=>setPrivacy(e.target.checked)}/> Li e aceito a <a href="/privacidade" target="_blank" rel="noreferrer">Política de Privacidade</a>.</label><hr/><p>Autorizações opcionais — você pode continuar sem marcar:</p><label><input type="checkbox" checked={healthConsent} onChange={e=>setHealthConsent(e.target.checked)}/> Autorizo o tratamento de dados de saúde para as funções que dependem deles.</label><label><input type="checkbox" checked={foodPhotoConsent} onChange={e=>setFoodPhotoConsent(e.target.checked)}/> Autorizo separadamente o envio e armazenamento privado de fotos de alimentos.</label><p className="muted">As duas autorizações são independentes. Você pode recusar qualquer uma e continuar usando as funções básicas. Fotos são anexos visuais; calorias dependem da escolha manual do alimento e da quantidade.</p></div><button className="auth-button" disabled={busy}>{busy?"Aguarde…":"Criar conta"}</button></form> : mode === "recovery" ? <form onSubmit={(e)=>void run(e,updatePassword)}><label>Nova senha<input type="password" autoComplete="new-password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} minLength={8} required/></label><p className="muted" aria-live="polite">Força da senha: {newPassword.length < 8 ? "fraca — use pelo menos 8 caracteres" : newPassword.length >= 12 && /[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword) && /[0-9]/.test(newPassword) && /[^A-Za-z0-9]/.test(newPassword) ? "forte" : "média — combine letras maiúsculas, minúsculas, números e símbolos"}.</p><button className="auth-button" disabled={busy}>Salvar nova senha</button></form> : <form onSubmit={(e)=>void run(e,mode==="forgot"?sendRecovery:signIn)}><label>E-mail<input type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} required/></label>{mode!=="forgot"&&<label>Senha<input type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} required/></label>}<button className="auth-button" disabled={busy || (mode==="login" && loginCooldown > 0) || (mode==="forgot" && emailCooldown > 0)}>{busy?"Aguarde…":mode==="forgot" ? (emailCooldown > 0 ? `Aguarde ${emailCooldown}s` : "Enviar link de recuperação") : loginCooldown > 0 ? `Tente novamente em ${loginCooldown}s` : "Entrar"}</button></form>}
     {error&&<p className="auth-error" role="alert">{error}</p>}{notice&&<p className="auth-success" role="status">{notice}</p>}<div className="auth-switch">{mode==="login"?<><button onClick={()=>{setMode("signup");setError("");setNotice("");}}>Criar uma conta</button><button onClick={()=>{setMode("forgot");setError("");setNotice("");}}>Esqueci minha senha</button><button disabled={emailCooldown > 0 || busy} onClick={(e)=>void run(e,resendConfirmation)}>{emailCooldown > 0 ? `Reenviar confirmação em ${emailCooldown}s` : "Reenviar confirmação de e-mail"}</button></>:<button onClick={()=>{setMode("login");setError("");setNotice("");}}>Voltar para entrar</button>}</div></section></main>;
 }

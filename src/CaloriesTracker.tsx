@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { createFoodPhotoSignedUrl, deleteFoodPhoto, uploadFoodPhoto } from "./foodPhotoStorage";
+import { createFoodPhotoSignedUrl, deleteFoodPhoto, uploadFoodPhoto, validateFoodPhoto } from "./foodPhotoStorage";
 
 export type FoodLog = { id: string; name: string; grams: number; unit?: "g" | "ml"; kcal: number; date: string; photoPath?: string };
 export type ActivityLog = { id: string; name: string; minutes: number; kcal: number; date: string };
@@ -100,13 +100,18 @@ export default function CaloriesTracker({ weight, foodLogs, setFoodLogs, activit
         <label>Quantidade ({foodUnit})<input type="number" min="0" max="3000" value={grams} onChange={e => setGrams(e.target.value)} /></label>
       </div>
       <label className="photo-upload">Foto do alimento (opcional)
-        <input type="file" accept="image/*" capture="environment" onChange={async e => {
+        <input type="file" accept="image/jpeg,image/png,image/webp" capture="environment" disabled={!userId || !photoConsent} onChange={e => {
           const input = e.currentTarget;
           const file = input.files?.[0];
           if (!file) return;
-          setPhotoStatus("Preparando foto...");
-          try { setFoodPhoto(await compressFoodPhoto(file)); setPhotoStatus("Foto pronta para salvar junto ao alimento."); }
-          catch (error) { setPhotoStatus(error instanceof Error ? error.message : "Não foi possível carregar a foto."); setFoodPhoto(undefined); }
+          try {
+            validateFoodPhoto(file);
+            setFoodPhoto(file);
+            setPhotoStatus("Foto selecionada. Antes do envio, será reduzida a até 1600 px e terá metadados EXIF/GPS removidos.");
+          } catch (error) {
+            setPhotoStatus(error instanceof Error ? error.message : "Não foi possível carregar a foto.");
+            setFoodPhoto(undefined);
+          }
           input.value = "";
         }} />
       </label>

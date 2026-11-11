@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createFoodPhotoSignedUrl, deleteFoodPhoto, uploadFoodPhoto } from "./foodPhotoStorage";
 
-export type FoodLog = { id: string; name: string; grams: number; unit?: "g" | "ml"; kcal: number; date: string; photo?: string };
+export type FoodLog = { id: string; name: string; grams: number; unit?: "g" | "ml"; kcal: number; date: string; photoPath?: string };
 export type ActivityLog = { id: string; name: string; minutes: number; kcal: number; date: string };
 
 const foods = [
@@ -37,43 +38,48 @@ const activities = [
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
 const fmt = (n: number) => Math.round(n).toLocaleString("pt-BR");
 
-async function compressFoodPhoto(file: File): Promise<string> {
-  if (!file.type.startsWith("image/")) throw new Error("Escolha uma imagem válida.");
-  if (file.size > 12 * 1024 * 1024) throw new Error("A foto deve ter no máximo 12 MB.");
-  const source = URL.createObjectURL(file);
-  try {
-    const image = new Image();
-    image.src = source;
-    await new Promise<void>((resolve, reject) => {
-      image.onload = () => resolve();
-      image.onerror = () => reject(new Error("Não foi possível abrir esta foto."));
-    });
-    const scale = Math.min(1, 1280 / Math.max(image.width, image.height));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.max(1, Math.round(image.width * scale));
-    canvas.height = Math.max(1, Math.round(image.height * scale));
-    const context = canvas.getContext("2d");
-    if (!context) throw new Error("Não foi possível preparar a foto.");
-    context.drawImage(image, 0, 0, canvas.width, canvas.height);
-    const data = canvas.toDataURL("image/jpeg", 0.68);
-    if (data.length > 650_000) throw new Error("Esta foto ficou muito grande. Tente outra imagem.");
-    return data;
-  } finally {
-    URL.revokeObjectURL(source);
-  }
-}
-
-export default function CaloriesTracker({ weight, foodLogs, setFoodLogs, activityLogs, setActivityLogs }: {
+export default function CaloriesTracker({ weight, foodLogs, setFoodLogs, activityLogs, setActivityLogs, userId, photoConsent }: {
   weight: string; foodLogs: FoodLog[]; setFoodLogs: (v: FoodLog[] | ((old: FoodLog[]) => FoodLog[])) => void;
   activityLogs: ActivityLog[]; setActivityLogs: (v: ActivityLog[] | ((old: ActivityLog[]) => ActivityLog[])) => void;
+  userId?: string; photoConsent: boolean;
 }) {
   const [foodName, setFoodName] = useState(foods[0].name);
   const [grams, setGrams] = useState("100");
-  const [foodPhoto, setFoodPhoto] = useState<string | undefined>();
+  const [foodPhoto, setFoodPhoto] = useState<File | undefined>();
+  const [foodPhotoPreview, setFoodPhotoPreview] = useState<string | undefined>();
+  const [signedPhotos, setSignedPhotos] = useState<Record<string, string>>({});
   const [photoStatus, setPhotoStatus] = useState("");
   const [activityName, setActivityName] = useState(activities[0].name);
   const [minutes, setMinutes] = useState("30");
   const date = today();
+  useEffect(() => {
+    if (!foodPhoto) { setFoodPhotoPreview(undefined); return; }
+    const url = URL.createObjectURL(foodPhoto);
+    setFoodPhotoPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [foodPhoto]);
+  useEffect(() => {
+    if (!userId || !photoConsent) { setSignedPhotos({}); return; }
+    let active = true;
+    const refresh = async () => {
+      const paths = [...new Set(foodLogs.map((item) => item.photoPath).filter((path): path is string => Boolean(path)))];
+      const entries = await Promise.all(paths.map(async (path) => [path, await createFoodPhotoSignedUrl(userId, path)] as const));
+      if (active) setSignedPhotos(Object.fromEntries(entries.filter((entry): entry is readonly [string, string] => Boolean(entry[1]))));
+    };
+    void refresh();
+    const timer = window.setInterval(() => void refresh(), 45_000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [foodLogs, userId, photoConsent]);
+  const addFood = async () => {
+    let photoPath: string | undefined;
+    if (foodPhoto && userId && photoConsent) {
+      try { photoPath = await uploadFoodPhoto(userId, foodPhoto); }
+      catch (error) { setPhotoStatus(error instanceof Error ? error.message : "Não foi possível guardar a foto."); return; }
+    }
+    setFoodLogs(old => [...old, { id: crypto.randomUUID(), name: food.name, grams: Number(grams), unit: foodUnit, kcal: foodEstimate, date, ...(photoPath ? { photoPath } : {}) }]);
+    setFoodPhoto(undefined);
+    setPhotoStatus(photoPath ? "Alimento registrado e foto guardada em armazenamento privado." : "Alimento registrado. Nenhuma foto foi sincronizada.");
+  };
   const bodyWeight = Number(weight);
   const food = foods.find(x => x.name === foodName) ?? foods[0];
   const activity = activities.find(x => x.name === activityName) ?? activities[0];
@@ -104,10 +110,11 @@ export default function CaloriesTracker({ weight, foodLogs, setFoodLogs, activit
           input.value = "";
         }} />
       </label>
-      {foodPhoto && <div className="food-photo-preview"><img src={foodPhoto} alt="Prévia do alimento" /><button type="button" className="secondary" onClick={() => { setFoodPhoto(undefined); setPhotoStatus(""); }}>Remover foto</button></div>}
+      {foodPhotoPreview && <div className="food-photo-preview"><img src={foodPhotoPreview} alt="Prévia do alimento" /><button type="button" className="secondary" onClick={() => { setFoodPhoto(undefined); setPhotoStatus(""); }}>Remover foto</button></div>}
+      <p className="muted">A foto é somente um anexo visual. As calorias são calculadas pela escolha manual do alimento e da quantidade. Para sincronizar fotos, entre na conta e autorize separadamente o uso de fotos de alimentos.</p>
       {photoStatus && <p className="muted" role="status">{photoStatus}</p>}
       <div className="calorie-preview"><span>{food.kcal} kcal / 100 {foodUnit}</span><b>{fmt(foodEstimate)} kcal nesta porção</b></div>
-      <button className="primary" disabled={grams === "" || !Number.isFinite(Number(grams)) || Number(grams) < 0} onClick={() => { setFoodLogs(old => [...old, { id: crypto.randomUUID(), name: food.name, grams: Number(grams), unit: foodUnit, kcal: foodEstimate, date, photo: foodPhoto }]); setFoodPhoto(undefined); setPhotoStatus(""); }}>Adicionar alimento ao diário</button>
+      <button className="primary" disabled={grams === "" || !Number.isFinite(Number(grams)) || Number(grams) < 0} onClick={() => void addFood()}>Adicionar alimento ao diário</button>
       <p className="muted">Inclua também bebidas. A preparação muda as calorias: selecione a versão mais parecida com a consumida; óleo, molhos e acompanhamentos devem ser registrados separadamente.</p>
     </section>
     <section className="panel">
@@ -129,7 +136,7 @@ export default function CaloriesTracker({ weight, foodLogs, setFoodLogs, activit
         <div><small>DIFERENÇA</small><b>{fmt(consumed - burned)} kcal</b></div>
       </div>
       <p className="muted">A diferença é apenas entre alimentos e exercícios registrados aqui. Não representa o balanço energético completo do dia: o corpo também gasta energia em repouso e nas atividades cotidianas. Não use esse número sozinho para definir dieta ou meta de emagrecimento.</p>
-      <div className="calorie-log"><b>Alimentos de hoje</b>{todayFoods.length ? todayFoods.map(x => <div className="calorie-log-row" key={x.id}>{x.photo && <img className="food-log-photo" src={x.photo} alt={"Foto de " + x.name} />}<span>{x.name} · {x.grams} {x.unit ?? "g"}</span><b>{fmt(x.kcal)} kcal</b><button aria-label={"Excluir " + x.name} onClick={() => setFoodLogs(old => old.filter(y => y.id !== x.id))}>×</button></div>) : <p>Nenhum alimento registrado hoje.</p>}</div>
+      <div className="calorie-log"><b>Alimentos de hoje</b>{todayFoods.length ? todayFoods.map(x => <div className="calorie-log-row" key={x.id}>{x.photoPath && signedPhotos[x.photoPath] && <img className="food-log-photo" src={signedPhotos[x.photoPath]} alt={"Foto de " + x.name} />}<span>{x.name} · {x.grams} {x.unit ?? "g"}</span><b>{fmt(x.kcal)} kcal</b><button aria-label={"Excluir " + x.name} onClick={async () => { if (x.photoPath && userId) { const removed = await deleteFoodPhoto(userId, x.photoPath); if (!removed) { setPhotoStatus("Não foi possível excluir a foto. Tente novamente."); return; } } setFoodLogs(old => old.filter(y => y.id !== x.id)); }}>×</button></div>) : <p>Nenhum alimento registrado hoje.</p>}</div>
       <div className="calorie-log"><b>Exercícios de hoje</b>{todayActivities.length ? todayActivities.map(x => <div className="calorie-log-row" key={x.id}><span>{x.name} · {x.minutes} min</span><b>{fmt(x.kcal)} kcal</b><button aria-label={"Excluir " + x.name} onClick={() => setActivityLogs(old => old.filter(y => y.id !== x.id))}>×</button></div>) : <p>Nenhum exercício registrado hoje.</p>}</div>
     </section>
     <p className="muted">Base alimentar de referência: TACO/NEPA-Unicamp. Valores aproximados por 100 g; não substituem avaliação nutricional. Gasto adicional estimado por MET, conforme o Compendium of Physical Activities. <a href="https://pacompendium.com/" target="_blank" rel="noreferrer">Consultar referência de atividades</a>.</p>

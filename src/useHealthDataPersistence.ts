@@ -9,6 +9,7 @@ export function useHealthDataPersistence(
   onLoad: (payload: HealthPayload) => void,
 ) {
   const [consent, setConsent] = useState(false);
+  const [photoConsent, setPhotoConsent] = useState(false);
   const [loading, setLoading] = useState(Boolean(userId));
   const [status, setStatus] = useState("");
 
@@ -33,9 +34,17 @@ export function useHealthDataPersistence(
         if (active) setLoading(false);
         return;
       }
+      const { data: photoEvents, error: photoConsentError } = await supabase
+        .from("account_consent_events")
+        .select("action")
+        .eq("user_id", userId)
+        .eq("consent_type", "food_photos")
+        .order("occurred_at", { ascending: false })
+        .limit(1);
       const granted = events?.[0]?.action === "granted";
       if (!active) return;
       setConsent(granted);
+      setPhotoConsent(!photoConsentError && photoEvents?.[0]?.action === "granted");
       if (granted) {
         const { data, error } = await supabase
           .from("health_data_records")
@@ -102,29 +111,75 @@ export function useHealthDataPersistence(
   const revokeConsent = useCallback(async () => {
     const client = supabase;
     if (!userId || !client) return false;
+    let photoCleanupPending = false;
+    const photoResult = client.functions?.invoke ? await client.functions.invoke("food-photo-consent", { body: { action: "revoke" } }) : { data: null, error: new Error("photo_cleanup_unavailable") };
+    const photoData = photoResult.data;
+    const photoError = photoResult.error;
+    if (photoData?.revoked || photoData?.consent === "withdrawn") setPhotoConsent(false);
+    photoCleanupPending = Boolean(photoError || !photoData?.success);
     const { error } = await client.from("account_consent_events").insert({
       user_id: userId,
       consent_type: "health_data",
       action: "withdrawn",
-      policy_version: "2026-11-08",
+      policy_version: "2026-11-11",
     });
     if (error) {
       setStatus("Não foi possível registrar a revogação. Tente novamente.");
       return false;
     }
     setConsent(false);
-    setStatus("Autorização revogada. Novos registros não serão sincronizados.");
+    setStatus(photoCleanupPending
+      ? "Autorização de saúde revogada. O acesso às fotos foi bloqueado; a exclusão física de algumas fotos ainda precisa ser concluída."
+      : "Autorização de saúde revogada. Novos registros não serão sincronizados e as fotos enviadas também foram removidas.");
+    return true;
+  }, [userId]);
+
+  const grantPhotoConsent = useCallback(async () => {
+    const client = supabase;
+    if (!userId || !client) return false;
+    const { data, error } = await client.functions.invoke("food-photo-consent", { body: { action: "grant" } });
+    if (error || !data?.success) {
+      setStatus("Não foi possível registrar a autorização para fotos. Tente novamente.");
+      return false;
+    }
+    setPhotoConsent(true);
+    setStatus("Autorização específica para fotos registrada.");
+    return true;
+  }, [userId]);
+
+  const revokePhotoConsent = useCallback(async () => {
+    const client = supabase;
+    if (!userId || !client) return false;
+    const photoResult = client.functions?.invoke ? await client.functions.invoke("food-photo-consent", { body: { action: "revoke" } }) : { data: null, error: new Error("photo_cleanup_unavailable") };
+    const data = photoResult.data;
+    const error = photoResult.error;
+    if (data?.revoked || data?.consent === "withdrawn") setPhotoConsent(false);
+    if (data?.revoked && !data?.success) {
+      setStatus("Autorização revogada e acesso bloqueado. A limpeza das fotos ficou pendente; use novamente a opção de concluir exclusão.");
+      return true;
+    }
+    if (error || !data?.success) {
+      setStatus("Não foi possível confirmar a revogação. Tente novamente.");
+      return false;
+    }
+    setPhotoConsent(false);
+    setStatus("Autorização revogada e fotos enviadas apagadas do armazenamento privado.");
     return true;
   }, [userId]);
 
   const deleteCloudData = useCallback(async () => {
     const client = supabase;
     if (!userId || !client) return false;
+    const photoResult = client.functions?.invoke ? await client.functions.invoke("food-photo-consent", { body: { action: "revoke" } }) : { data: null, error: new Error("photo_cleanup_unavailable") };
+    const photoData = photoResult.data;
+    const photoError = photoResult.error;
+    if (photoData?.revoked || photoData?.consent === "withdrawn") setPhotoConsent(false);
+    const photoCleanupPending = Boolean(photoError || !photoData?.success);
     const { error: consentError } = await client.from("account_consent_events").insert({
       user_id: userId,
       consent_type: "health_data",
       action: "withdrawn",
-      policy_version: "2026-11-08",
+      policy_version: "2026-11-11",
     });
     if (consentError) {
       setStatus("Não foi possível pausar a sincronização. Os registros não foram apagados.");
@@ -136,9 +191,11 @@ export function useHealthDataPersistence(
       setStatus("A autorização foi retirada, mas não foi possível apagar os registros. Tente novamente.");
       return false;
     }
-    setStatus("Os registros salvos foram apagados e a autorização foi retirada.");
+    setStatus(photoCleanupPending
+      ? "Os registros salvos foram apagados e as autorizações retiradas. A limpeza física de algumas fotos ainda precisa ser concluída."
+      : "Os registros salvos foram apagados, as autorizações retiradas e as fotos enviadas removidas.");
     return true;
   }, [userId]);
 
-  return { consent, loading, status, grantConsent, revokeConsent, deleteCloudData };
+  return { consent, photoConsent, loading, status, grantConsent, revokeConsent, grantPhotoConsent, revokePhotoConsent, deleteCloudData };
 }

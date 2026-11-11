@@ -1,3 +1,4 @@
+/* PENDENTE DE REVISÃO CLÍNICA — conteúdo de treino/alimentação requer validação profissional antes da abertura pública. */
 export type WorkoutLevel = "Iniciante" | "Intermediário" | "Avançado";
 export type TrainingPlace = "Casa" | "Academia";
 export type HomeEquipment = "Peso do corpo" | "Elásticos" | "Halteres";

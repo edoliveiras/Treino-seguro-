@@ -1,4 +1,22 @@
 # ESTADO DO PROJETO — Treino Seguro
+
+## Atualização de privacidade e segurança — 11/11/2026
+
+- O bucket `food-photos` foi criado no Supabase como privado, com limite de 5 MB e MIME types JPEG/PNG/WebP. O bucket está vazio neste momento.
+- Foram aplicadas quatro novas migrações (28 no total): bucket privado e políticas RLS, registro independente de aceite/recusa para fotos, e exigência simultânea de consentimento de saúde e de fotos para leitura/gravação.
+- As políticas em `storage.objects` restringem leitura, gravação e atualização à pasta `auth.uid()`; a exclusão fica permitida ao proprietário mesmo após revogação. A leitura também exige conta ativa, e-mail confirmado e os dois consentimentos vigentes.
+- A interface foi atualizada para usar imagens redimensionadas até 1600 px, regravadas para remover metadados EXIF/GPS, e URLs assinadas de 60 segundos. A sincronização exige consentimento de saúde e consentimento separado de fotos. Fotos são anexos; calorias dependem da escolha manual do alimento e da quantidade.
+- A função `food-photo-consent` está ativa, exige JWT e registra concessão/retirada. A retirada bloqueia a leitura e aciona a remoção de todos os objetos da pasta do usuário; há tentativa segura de repetição se a limpeza falhar.
+- As funções `delete-my-account` e `export-my-data` estão ativas e exigem JWT. A exclusão recusa contas administrativas, remove primeiro os objetos de Storage e então solicita a exclusão da conta; a exportação retorna os dados associados à conta autenticada e links assinados de 5 minutos para anexos de foto autorizados.
+- O cadastro registra escolhas independentes de consentimento de saúde e de fotos, incluindo recusa, versão e horário. As páginas legais e controles de exportação/exclusão estão acessíveis na área de Privacidade.
+- A triagem inicial inclui problemas cardíacos, dor no peito, tontura/desmaio, lesões, gravidez e medicamentos. Uma resposta de risco exige confirmação de leitura do aviso para consultar médico antes de treinar. O aviso permanente e a marcação `PENDENTE DE REVISÃO CLÍNICA` foram adicionados.
+- Inspeção direta: as 11 tabelas públicas têm RLS habilitado e ao menos uma política. As duas tabelas históricas de OTP por telefone permanecem sem uso pela interface; telefone segue apenas como contato. Busca no repositório não encontrou valores de chaves de serviço; referências a `SUPABASE_SERVICE_ROLE_KEY` existem somente como leitura de variável de ambiente em funções de servidor.
+- No schema interno `storage`, todas as tabelas também têm RLS ligado. `storage.objects` tem quatro políticas específicas para fotos. As tabelas internas `bucket_lifecycle_states`, `buckets`, `buckets_analytics`, `buckets_vectors`, `lifecycle_abandoned_artifacts`, `migrations`, `s3_multipart_uploads`, `s3_multipart_uploads_parts` e `vector_indexes` não têm políticas de cliente; permanecem sem acesso por RLS e não devem receber políticas de usuário, pois são metadados internos do Storage.
+- Não havia fotos legadas nos dois registros de saúde existentes; nenhum registro ou índice foi removido.
+- A última verificação automática passou: 10 arquivos de teste e 47 testes aprovados; compilação concluída; verificação de tipos das funções administrativas e de privacidade aprovada; testes unitários da limpeza de fotos e as duas suítes SQL (contas/dados de saúde e Storage privado) aprovadas. Os testes SQL usam PostgreSQL isolado com autenticação simulada; não equivalem a testes com duas contas reais no Supabase.
+- Bloqueios ainda existentes: URLs de autenticação e provedor SMTP não puderam ser conferidos/alterados pela conexão disponível; proteção contra senhas vazadas segue desativada no Supabase; não foram feitos testes reais de e-mail, nem homologação com duas contas reais. Revisões clínica, jurídica/LGPD e independente de segurança continuam pendentes.
+- O domínio de produção está verificado e a versão atualmente na branch principal tem implantação de produção READY associada ao domínio. As alterações desta revisão ainda estão em branch de revisão e não foram incorporadas nem publicadas em produção.
+
 Última atualização: 11/11/2026
 
 ## 1. Aplicativo
@@ -21,11 +39,11 @@
 - O código inclui migrações de contas, consentimentos, administração e registros de saúde, com políticas RLS para limitar dados à própria conta ativa e com consentimento vigente.
 - A migração mais recente renomeia o telefone para campo de contato, remove sua função de identificador único e revoga o acesso aos artefatos históricos de verificação telefônica, sem apagar dados dessas tabelas.
 - O código implementa sincronização de dados pessoais somente após autorização específica de dados de saúde. A revogação deve impedir novas leituras e gravações.
-- Verificação direta em 11/11/2026: o projeto Supabase dedicado está ativo e saudável na região us-east-1 (Leste dos EUA). As 24 migrações versionadas estão registradas no banco; há 2 contas de autenticação, ambas com e-mail confirmado, 1 administrador e 2 perfis. As sete tabelas principais de perfis, consentimentos, registros de saúde e treinos estão com RLS habilitado.
+- Verificação direta em 11/11/2026: o projeto Supabase dedicado está ativo e saudável na região us-east-1 (Leste dos EUA). As 28 migrações versionadas estão registradas no banco; há 2 contas de autenticação, ambas com e-mail confirmado, 1 administrador e 2 perfis. As sete tabelas principais de perfis, consentimentos, registros de saúde e treinos estão com RLS habilitado.
 - A função Edge `admin-account` está implantada e ativa, com verificação JWT obrigatória. A consulta não expôs nem alterou segredos.
 - O banco está hospedado fora do Brasil; a transferência internacional de dados precisa ser avaliada na revisão jurídica/LGPD.
 - Não foi comprovada a entrega real de e-mails nem a configuração efetiva de SMTP, templates e URLs de retorno. Cadastro, confirmação, reenvio e recuperação ainda precisam de homologação com caixas de e-mail controladas.
-- Fotos dos alimentos podem ser sincronizadas dentro do registro privado de saúde após consentimento específico; fotos de evolução não estão habilitadas.
+- Fotos de alimentos usam bucket privado, URLs assinadas de curta duração e consentimentos separados; fotos de evolução não estão habilitadas.
 
 ## 4. Administração
 - Existe painel de administração restrito a contas com papel administrativo no token de autenticação.

@@ -1,4 +1,4 @@
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2.80.0";
 
 const allowedOrigin = Deno.env.get("APP_ORIGIN") ?? "https://treino-seguro.vercel.app";
 const corsHeaders = {

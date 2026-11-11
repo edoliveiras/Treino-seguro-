@@ -1,3 +1,4 @@
+/* PENDENTE DE REVISÃO CLÍNICA — conteúdo de treino/alimentação requer validação profissional antes da abertura pública. */
 export type ProgramExercise = {
   name: string;
   technicalName: string;

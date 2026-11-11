@@ -1,3 +1,4 @@
+/* PENDENTE DE REVISÃO CLÍNICA — conteúdo de treino/alimentação requer validação profissional antes da abertura pública. */
 export type StrictLevel = "Iniciante" | "Intermediário" | "Avançado";
 export type StrictGroup = "Peito" | "Costas" | "Ombros" | "Bíceps" | "Tríceps" | "Antebraço" | "Quadríceps" | "Posterior de coxa" | "Glúteos" | "Panturrilha" | "Abdômen" | "Lombar e core profundo" | "Cardio" | "Alongamento" | "Equilíbrio";
 export type StrictExercise = { name:string; group:StrictGroup; level:StrictLevel; home:boolean; pains:string[] };

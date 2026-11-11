@@ -22,6 +22,7 @@ O CI executa testes do aplicativo, compilação, verificação de tipos da funç
 - Fotos exigem consentimento próprio e consentimento de dados de saúde. Recusar não bloqueia o uso básico. Revogar a autorização bloqueia a leitura e aciona a remoção das fotos enviadas.
 - A foto é somente um anexo visual; calorias dependem da escolha manual do alimento e da quantidade.
 - A área de Privacidade oferece exportação e exclusão da conta. A exclusão administrativa de contas de administrador continua restrita.
+- O telefone é apenas dado de contato. O cadastro e o acesso usam e-mail e senha; não há integração de WhatsApp, Meta/Facebook, SMS ou OTP por telefone.
 - A triagem inicial de saúde exige leitura do aviso quando alguma resposta indicar risco. Todo conteúdo de treino e alimentação está PENDENTE DE REVISÃO CLÍNICA.
 
 ## Acessibilidade

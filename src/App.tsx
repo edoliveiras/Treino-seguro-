@@ -35,7 +35,8 @@ export default function App({ userId, initialLevel = "Iniciante", initialPlace =
  const [pains,setPains]=useState<string[]>([]),[conditions,setConditions]=useState<string[]>([]),[triageRisks,setTriageRisks]=useState<string[]>([]),[triageRead,setTriageRead]=useState(false),[clearance,setClearance]=useState(false),[adult,setAdult]=useState(false),[understood,setUnderstood]=useState(false),[saved,setSaved]=useState(false);
  const [done,setDone]=useState<string[]>([]),[meal,setMeal]=useState(""),[mealEntries,setMealEntries]=useState<string[]>([]),[newWeight,setNewWeight]=useState(""),[weights,setWeights]=useState<string[]>([]),[waist,setWaist]=useState(""),[waists,setWaists]=useState<string[]>([]);
  const [foodLogs,setFoodLogs]=useState<FoodLog[]>([]),[activityLogs,setActivityLogs]=useState<ActivityLog[]>([]);
- const [photoNote,setPhotoNote]=useState(false),[cleared,setCleared]=useState(false),[profileSaveMessage,setProfileSaveMessage]=useState("");\n const [privacyActionStatus,setPrivacyActionStatus]=useState("");
+ const [photoNote,setPhotoNote]=useState(false),[cleared,setCleared]=useState(false),[profileSaveMessage,setProfileSaveMessage]=useState("");
+ const [privacyActionStatus,setPrivacyActionStatus]=useState("");
  const hydrateHealthData = useCallback((data: Record<string, unknown>) => {
   if (typeof data.weight === "string") setWeight(data.weight);
   if (typeof data.height === "string") setHeight(data.height);
@@ -44,7 +45,9 @@ export default function App({ userId, initialLevel = "Iniciante", initialPlace =
   if (typeof data.place === "string") setPlace(data.place);
   if (typeof data.level === "string") setLevel(data.level);
   if (Array.isArray(data.pains)) setPains(data.pains.filter((x): x is string => typeof x === "string"));
-  if (Array.isArray(data.conditions)) setConditions(data.conditions.filter((x): x is string => typeof x === "string"));\n  if (Array.isArray(data.triageRisks)) setTriageRisks(data.triageRisks.filter((x): x is string => typeof x === "string"));\n  if (typeof data.triageRead === "boolean") setTriageRead(data.triageRead);
+  if (Array.isArray(data.conditions)) setConditions(data.conditions.filter((x): x is string => typeof x === "string"));
+  if (Array.isArray(data.triageRisks)) setTriageRisks(data.triageRisks.filter((x): x is string => typeof x === "string"));
+  if (typeof data.triageRead === "boolean") setTriageRead(data.triageRead);
   if (typeof data.clearance === "boolean") setClearance(data.clearance);
   if (typeof data.adult === "boolean") setAdult(data.adult);
   if (typeof data.understood === "boolean") setUnderstood(data.understood);
@@ -90,7 +93,8 @@ export default function App({ userId, initialLevel = "Iniciante", initialPlace =
  const highBmi=bmi>=35;
  const painNeedsReview=requiresPainReview(pains);
  const blockedRunning=blocksRunningRecommendation(bmi,goal);
- const triageRisk=triageRisks.length>0;\n const canStart=canCompleteAssessment({adult,understood,weight:Number(weight),heightCm:Number(height),medicalReviewNeeded:medicalNeeded,medicalClearanceDeclared:clearance,runningBlocked:blockedRunning,triageRisk,triageRead});
+ const triageRisk=triageRisks.length>0;
+ const canStart=canCompleteAssessment({adult,understood,weight:Number(weight),heightCm:Number(height),medicalReviewNeeded:medicalNeeded,medicalClearanceDeclared:clearance,runningBlocked:blockedRunning,triageRisk,triageRead});
  const safetyBanner=<div className="notice"><ShieldCheck size={18}/><span>{safety}</span></div>;
  const renderExercise=(e:typeof exercises[number])=><article className="exercise" key={e.name}><div className="exercise-icon"><Dumbbell/></div><div className="exercise-copy"><b>{e.name}</b><small>{e.group}</small><p>{e.how}</p><p><strong>Adaptação:</strong> {e.adapt}</p><p><strong>Cuidado:</strong> {e.avoid}</p></div><button className={done.includes(e.name)?"round done":"round"} aria-label={(done.includes(e.name)?"Desmarcar ":"Marcar ")+e.name} aria-pressed={done.includes(e.name)} onClick={()=>setDone(old=>old.includes(e.name)?old.filter(x=>x!==e.name):[...old,e.name])}>{done.includes(e.name)?<CheckCircle2/>:"✓"}</button></article>;
  return <div className="app"><a className="skip-link" href="#main-content">Pular para o conteúdo principal</a><aside className="sidebar"><div className="brand"><div className="brand-icon"><HeartPulse/></div><div><b>treino seguro</b><small>SAÚDE EM MOVIMENTO</small></div></div><div className="side-label">MENU PRINCIPAL</div>{tabs.map(({name,icon:Icon})=><button key={name} aria-current={tab===name?"page":undefined} className={tab===name?"nav active":"nav"} onClick={()=>setTab(name)}><Icon size={19}/>{name}</button>)}<div className="side-note"><ShieldCheck/><b>Seu cuidado vem primeiro</b><p>Orientações educativas, adaptadas e baseadas em evidências.</p></div></aside>

@@ -64,26 +64,14 @@ export default function App({ userId, initialLevel = "Iniciante", initialPlace =
  const exportMyData = useCallback(async () => {
   if (!userId || !supabase) { setPrivacyActionStatus("Entre na sua conta para exportar os dados."); return; }
   setPrivacyActionStatus("Preparando uma cópia dos seus dados...");
-  const [profile, consents, health, assignments, completions, preferences] = await Promise.all([
-   supabase.from("profiles").select("*").eq("id",userId).maybeSingle(),
-   supabase.from("account_consent_events").select("*").eq("user_id",userId).order("occurred_at"),
-   supabase.from("health_data_records").select("*").eq("user_id",userId).maybeSingle(),
-   supabase.from("workout_assignments").select("*").eq("student_id",userId),
-   supabase.from("workout_completions").select("*").eq("student_id",userId),
-   supabase.from("account_notification_preferences").select("*").eq("user_id",userId).maybeSingle(),
-  ]);
-  const errors=[profile.error,consents.error,health.error,assignments.error,completions.error,preferences.error].filter(Boolean);
-  if (errors.length) { setPrivacyActionStatus("Não foi possível exportar todos os dados. Tente novamente."); return; }
-  const planIds=[...new Set((assignments.data??[]).map(item=>item.plan_id))];
-  const plans=planIds.length ? await supabase.from("workout_plans").select("*,workout_plan_exercises(*)").in("id",planIds) : {data:[],error:null};
-  if (plans.error) { setPrivacyActionStatus("Não foi possível exportar os treinos. Tente novamente."); return; }
-  const bundle={exportedAt:new Date().toISOString(),account:profile.data,consents:consents.data,healthRecords:health.data,workoutAssignments:assignments.data,workoutCompletions:completions.data,workoutPlans:plans.data,notificationPreferences:preferences.data};
-  const blob=new Blob([JSON.stringify(bundle,null,2)],{type:"application/json"});
+  const { data, error } = await supabase.functions.invoke("export-my-data", { body: {} });
+  if (error || !data) { setPrivacyActionStatus("Não foi possível exportar os dados. Tente novamente."); return; }
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
   const url=URL.createObjectURL(blob);
   const link=document.createElement("a");
   link.href=url; link.download="treino-seguro-meus-dados.json"; link.click();
   URL.revokeObjectURL(url);
-  setPrivacyActionStatus("Arquivo de exportação preparado no seu dispositivo. Alguns dados protegidos podem não estar disponíveis se a autorização correspondente estiver revogada.");
+  setPrivacyActionStatus("Arquivo de exportação preparado no seu dispositivo.");
  },[userId]);
  const deleteMyAccount = useCallback(async () => {
   if (!userId || !supabase) return;

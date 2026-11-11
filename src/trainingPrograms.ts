@@ -100,7 +100,7 @@ const legsDay: ProgramDay = {
 export const EXAMPLE_PROGRAMS: ExampleProgram[] = [
   {
     id:"iniciante-corpo-inteiro",title:"Iniciante — Corpo inteiro",level:"Iniciante",split:"Corpo inteiro",frequency:"2 a 3 dias por semana, em dias alternados",
-    description:"Duas ou três sessões de corpo inteiro, alternando os dias e deixando ao menos um dia de recuperação entre elas. Comece com duas séries e carga leve.",
+    description:"Duas ou três sessões de corpo inteiro distribuídas nos dias de treino escolhidos na semana. Não há dia de recuperação programado no aplicativo. Comece com duas séries e carga leve.",
     days:[beginnerDay]
   },
   {

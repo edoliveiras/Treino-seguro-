@@ -33,19 +33,30 @@ Deno.serve(async (request) => {
   try { body = await request.json(); } catch { return json(400, { error: "invalid_request" }); }
   if (body.action !== "grant" && body.action !== "revoke") return json(400, { error: "invalid_request" });
 
-  const action = body.action === "grant" ? "granted" : "withdrawn";
-  const { error: consentError } = await userClient.from("account_consent_events").insert({
-    user_id: authData.user.id,
-    consent_type: "food_photos",
-    action,
-    policy_version: "2026-11-11",
-  });
-  if (consentError) return json(400, { error: "consent_not_recorded" });
-  if (action === "granted") return json(200, { success: true, consent: "granted" });
+  const userId = authData.user.id;
+  if (body.action === "grant") {
+    // A new grant must never make old, incompletely removed files visible again.
+    try { await deleteUserFoodPhotos(adminClient.storage, userId); }
+    catch { return json(503, { error: "previous_photo_cleanup_failed_consent_not_granted" }); }
+    const { error: consentError } = await userClient.from("account_consent_events").insert({
+      user_id: userId, consent_type: "food_photos", action: "granted", policy_version: "2026-11-11",
+    });
+    if (consentError) return json(400, { error: "consent_not_recorded" });
+    return json(200, { success: true, consent: "granted" });
+  }
 
+  const { data: latestConsent } = await userClient.from("account_consent_events")
+    .select("action").eq("user_id", userId).eq("consent_type", "food_photos")
+    .order("occurred_at", { ascending: false }).limit(1);
+  if (latestConsent?.[0]?.action !== "withdrawn") {
+    const { error: consentError } = await userClient.from("account_consent_events").insert({
+      user_id: userId, consent_type: "food_photos", action: "withdrawn", policy_version: "2026-11-11",
+    });
+    if (consentError) return json(400, { error: "consent_not_recorded" });
+  }
   try {
-    const deleted = await deleteUserFoodPhotos(adminClient.storage, authData.user.id);
-    return json(200, { success: true, consent: "withdrawn", deleted });
+    const deleted = await deleteUserFoodPhotos(adminClient.storage, userId);
+    return json(200, { success: true, consent: "withdrawn", revoked: true, deleted });
   } catch {
     return json(200, { success: false, consent: "withdrawn", revoked: true, cleanupPending: true });
   }

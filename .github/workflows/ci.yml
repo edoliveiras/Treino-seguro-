@@ -37,7 +37,7 @@ jobs:
       - name: Type-check privacy Edge Functions
         run: deno check --no-lock supabase/functions/food-photo-consent/index.ts supabase/functions/delete-my-account/index.ts supabase/functions/export-my-data/index.ts
       - name: Test photo cleanup logic
-        run: deno test --no-check supabase/functions/shared/photoCleanup.test.ts
+        run: deno test --no-check supabase/functions/shared/photoCleanup.deno.ts
       - name: Test account and health-data database migrations
         env:
           PGPASSWORD: postgres

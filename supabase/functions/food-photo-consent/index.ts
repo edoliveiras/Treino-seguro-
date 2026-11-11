@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { deleteUserFoodPhotos } from "../shared/photoCleanup.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": Deno.env.get("APP_ORIGIN") ?? "https://treino-seguro.vercel.app",
@@ -42,18 +43,10 @@ Deno.serve(async (request) => {
   if (consentError) return json(400, { error: "consent_not_recorded" });
   if (action === "granted") return json(200, { success: true, consent: "granted" });
 
-  let deleted = 0;
-  for (let offset = 0; ; offset += 1000) {
-    const { data: objects, error: listError } = await adminClient.storage.from("food-photos").list(authData.user.id, { limit: 1000, offset });
-    if (listError) return json(503, { error: "consent_revoked_photo_cleanup_pending", revoked: true });
-    if (!objects?.length) break;
-    const paths = objects.filter((item) => item.id).map((item) => `${authData.user.id}/${item.name}`);
-    if (paths.length) {
-      const { error: removeError } = await adminClient.storage.from("food-photos").remove(paths);
-      if (removeError) return json(503, { error: "consent_revoked_photo_cleanup_pending", revoked: true });
-      deleted += paths.length;
-    }
-    if (objects.length < 1000) break;
+  try {
+    const deleted = await deleteUserFoodPhotos(adminClient.storage, authData.user.id);
+    return json(200, { success: true, consent: "withdrawn", deleted });
+  } catch {
+    return json(503, { error: "consent_revoked_photo_cleanup_pending", revoked: true });
   }
-  return json(200, { success: true, consent: "withdrawn", deleted });
 });

@@ -23,6 +23,8 @@ grant usage on schema storage to anon, authenticated, service_role;
 grant execute on function storage.foldername(text) to authenticated;
 grant select, insert, update, delete on storage.objects to authenticated;
 grant select on storage.buckets to authenticated;
+grant all on storage.objects, storage.buckets to service_role;
+alter role service_role bypassrls;
 
 \ir ../migrations/20261111190000_private_food_photo_storage.sql
 \ir ../migrations/20261111191000_record_optional_food_photo_consent.sql
@@ -44,11 +46,20 @@ end;
 $bucket_check$;
 
 set role service_role;
+insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
+('00000000-0000-4000-8000-000000000006','adult6@example.test',now(),
+ '{"full_name":"Pessoa Teste 6","phone_e164":"+5511999990006","adult_confirmed":"true","terms_accepted":"true","privacy_accepted":"true","health_data_consent":"false","food_photos_consent":"true"}');
+do $signup_photo_consent$
+begin
+  if (select action from public.account_consent_events where user_id='00000000-0000-4000-8000-000000000006' and consent_type='health_data' order by occurred_at desc limit 1) <> 'declined' then raise exception 'health_data_decline_not_recorded'; end if;
+  if (select action from public.account_consent_events where user_id='00000000-0000-4000-8000-000000000006' and consent_type='food_photos' order by occurred_at desc limit 1) <> 'granted' then raise exception 'food_photo_consent_not_recorded'; end if;
+end;
+$signup_photo_consent$;
+
 insert into storage.objects(id,bucket_id,name,owner_id)
 values
 ('30000000-0000-4000-8000-000000000001','food-photos','00000000-0000-4000-8000-000000000001/a.jpg','00000000-0000-4000-8000-000000000001'),
 ('30000000-0000-4000-8000-000000000002','food-photos','00000000-0000-4000-8000-000000000003/b.jpg','00000000-0000-4000-8000-000000000003');
-reset role;
 
 set role authenticated;
 set request.jwt.claim.role = 'authenticated';
@@ -101,7 +112,6 @@ end;
 $photo_revoke$;
 reset role;
 
-set role service_role;
 do $photo_deleted$
 begin
   if exists (select 1 from storage.objects where name='00000000-0000-4000-8000-000000000001/a.jpg') then
@@ -112,6 +122,5 @@ begin
   end if;
 end;
 $photo_deleted$;
-reset role;
 
 select 'private_food_photo_storage_rls_tests_passed' as result;

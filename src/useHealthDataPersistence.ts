@@ -170,7 +170,9 @@ export function useHealthDataPersistence(
   const deleteCloudData = useCallback(async () => {
     const client = supabase;
     if (!userId || !client) return false;
-    const { data: photoData, error: photoError } = await client.functions.invoke("food-photo-consent", { body: { action: "revoke" } });
+    const photoResult = client.functions?.invoke ? await client.functions.invoke("food-photo-consent", { body: { action: "revoke" } }) : { data: null, error: new Error("photo_cleanup_unavailable") };
+    const photoData = photoResult.data;
+    const photoError = photoResult.error;
     if (photoData?.revoked || photoData?.consent === "withdrawn") setPhotoConsent(false);
     const photoCleanupPending = Boolean(photoError || !photoData?.success);
     const { error: consentError } = await client.from("account_consent_events").insert({

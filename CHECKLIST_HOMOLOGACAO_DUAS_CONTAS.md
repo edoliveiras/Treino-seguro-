@@ -24,7 +24,7 @@ Use duas contas de teste (A e B), com caixas de e-mail que o responsável contro
 - [ ] Confirmar que novas fotos deixam de sincronizar, links antigos deixam de abrir e os arquivos da pasta de A são removidos.
 - [ ] Se a tela indicar limpeza pendente, usar a opção de concluir exclusão e confirmar que a pasta fica vazia.
 - [ ] Revogar o consentimento de saúde e confirmar que a sincronização para e as fotos também são removidas.
-- [ ] Exportar os dados de A e conferir o arquivo JSON.
+- [ ] Exportar os dados de A e conferir o arquivo JSON, incluindo os links temporários das fotos autorizadas (validade de 5 minutos).
 - [ ] Solicitar exclusão da conta A; confirmar que perfil, dados de saúde, treinos, conclusões, consentimentos e fotos foram removidos.
 - [ ] Confirmar que B continua acessando apenas os próprios dados e que a conta administrativa permanece intacta.
 

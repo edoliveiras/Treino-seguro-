@@ -113,9 +113,13 @@ export function useHealthDataPersistence(
     if (!userId || !client) return false;
     let photoCleanupPending = false;
     if (photoConsent) {
-      const { data, error: photoError } = await client.functions.invoke("food-photo-consent", { body: { action: "revoke" } });
-      if (data?.revoked || data?.consent === "withdrawn") setPhotoConsent(false);
-      photoCleanupPending = Boolean(photoError || !data?.success);
+      if (client.functions?.invoke) {
+        const { data, error: photoError } = await client.functions.invoke("food-photo-consent", { body: { action: "revoke" } });
+        if (data?.revoked || data?.consent === "withdrawn") setPhotoConsent(false);
+        photoCleanupPending = Boolean(photoError || !data?.success);
+      } else {
+        photoCleanupPending = true;
+      }
     }
     const { error } = await client.from("account_consent_events").insert({
       user_id: userId,

@@ -148,7 +148,7 @@ export default function StudentTraining({userId,level,place,days,compact=false,o
   {error&&<p className="auth-error" role="alert">{error}</p>}
   <section className="training-session-hero">
    <div><span className="training-session-kicker">SEU TREINO DO DIA</span><h2>{activePlan?plan?.title:currentDayLabel||demoProgram.title}</h2><p>{activePlan?plan?.description:currentDay?.focus||demoProgram.description}</p></div>
-   <button type="button" className={started?"training-start-button is-started":"training-start-button"} onClick={()=>setStarted(value=>!value)}><PlayCircle size={23}/>{started?"TREINO EM ANDAMENTO":"COMEÇAR TREINO"}</button>
+   <button type="button" className={started?"training-start-button is-started":"training-start-button"} onClick={()=>{setStarted(true);document.getElementById("workout-exercise-list")?.scrollIntoView({behavior:"smooth",block:"start"});}}><PlayCircle size={23}/>{started?"TREINO EM ANDAMENTO":"COMEÇAR TREINO"}</button>
    <div className="training-session-count">{total} exercícios no total</div>
   </section>
   <div className="workout-meta">
@@ -162,7 +162,7 @@ export default function StudentTraining({userId,level,place,days,compact=false,o
    <div className="bmi"><CheckCircle2/><div><b>{doneCount} de {total} exercícios marcados hoje</b><small>O histórico fica salvo na sua conta.</small></div></div>
   </div>
   {!activePlan&&<p className="muted">Este é um modelo inicial baseado no nível informado na avaliação. Ele será substituído automaticamente quando o professor atribuir um plano individual.</p>}
-  {currentDay&&<article className="workout-day" key={currentDay.label}>
+  {currentDay&&<article id="workout-exercise-list" className="workout-day" key={currentDay.label}>
    <h3>{currentDay.label}</h3><p className="muted">{currentDay.focus}</p>
    {currentItems.map((e,i)=>{
     const baseRest=("rest_seconds" in e?e.rest_seconds:e.restSeconds);

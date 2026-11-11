@@ -278,6 +278,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .student-training .student-exercise{display:grid;grid-template-columns:76px minmax(0,1fr) auto;align-items:center;gap:12px;padding:14px;margin:12px 0;background:#121720;border:1px solid #293244;border-radius:16px;color:#f2f5fb}
 .student-training .student-exercise>div:first-child>img{width:76px;height:76px;object-fit:cover;border-radius:12px}
 .student-training .student-exercise .exercise-copy{min-width:0}
+.student-exercise-number{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:24px;margin:0 0 7px;padding:0 7px;border:1px solid #3d75ca;border-radius:8px;background:#1d3d73;color:#e5efff;font-size:12px;font-weight:900;line-height:1}
 .student-training .student-exercise .exercise-copy>b{color:#fff;font-size:16px}
 .student-training .student-exercise .exercise-copy p{color:#aeb8c9}
 .student-training .student-exercise .library-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}

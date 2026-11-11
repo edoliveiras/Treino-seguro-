@@ -28,6 +28,7 @@ alter role service_role bypassrls;
 
 \ir ../migrations/20261111190000_private_food_photo_storage.sql
 \ir ../migrations/20261111191000_record_optional_food_photo_consent.sql
+\ir ../migrations/20261111192000_require_both_consents_for_food_photos.sql
 
 insert into public.account_consent_events(user_id,consent_type,action,policy_version)
 values

@@ -35,7 +35,7 @@ Deno.serve(async (request) => {
 
   const { data: profile, error: profileError } = await userClient.from("profiles").select("role").eq("id", authData.user.id).maybeSingle();
   if (profileError || !profile) return json(403, { error: "account_not_available" });
-  if (profile.role === "admin") return json(403, { error: "administrator_must_use_admin_account_removal" });
+  if (profile.role === "admin" || authData.user.app_metadata?.role === "admin") return json(403, { error: "administrator_must_use_admin_account_removal" });
 
   // Remove owned objects first: Supabase Auth refuses deletion while the user owns Storage objects.
   try {

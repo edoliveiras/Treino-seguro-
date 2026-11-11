@@ -126,4 +126,24 @@ begin
 end;
 $photo_deleted$;
 
+-- Exercise the same storage-first cleanup order used by the account deletion Edge Function.
+insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
+('00000000-0000-4000-8000-000000000007','adult7@example.test',now(),
+ '{"full_name":"Pessoa Teste 7","phone_e164":"+5511999990007","adult_confirmed":"true","terms_accepted":"true","privacy_accepted":"true","health_data_consent":"true","food_photos_consent":"true"}');
+insert into public.health_data_records(user_id,payload)
+values ('00000000-0000-4000-8000-000000000007','{"weight":"70","foodLogs":[]}');
+insert into storage.objects(id,bucket_id,name,owner_id)
+values ('30000000-0000-4000-8000-000000000007','food-photos','00000000-0000-4000-8000-000000000007/c.jpg','00000000-0000-4000-8000-000000000007');
+delete from storage.objects where name like '00000000-0000-4000-8000-000000000007/%';
+delete from auth.users where id='00000000-0000-4000-8000-000000000007';
+do $account_delete_cascade$
+begin
+  if exists(select 1 from public.profiles where id='00000000-0000-4000-8000-000000000007') then raise exception 'account_delete_left_profile'; end if;
+  if exists(select 1 from public.health_data_records where user_id='00000000-0000-4000-8000-000000000007') then raise exception 'account_delete_left_health_records'; end if;
+  if exists(select 1 from public.account_consent_events where user_id='00000000-0000-4000-8000-000000000007') then raise exception 'account_delete_left_consents'; end if;
+  if exists(select 1 from public.account_notification_preferences where user_id='00000000-0000-4000-8000-000000000007') then raise exception 'account_delete_left_notification_preferences'; end if;
+  if exists(select 1 from storage.objects where name like '00000000-0000-4000-8000-000000000007/%') then raise exception 'account_delete_left_storage_objects'; end if;
+end;
+$account_delete_cascade$;
+
 select 'private_food_photo_storage_rls_tests_passed' as result;

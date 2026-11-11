@@ -267,6 +267,12 @@ begin
 end $admin_reactivation_check$;
 insert into public.health_data_records(user_id,payload)
 values ('00000000-0000-4000-8000-000000000002','{"weight":"88","foodLogs":[]}');
+insert into public.workout_plans(id,title,level,split_type,description,created_by)
+values ('10000000-0000-4000-8000-000000000002','Plano para teste de exclusão','Iniciante','Corpo inteiro','Registro de teste','00000000-0000-4000-8000-000000000001');
+insert into public.workout_assignments(id,plan_id,student_id,assigned_by)
+values ('11000000-0000-4000-8000-000000000002','10000000-0000-4000-8000-000000000002','00000000-0000-4000-8000-000000000002','00000000-0000-4000-8000-000000000001');
+insert into public.workout_completions(id,assignment_id,student_id,exercise_name,source)
+values ('12000000-0000-4000-8000-000000000002','11000000-0000-4000-8000-000000000002','00000000-0000-4000-8000-000000000002','Supino','assigned');
 
 insert into public.health_data_records(user_id,payload)
 values ('00000000-0000-4000-8000-000000000002','{"weight":"88","foodLogs":[]}');

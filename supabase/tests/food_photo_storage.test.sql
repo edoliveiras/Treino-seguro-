@@ -45,7 +45,6 @@ begin
 end;
 $bucket_check$;
 
-set role service_role;
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000006','adult6@example.test',now(),
  '{"full_name":"Pessoa Teste 6","phone_e164":"+5511999990006","adult_confirmed":"true","terms_accepted":"true","privacy_accepted":"true","health_data_consent":"false","food_photos_consent":"true"}');

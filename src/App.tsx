@@ -35,7 +35,7 @@ export default function App({ userId, initialLevel = "Iniciante", initialPlace =
  const [pains,setPains]=useState<string[]>([]),[conditions,setConditions]=useState<string[]>([]),[clearance,setClearance]=useState(false),[adult,setAdult]=useState(false),[understood,setUnderstood]=useState(false),[saved,setSaved]=useState(false);
  const [done,setDone]=useState<string[]>([]),[meal,setMeal]=useState(""),[mealEntries,setMealEntries]=useState<string[]>([]),[newWeight,setNewWeight]=useState(""),[weights,setWeights]=useState<string[]>([]),[waist,setWaist]=useState(""),[waists,setWaists]=useState<string[]>([]);
  const [foodLogs,setFoodLogs]=useState<FoodLog[]>([]),[activityLogs,setActivityLogs]=useState<ActivityLog[]>([]);
- const [photoNote,setPhotoNote]=useState(false),[cleared,setCleared]=useState(false),[profileSaveMessage,setProfileSaveMessage]=useState("");
+ const [photoNote,setPhotoNote]=useState(false),[cleared,setCleared]=useState(false),[profileSaveMessage,setProfileSaveMessage]=useState("");\n const [privacyActionStatus,setPrivacyActionStatus]=useState("");
  const hydrateHealthData = useCallback((data: Record<string, unknown>) => {
   if (typeof data.weight === "string") setWeight(data.weight);
   if (typeof data.height === "string") setHeight(data.height);
@@ -61,6 +61,40 @@ export default function App({ userId, initialLevel = "Iniciante", initialPlace =
   understood, saved, done, mealEntries, foodLogs, activityLogs, weights, waists,
  }), [weight,height,goal,days,place,level,pains,conditions,clearance,adult,understood,saved,done,mealEntries,foodLogs,activityLogs,weights,waists]);
  const cloud = useHealthDataPersistence(userId, healthPayload, hydrateHealthData);
+ const exportMyData = useCallback(async () => {
+  if (!userId || !supabase) { setPrivacyActionStatus("Entre na sua conta para exportar os dados."); return; }
+  setPrivacyActionStatus("Preparando uma cópia dos seus dados...");
+  const [profile, consents, health, assignments, completions, preferences] = await Promise.all([
+   supabase.from("profiles").select("*").eq("id",userId).maybeSingle(),
+   supabase.from("account_consent_events").select("*").eq("user_id",userId).order("occurred_at"),
+   supabase.from("health_data_records").select("*").eq("user_id",userId).maybeSingle(),
+   supabase.from("workout_assignments").select("*").eq("student_id",userId),
+   supabase.from("workout_completions").select("*").eq("student_id",userId),
+   supabase.from("account_notification_preferences").select("*").eq("user_id",userId).maybeSingle(),
+  ]);
+  const errors=[profile.error,consents.error,health.error,assignments.error,completions.error,preferences.error].filter(Boolean);
+  if (errors.length) { setPrivacyActionStatus("Não foi possível exportar todos os dados. Tente novamente."); return; }
+  const planIds=[...new Set((assignments.data??[]).map(item=>item.plan_id))];
+  const plans=planIds.length ? await supabase.from("workout_plans").select("*,workout_plan_exercises(*)").in("id",planIds) : {data:[],error:null};
+  if (plans.error) { setPrivacyActionStatus("Não foi possível exportar os treinos. Tente novamente."); return; }
+  const bundle={exportedAt:new Date().toISOString(),account:profile.data,consents:consents.data,healthRecords:health.data,workoutAssignments:assignments.data,workoutCompletions:completions.data,workoutPlans:plans.data,notificationPreferences:preferences.data};
+  const blob=new Blob([JSON.stringify(bundle,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement("a");
+  link.href=url; link.download="treino-seguro-meus-dados.json"; link.click();
+  URL.revokeObjectURL(url);
+  setPrivacyActionStatus("Arquivo de exportação preparado no seu dispositivo. Alguns dados protegidos podem não estar disponíveis se a autorização correspondente estiver revogada.");
+ },[userId]);
+ const deleteMyAccount = useCallback(async () => {
+  if (!userId || !supabase) return;
+  if (!window.confirm("Excluir definitivamente sua conta, perfil, treinos, registros alimentares, fotos e consentimentos? Esta ação não pode ser desfeita.")) return;
+  setPrivacyActionStatus("Solicitando exclusão segura da conta...");
+  const {data,error}=await supabase.functions.invoke("delete-my-account",{body:{confirm:true}});
+  if (error || !data?.success) { setPrivacyActionStatus("A exclusão não foi concluída. Seus dados não foram confirmados como apagados; entre em contato com o suporte."); return; }
+  await supabase.auth.signOut();
+  window.location.assign("/");
+ },[userId]);
+
  const toggle=(v:string,arr:string[],setter:(v:string[])=>void)=>setter(toggleExclusiveOption(v,arr));
  const bmi=useMemo(()=>{const w=Number(weight),h=Number(height)/100;return w>0&&h>0?w/(h*h):0},[weight,height]);
  const bmiClass=bmi===0?"—":bmi<18.5?"Abaixo do peso":bmi<25?"Faixa adequada":bmi<30?"Sobrepeso":bmi<35?"Obesidade grau I":bmi<40?"Obesidade grau II":"Obesidade grau III";
@@ -119,7 +153,8 @@ export default function App({ userId, initialLevel = "Iniciante", initialPlace =
  {tab==="Ciência"&&<><section className="panel"><span className="eyebrow">EVIDÊNCIA E LIMITES</span><h2>Fontes científicas consultadas</h2><p>Resumo em linguagem simples. As recomendações gerais não substituem diretrizes clínicas individuais.</p></section>{sources.map(s=><article className="source" key={s.name}><BookOpen/><div><b>{s.name}</b><p>{s.detail}</p><small>{s.ref}</small><a href={s.url} target="_blank" rel="noreferrer">Consultar fonte ↗</a></div></article>)}<section className="panel"><b>Limites científicos do aplicativo</b><p>O bloco de 7 semanas é uma organização prática para distribuir adaptação e progressão; não é um protocolo validado para todas as pessoas com obesidade. O IMC é uma triagem, não diagnóstico. Não existe base para recomendar um exercício específico universal para dores. As sugestões devem ser individualizadas por profissionais.</p></section></>}
  {tab==="Privacidade"&&<section className="panel"><span className="eyebrow">PRIVACIDADE E LGPD</span><h2>Seus dados merecem proteção</h2><div className="bmi"><Lock/><div><b>Proteção e controle dos seus dados pessoais</b><p>Os dados de cadastro e autenticação (nome, e-mail e telefone de contato) são enviados ao Supabase para proteger sua conta. Avaliações, informações de saúde, treinos, refeições, peso e medidas só são sincronizados depois de uma autorização específica e podem ser revogados e apagados. Fotos dos alimentos exigem autorização própria, separada dos demais dados de saúde, e são guardadas em armazenamento privado com links temporários.</p></div></div>{userId && <div className="bmi"><Lock/><div><b>Salvamento individual dos seus registros</b><p>{cloud.loading ? "Conferindo sua autorização..." : cloud.consent ? "A autorização para dados de saúde está ativa. Avaliações, treinos, refeições, peso e medidas são sincronizados com sua conta." : "Seus registros permanecem somente nesta sessão até você autorizar expressamente o armazenamento."}</p>{!cloud.loading && (cloud.consent ? <><button type="button" className="secondary" onClick={()=>void cloud.revokeConsent()}>Revogar autorização</button> <button type="button" className="danger-button" onClick={()=>{if(window.confirm("Apagar definitivamente os registros salvos e retirar a autorização de sincronização?"))void cloud.deleteCloudData()}}>Apagar registros salvos</button></> : <button type="button" className="primary" onClick={()=>void cloud.grantConsent()}>Autorizar e salvar meus registros</button>)}{cloud.status && <p role="status" className="muted">{cloud.status}</p>}</div></div>} 
  {userId && <div className="bmi"><Camera/><div><b>Consentimento separado para fotos de alimentos</b><p>{cloud.photoConsent ? "A autorização para fotos está ativa. As imagens são privadas e só você pode acessá-las por links temporários." : "Você pode recusar fotos e continuar usando o diário alimentar. Sem autorização, nenhuma foto será enviada."}</p>{cloud.photoConsent ? <button type="button" className="danger-button" onClick={()=>{if(window.confirm("Revogar a autorização e apagar todas as fotos de alimentos já enviadas? Esta ação não apaga seus registros escritos."))void cloud.revokePhotoConsent().then(ok=>{if(ok)setFoodLogs(old=>old.map(item=>({...item,photoPath:undefined})));});}}>Revogar e apagar fotos enviadas</button> : <button type="button" className="secondary" onClick={()=>void cloud.grantPhotoConsent()}>Autorizar fotos de alimentos</button>}</div></div>}
+ <div className="bmi"><ShieldCheck/><div><b>Seus direitos sobre os dados</b><p>Você pode baixar uma cópia dos dados associados à sua conta ou solicitar a exclusão definitiva da conta e dos registros pessoais.</p><button type="button" className="secondary" onClick={()=>void exportMyData()}>Exportar meus dados</button> <button type="button" className="danger-button" onClick={()=>void deleteMyAccount()}>Excluir minha conta e meus dados</button>{privacyActionStatus&&<p role="status" className="muted">{privacyActionStatus}</p>}</div></div>
  <div className="bmi"><BookOpen/><div><b>Termos e Política</b><p>Consulte os documentos de privacidade e uso antes ou durante o uso do aplicativo.</p><a href="/termos" target="_blank" rel="noreferrer">Termos de Uso</a> · <a href="/privacidade" target="_blank" rel="noreferrer">Política de Privacidade</a></div></div>
  <h3>Como os dados são tratados nesta versão</h3><p className="safety-alert">PENDENTE DE REVISÃO CLÍNICA — conteúdo de treino e alimentação ainda exige validação por profissionais habilitados antes da abertura pública.</p><ul><li>O cadastro e o login já usam autenticação individual no Supabase, com confirmação de e-mail.</li><li>Criptografia em trânsito e controles adequados de acesso no banco.</li><li>Consentimentos independentes para dados de saúde e para fotos de alimentos. Fotos ficam em bucket privado, com acesso individual e links assinados de curta duração.</li><li>Política de privacidade disponível; o canal de atendimento LGPD e os prazos de retenção precisam ser definidos antes da publicação.</li><li>Exclusão dos registros de saúde armazenados. As fotos dos alimentos ficam em armazenamento privado separado e são removidas quando a autorização específica é revogada.</li><li>Não compartilhar dados de saúde para publicidade ou treinamento de modelos.</li></ul><p className="muted">O aplicativo usa o Supabase para autenticação e, somente após sua autorização específica, para salvar seus registros pessoais. Fotos dos alimentos são opcionais e só são sincronizadas com a autorização específica para fotos ativa.</p><div className="session-delete"><b>Apagar informações desta sessão</b><p>Remove da tela os dados digitados, incluindo avaliação, refeições, medidas e marcações de exercícios. Se a sincronização estiver ativa, a alteração também será salva na sua conta.</p><button type="button" className="danger-button" onClick={()=>{if(!window.confirm(cloud.consent?"Apagar os dados desta sessão e atualizar os registros sincronizados da sua conta?":"Apagar os dados desta sessão?"))return;setWeight("");setHeight("");setGoal("Condicionamento");setDays("3");setPlace("Casa");setLevel("Iniciante");setPains([]);setConditions([]);setClearance(false);setAdult(false);setUnderstood(false);setSaved(false);setDone([]);setMeal("");setMealEntries([]);setFoodLogs([]);setActivityLogs([]);setNewWeight("");setWeights([]);setWaist("");setWaists([]);setPhotoNote(false);setCleared(true)}}>Apagar dados desta sessão</button>{cleared&&<p role="status" className="success-text">Os dados desta sessão foram apagados da tela.</p>}</div></section>}
- <footer>Treino Seguro · Informação, movimento e cuidado.<br/><small>Ferramenta educativa. Não diagnostica nem substitui profissionais de saúde.</small></footer></main></div>;
+ <footer>Treino Seguro · Informação, movimento e cuidado.<br/><small>O app não substitui orientação médica ou de profissional de Educação Física.</small></footer></main></div>;
 }

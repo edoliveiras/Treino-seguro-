@@ -50,7 +50,7 @@ Deno.serve(async (request) => {
     const { data, error } = await adminClient.storage.from("food-photos").createSignedUrl(path, 300);
     return !error && data?.signedUrl ? { path, downloadUrl: data.signedUrl, expiresInSeconds: 300 } : null;
   }));
-  const foodPhotoAttachments = signedAttachments.filter((item): item is NonNullable<typeof item> => item !== null);
+  const foodPhotoAttachments = signedAttachments.filter((item): item is { path: string; downloadUrl: string; expiresInSeconds: number } => item !== null);
 
   return json(200, {
     exportedAt: new Date().toISOString(),

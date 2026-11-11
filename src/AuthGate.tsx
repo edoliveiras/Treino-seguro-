@@ -193,7 +193,7 @@ export default function AuthGate() {
   const resendConfirmation = async () => {
     if (!supabase) return;
     if (emailCooldown > 0) throw new Error(`Aguarde ${emailCooldown} segundos antes de solicitar outro e-mail.`);
-    const { error: resendError } = await supabase!.auth.resend({ type: "signup", email: email.trim().toLowerCase(), options: { emailRedirectTo: window.location.origin } });
+    const { error: resendError } = await supabase!.auth.resend({ type: "signup", email: email.trim().toLowerCase(), options: { emailRedirectTo: PRODUCTION_ORIGIN } });
     if (resendError) throw resendError;
     setEmailCooldown(60);
     setNotice("Solicitação de reenvio aceita. Confira sua caixa de entrada e o spam; a entrega depende da configuração de e-mail do serviço.");
@@ -215,7 +215,7 @@ export default function AuthGate() {
     setEmailChangeMessage("");
     const { error } = await supabase.auth.updateUser(
       { email: newEmail.trim().toLowerCase() },
-      { emailRedirectTo: window.location.origin },
+      { emailRedirectTo: PRODUCTION_ORIGIN },
     );
     if (error) {
       setEmailChangeError("Não foi possível registrar a troca de e-mail. Confira o endereço e tente novamente.");

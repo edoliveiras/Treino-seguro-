@@ -1,6 +1,15 @@
-import { assertEquals, assertRejects } from "jsr:@std/assert@1";
-import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { deleteUserFoodPhotos } from "./photoCleanup.ts";
+
+function assertEquals(actual: unknown, expected: unknown): void {
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`Expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`);
+}
+async function assertRejects(action: () => Promise<unknown>, message: string): Promise<void> {
+  try { await action(); } catch (error) {
+    if (error instanceof Error && error.message.includes(message)) return;
+    throw error;
+  }
+  throw new Error(`Expected rejection: ${message}`);
+}
 
 Deno.test("revocation removes every batch from only the caller's folder", async () => {
   const userId = "user-a";
@@ -19,7 +28,7 @@ Deno.test("revocation removes every batch from only the caller's folder", async 
       },
       remove: async (paths: string[]) => { removed.push(paths); return { data: [], error: null }; },
     }),
-  } as unknown as SupabaseClient["storage"];
+  } as never;
   const count = await deleteUserFoodPhotos(storage, userId);
   assertEquals(count, 1001);
   assertEquals(calls, 2);
@@ -34,7 +43,7 @@ Deno.test("does not report success when storage deletion fails", async () => {
       remove: async () => ({ data: null, error: new Error("storage unavailable") }),
     }),
   } as unknown as SupabaseClient["storage"];
-  await assertRejects(() => deleteUserFoodPhotos(storage, "user-a"), Error, "photo_remove_failed");
+  await assertRejects(() => deleteUserFoodPhotos(storage, "user-a"), "photo_remove_failed");
 });
 
 Deno.test("returns zero when the user has no photos", async () => {

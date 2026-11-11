@@ -261,3 +261,86 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .workout-builder .pain-fieldset legend{padding:0 5px;font-size:13px;font-weight:700;color:#405747}
 .workout-builder .pain-fieldset label{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;width:100%;margin:0;padding:5px 0;font-size:13px;line-height:1.4}
 .workout-builder .pain-fieldset input[type="checkbox"]{width:20px;height:20px;min-width:20px;margin:0;padding:0;accent-color:#24734d;flex:0 0 20px}
+
+
+/* Tela de treino no formato de sessão guiada, inspirada na referência enviada. */
+.student-training.panel{
+  --training-blue:#2867e8;
+  --training-blue-light:#3d83f6;
+  background:#0b1019;
+  color:#f4f6fb;
+  border:1px solid #202938;
+  border-radius:24px;
+  padding:clamp(18px,4vw,30px);
+  box-shadow:0 18px 55px #07101d20;
+}
+.student-training>.eyebrow{color:#8da7d5}
+.student-training>h2{color:#f7f8fc;font-size:clamp(25px,5vw,34px);margin:8px 0}
+.student-training>p{color:#aeb8c9}
+.training-session-hero{display:grid;gap:16px;margin:20px 0 28px}
+.training-session-kicker{font-size:10px;font-weight:900;letter-spacing:1.5px;color:#8da7d5}
+.training-session-hero h2{font-size:clamp(27px,6vw,38px);line-height:1.12;color:#fff;margin:8px 0}
+.training-session-hero p{font-size:14px;line-height:1.55;color:#9ca9bd;margin:0}
+.training-start-button{display:flex;align-items:center;justify-content:center;gap:13px;width:100%;min-height:72px;padding:16px 20px;border:0;border-radius:22px;background:linear-gradient(110deg,#3d83f6,#174bd4);color:#061126;font-size:clamp(16px,4vw,20px);font-weight:900;box-shadow:0 12px 30px #1754d54a;cursor:pointer}
+.training-start-button.is-started{background:linear-gradient(110deg,#2563eb,#1741ae);color:#fff}
+.training-session-count{color:#aab5c7;font-size:13px;text-align:right}
+.student-training .workout-meta{background:#111a29;border:1px solid #253247;border-radius:16px;color:#e8edf6}
+.student-training .workout-meta small{color:#8da7d5}
+.student-training .workout-meta b{color:#f2f5fb}
+.student-training .day-selector button{border-radius:12px}
+.student-training .day-selector .primary{background:#245fe0;color:#fff}
+.student-training .day-selector .secondary{background:#151e2d;border:1px solid #2a3547;color:#d8e0ef}
+.student-training .form-grid label{color:#dce5f4}
+.student-training .form-grid select{background:#121b29;color:#f2f5fb;border-color:#2a3547}
+.student-training .bmi{background:#111a29;border-color:#26354b;color:#dbe6f8}
+.student-training .bmi b,.student-training .bmi small{color:#dbe6f8}
+.student-training .workout-day{counter-reset:training-exercise;background:transparent;border:0;border-radius:0;overflow:visible;margin:18px 0}
+.student-training .workout-day>h3{color:#f7f8fc;font-size:22px;margin:0 0 5px}
+.student-training .workout-day>.muted{color:#9eabc0}
+.student-training .student-exercise{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+  min-height:112px;
+  margin:12px 0;
+  padding:18px 16px 18px 78px;
+  border:1px solid #252e3b;
+  border-radius:23px;
+  background:#121720;
+  color:#f1f4fa;
+  box-shadow:0 5px 18px #00000014;
+}
+.student-training .student-exercise::before{
+  counter-increment:training-exercise;
+  content:counter(training-exercise);
+  position:absolute;left:18px;top:50%;transform:translateY(-50%);
+  width:52px;height:52px;display:grid;place-items:center;
+  border-radius:17px;background:linear-gradient(145deg,#3c82f5,#174bd4);
+  color:#07142b;font-size:22px;font-weight:900;
+  box-shadow:0 7px 20px #1856d94a;
+}
+.student-training .student-exercise>div:first-child{display:none}
+.student-training .student-exercise .exercise-copy{min-width:0}
+.student-training .student-exercise .exercise-copy>b{display:block;color:#f7f8fc;font-size:17px;line-height:1.35;margin-bottom:8px}
+.student-training .student-exercise .exercise-copy>p{color:#9eabc0;font-size:13px;line-height:1.45;margin:5px 0}
+.student-training .student-exercise .exercise-copy>p:first-of-type{color:#4c8af8;font-weight:700}
+.student-training .student-exercise .exercise-copy>p:nth-of-type(n+3){display:none}
+.student-training .student-exercise .library-actions{display:none}
+.student-training .student-exercise>.round{width:38px;height:38px;min-width:38px;border:1px solid #34445e;background:#172338;color:#8fb4ff}
+.student-training .student-exercise>.round.done{background:#173c2a;border-color:#286344;color:#8ee0a9}
+.student-training .complete-workout-button{min-height:54px;border-radius:15px;background:#245fe0;color:#fff;font-weight:800}
+.student-training .safety-alert{background:#17202d;border:1px solid #2a374a;color:#cbd6e8;border-radius:15px}
+.student-training .safety-alert p{color:#aebbd0}
+.student-training .log-list{color:#dbe4f3}
+.student-training .log-list p{color:#aebbd0}
+@media(max-width:480px){
+ .student-training.panel{padding:17px 13px;border-radius:20px}
+ .training-start-button{min-height:66px;border-radius:19px}
+ .student-training .student-exercise{min-height:104px;padding:15px 10px 15px 68px;gap:8px;border-radius:20px}
+ .student-training .student-exercise::before{left:12px;width:46px;height:46px;border-radius:15px}
+ .student-training .student-exercise .exercise-copy>b{font-size:15px}
+ .student-training .student-exercise .exercise-copy>p{font-size:12px}
+ .student-training .student-exercise>.round{width:34px;height:34px;min-width:34px}
+}

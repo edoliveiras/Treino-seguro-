@@ -24,7 +24,6 @@ grant execute on function storage.foldername(text) to authenticated;
 grant select, insert, update, delete on storage.objects to authenticated;
 grant select on storage.buckets to authenticated;
 grant all on storage.objects, storage.buckets to service_role;
-alter role service_role bypassrls;
 
 \ir ../migrations/20261111190000_private_food_photo_storage.sql
 \ir ../migrations/20261111191000_record_optional_food_photo_consent.sql

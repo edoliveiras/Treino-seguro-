@@ -1,7 +1,12 @@
-import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
+type PhotoStorage = {
+  from: (bucket: string) => {
+    list: (prefix: string, options: { limit: number; offset: number }) => Promise<{ data: Array<{ id?: string | null; name: string }> | null; error: unknown | null }>;
+    remove: (paths: string[]) => Promise<{ error: unknown | null }>;
+  };
+};
 
 export async function deleteUserFoodPhotos(
-  storage: SupabaseClient["storage"],
+  storage: PhotoStorage,
   userId: string,
 ): Promise<number> {
   let deleted = 0;

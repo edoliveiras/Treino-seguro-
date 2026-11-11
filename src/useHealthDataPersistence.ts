@@ -9,6 +9,7 @@ export function useHealthDataPersistence(
   onLoad: (payload: HealthPayload) => void,
 ) {
   const [consent, setConsent] = useState(false);
+  const [photoConsent, setPhotoConsent] = useState(false);
   const [loading, setLoading] = useState(Boolean(userId));
   const [status, setStatus] = useState("");
 
@@ -117,6 +118,35 @@ export function useHealthDataPersistence(
     return true;
   }, [userId]);
 
+  const grantPhotoConsent = useCallback(async () => {
+    const client = supabase;
+    if (!userId || !client) return false;
+    const { data, error } = await client.functions.invoke("food-photo-consent", { body: { action: "grant" } });
+    if (error || !data?.success) {
+      setStatus("Não foi possível registrar a autorização para fotos. Tente novamente.");
+      return false;
+    }
+    setPhotoConsent(true);
+    setStatus("Autorização específica para fotos registrada.");
+    return true;
+  }, [userId]);
+
+  const revokePhotoConsent = useCallback(async () => {
+    const client = supabase;
+    if (!userId || !client) return false;
+    const { data, error } = await client.functions.invoke("food-photo-consent", { body: { action: "revoke" } });
+    if (data?.revoked || data?.consent === "withdrawn") setPhotoConsent(false);
+    if (error || !data?.success) {
+      setStatus(data?.revoked
+        ? "Autorização revogada. A limpeza das fotos ainda precisa ser concluída; tente novamente."
+        : "Não foi possível concluir a revogação. Nenhuma alteração foi confirmada.");
+      return false;
+    }
+    setPhotoConsent(false);
+    setStatus("Autorização revogada e fotos enviadas apagadas do armazenamento privado.");
+    return true;
+  }, [userId]);
+
   const deleteCloudData = useCallback(async () => {
     const client = supabase;
     if (!userId || !client) return false;
@@ -140,5 +170,5 @@ export function useHealthDataPersistence(
     return true;
   }, [userId]);
 
-  return { consent, loading, status, grantConsent, revokeConsent, deleteCloudData };
+  return { consent, photoConsent, loading, status, grantConsent, revokeConsent, grantPhotoConsent, revokePhotoConsent, deleteCloudData };
 }

@@ -88,7 +88,7 @@ export default function AdminPanel({ currentUserId }: { currentUserId: string })
       {accounts.map(account => <article className="admin-account-card" key={account.id}>
         <div className="admin-account-main">
           <UserRound size={20}/>
-          <div><b>{account.full_name}</b><span>{account.email}</span><small>WhatsApp para contato: {account.phone_e164}</small></div>
+          <div><b>{account.full_name}</b><span>{account.email}</span><small>Telefone de contato: {account.phone_e164}</small></div>
         </div>
         <div className="admin-account-meta">
           <span className={`account-status status-${account.account_status}`}>{account.account_status === "active" ? "Ativa" : account.account_status === "suspended" ? "Suspensa" : "Pendente de e-mail"}</span>

@@ -274,12 +274,19 @@ values ('11000000-0000-4000-8000-000000000002','10000000-0000-4000-8000-00000000
 insert into public.workout_completions(id,assignment_id,student_id,exercise_name,source)
 values ('12000000-0000-4000-8000-000000000002','11000000-0000-4000-8000-000000000002','00000000-0000-4000-8000-000000000002','Supino','assigned');
 
-insert into public.health_data_records(user_id,payload)
-values ('00000000-0000-4000-8000-000000000002','{"weight":"88","foodLogs":[]}');
-
 set role service_role;
 select public.admin_delete_account('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002');
 reset role;
+do $account_cleanup_check$
+begin
+  if exists(select 1 from public.health_data_records where user_id='00000000-0000-4000-8000-000000000002') then raise exception 'account_cleanup_left_health_data'; end if;
+  if exists(select 1 from public.account_consent_events where user_id='00000000-0000-4000-8000-000000000002') then raise exception 'account_cleanup_left_consent_events'; end if;
+  if exists(select 1 from public.account_notification_preferences where user_id='00000000-0000-4000-8000-000000000002') then raise exception 'account_cleanup_left_notification_preferences'; end if;
+  if exists(select 1 from public.workout_assignments where student_id='00000000-0000-4000-8000-000000000002') then raise exception 'account_cleanup_left_workout_assignments'; end if;
+  if exists(select 1 from public.workout_completions where student_id='00000000-0000-4000-8000-000000000002') then raise exception 'account_cleanup_left_workout_completions'; end if;
+end;
+$account_cleanup_check$;
+delete from public.workout_plans where id='10000000-0000-4000-8000-000000000002';
 do $rls$
 begin
   if (select count(*) from public.profiles) <> 4 then

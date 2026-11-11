@@ -1,3 +1,4 @@
+/* PENDENTE DE REVISÃO CLÍNICA — conteúdo de treino/alimentação requer validação profissional antes da abertura pública. */
 import { useEffect, useMemo, useState } from "react";
 import { createFoodPhotoSignedUrl, deleteFoodPhoto, uploadFoodPhoto, validateFoodPhoto } from "./foodPhotoStorage";
 

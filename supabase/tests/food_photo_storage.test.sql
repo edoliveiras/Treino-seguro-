@@ -106,14 +106,20 @@ set request.jwt.claim.role = 'authenticated';
 set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
 set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"user"}}';
 do $photo_revoke$
+declare v_rows integer;
 begin
   if (select count(*) from storage.objects) <> 0 then
     raise exception 'revoked_photo_consent_still_allows_read';
   end if;
   delete from storage.objects where name='00000000-0000-4000-8000-000000000001/a.jpg';
+  get diagnostics v_rows = row_count;
+  if v_rows <> 0 then raise exception 'client_deleted_after_revocation_instead_of_server_cleanup'; end if;
 end;
 $photo_revoke$;
 reset role;
+
+-- The authenticated Edge Function uses its server-side storage client to finish cleanup.
+delete from storage.objects where name='00000000-0000-4000-8000-000000000001/a.jpg';
 
 do $photo_deleted$
 begin

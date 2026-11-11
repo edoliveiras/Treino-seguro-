@@ -184,6 +184,7 @@ export default function AuthGate() {
 
   const sendRecovery = async () => {
     if (!supabase) return;
+    if (emailCooldown > 0) throw new Error(`Aguarde ${emailCooldown} segundos antes de solicitar outra recuperação.`);
     const { error: recoveryError } = await supabase!.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: PRODUCTION_ORIGIN + "/?flow=recovery" });
     if (recoveryError) throw recoveryError;
     setEmailCooldown(60);

@@ -111,20 +111,28 @@ export function useHealthDataPersistence(
   const revokeConsent = useCallback(async () => {
     const client = supabase;
     if (!userId || !client) return false;
+    let photoCleanupPending = false;
+    if (photoConsent) {
+      const { data, error: photoError } = await client.functions.invoke("food-photo-consent", { body: { action: "revoke" } });
+      if (data?.revoked || data?.consent === "withdrawn") setPhotoConsent(false);
+      photoCleanupPending = Boolean(photoError || !data?.success);
+    }
     const { error } = await client.from("account_consent_events").insert({
       user_id: userId,
       consent_type: "health_data",
       action: "withdrawn",
-      policy_version: "2026-11-08",
+      policy_version: "2026-11-11",
     });
     if (error) {
       setStatus("Não foi possível registrar a revogação. Tente novamente.");
       return false;
     }
     setConsent(false);
-    setStatus("Autorização revogada. Novos registros não serão sincronizados.");
+    setStatus(photoCleanupPending
+      ? "Autorização de saúde revogada. O acesso às fotos foi bloqueado; a exclusão física de algumas fotos ainda precisa ser concluída."
+      : "Autorização de saúde revogada. Novos registros não serão sincronizados e as fotos enviadas também foram removidas.");
     return true;
-  }, [userId]);
+  }, [userId, photoConsent]);
 
   const grantPhotoConsent = useCallback(async () => {
     const client = supabase;

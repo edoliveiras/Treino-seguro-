@@ -29,9 +29,12 @@ export function canCompleteAssessment(input: {
   medicalReviewNeeded: boolean;
   medicalClearanceDeclared: boolean;
   runningBlocked: boolean;
+  triageRisk?: boolean;
+  triageRead?: boolean;
 }): boolean {
   return input.adult && input.understood &&
     isValidMeasurement(input.weight, input.heightCm) &&
     (!input.medicalReviewNeeded || input.medicalClearanceDeclared) &&
+    (!input.triageRisk || input.triageRead === true) &&
     !input.runningBlocked;
 }

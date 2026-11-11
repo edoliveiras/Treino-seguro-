@@ -31,6 +31,7 @@ export default function StudentTraining({userId,level,place,days,compact=false,o
  const [loading,setLoading]=useState(Boolean(userId));
  const [newNotice,setNewNotice]=useState(false);
  const [error,setError]=useState("");
+ const [started,setStarted]=useState(false);
  const now=new Date();
  const today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
 
@@ -145,6 +146,11 @@ export default function StudentTraining({userId,level,place,days,compact=false,o
   <h2>{activePlan?plan?.title:demoProgram.title}</h2>
   <p>{activePlan?plan?.description:demoProgram.description}</p>
   {error&&<p className="auth-error" role="alert">{error}</p>}
+  <section className="training-session-hero">
+   <div><span className="training-session-kicker">SEU TREINO DO DIA</span><h2>{activePlan?plan?.title:currentDayLabel||demoProgram.title}</h2><p>{activePlan?plan?.description:currentDay?.focus||demoProgram.description}</p></div>
+   <button type="button" className={started?"training-start-button is-started":"training-start-button"} onClick={()=>setStarted(value=>!value)}><PlayCircle size={23}/>{started?"TREINO EM ANDAMENTO":"COMEÇAR TREINO"}</button>
+   <div className="training-session-count">{total} exercícios no total</div>
+  </section>
   <div className="workout-meta">
    <div><small>NÍVEL</small><b>{activePlan?plan?.level:demoProgram.level}</b></div>
    <div><small>FREQUÊNCIA</small><b>{activePlan?`Disponibilidade: ${days} dias/semana`:demoProgram.frequency}</b></div>

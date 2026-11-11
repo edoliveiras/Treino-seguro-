@@ -268,6 +268,9 @@ end $admin_reactivation_check$;
 insert into public.health_data_records(user_id,payload)
 values ('00000000-0000-4000-8000-000000000002','{"weight":"88","foodLogs":[]}');
 
+insert into public.health_data_records(user_id,payload)
+values ('00000000-0000-4000-8000-000000000002','{"weight":"88","foodLogs":[]}');
+
 set role service_role;
 select public.admin_delete_account('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002');
 reset role;

@@ -51,6 +51,8 @@ describe("liberação do fluxo de treino", () => {
     expect(canCompleteAssessment({ ...valid, medicalReviewNeeded: true })).toBe(false);
     expect(canCompleteAssessment({ ...valid, medicalReviewNeeded: true, medicalClearanceDeclared: true })).toBe(true);
     expect(canCompleteAssessment({ ...valid, runningBlocked: true })).toBe(false);
+    expect(canCompleteAssessment({ ...valid, triageRisk: true, triageRead: false })).toBe(false);
+    expect(canCompleteAssessment({ ...valid, triageRisk: true, triageRead: true })).toBe(true);
   });
 });
 

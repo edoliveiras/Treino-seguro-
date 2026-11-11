@@ -265,8 +265,6 @@ begin
     raise exception 'admin_reactivation_must_only_require_confirmed_email';
   end if;
 end $admin_reactivation_check$;
-insert into public.health_data_records(user_id,payload)
-values ('00000000-0000-4000-8000-000000000002','{"weight":"88","foodLogs":[]}');
 insert into public.workout_plans(id,title,level,split_type,description,created_by)
 values ('10000000-0000-4000-8000-000000000002','Plano para teste de exclusão','Iniciante','Corpo inteiro','Registro de teste','00000000-0000-4000-8000-000000000001');
 insert into public.workout_plan_exercises(id,plan_id,day_label,position,exercise_name,technical_name,muscle_group)

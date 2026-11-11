@@ -39,6 +39,19 @@ Deno.serve(async (request) => {
   ]) : [{ data: [], error: null }, { data: [], error: null }];
   if (plans.error || exercises.error) return json(500, { error: "export_not_completed" });
 
+  const latestConsent = new Map<string, string>();
+  for (const event of consents.data ?? []) latestConsent.set(event.consent_type, event.action);
+  const photoConsentActive = latestConsent.get("food_photos") === "granted" && latestConsent.get("health_data") === "granted";
+  const payload = (health.data?.payload ?? {}) as { foodLogs?: Array<{ photoPath?: unknown }> };
+  const photoPaths = photoConsentActive && Array.isArray(payload.foodLogs)
+    ? [...new Set(payload.foodLogs.map((item) => typeof item.photoPath === "string" ? item.photoPath : null).filter((path): path is string => Boolean(path && path.startsWith(`${userId}/`))))]
+    : [];
+  const signedAttachments = await Promise.all(photoPaths.map(async (path) => {
+    const { data, error } = await adminClient.storage.from("food-photos").createSignedUrl(path, 300);
+    return !error && data?.signedUrl ? { path, downloadUrl: data.signedUrl, expiresInSeconds: 300 } : null;
+  }));
+  const foodPhotoAttachments = signedAttachments.filter((item): item is NonNullable<typeof item> => item !== null);
+
   return json(200, {
     exportedAt: new Date().toISOString(),
     account: profile.data,
@@ -49,5 +62,6 @@ Deno.serve(async (request) => {
     workoutPlans: plans.data,
     workoutPlanExercises: exercises.data,
     notificationPreferences: preferences.data,
+    foodPhotoAttachments,
   });
 });

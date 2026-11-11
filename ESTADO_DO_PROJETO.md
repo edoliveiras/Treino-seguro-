@@ -3,7 +3,7 @@
 ## Atualização de privacidade e segurança — 11/11/2026
 
 - O bucket `food-photos` foi criado no Supabase como privado, com limite de 5 MB e MIME types JPEG/PNG/WebP. O bucket está vazio neste momento.
-- Foram aplicadas três novas migrações (27 no total): bucket privado e políticas RLS, registro independente de aceite/recusa para fotos, e exigência simultânea de consentimento de saúde e de fotos para leitura/gravação.
+- Foram aplicadas três novas migrações (28 no total): bucket privado e políticas RLS, registro independente de aceite/recusa para fotos, e exigência simultânea de consentimento de saúde e de fotos para leitura/gravação.
 - As políticas em `storage.objects` restringem leitura, gravação e atualização à pasta `auth.uid()`; a exclusão fica permitida ao proprietário mesmo após revogação. A leitura também exige conta ativa, e-mail confirmado e os dois consentimentos vigentes.
 - A interface foi atualizada para usar imagens redimensionadas até 1600 px, regravadas para remover metadados EXIF/GPS, e URLs assinadas de 60 segundos. A sincronização exige consentimento de saúde e consentimento separado de fotos. Fotos são anexos; calorias dependem da escolha manual do alimento e da quantidade.
 - A função `food-photo-consent` está ativa, exige JWT e registra concessão/retirada. A retirada bloqueia a leitura e aciona a remoção de todos os objetos da pasta do usuário; há tentativa segura de repetição se a limpeza falhar.
@@ -37,7 +37,7 @@
 - O código inclui migrações de contas, consentimentos, administração e registros de saúde, com políticas RLS para limitar dados à própria conta ativa e com consentimento vigente.
 - A migração mais recente renomeia o telefone para campo de contato, remove sua função de identificador único e revoga o acesso aos artefatos históricos de verificação telefônica, sem apagar dados dessas tabelas.
 - O código implementa sincronização de dados pessoais somente após autorização específica de dados de saúde. A revogação deve impedir novas leituras e gravações.
-- Verificação direta em 11/11/2026: o projeto Supabase dedicado está ativo e saudável na região us-east-1 (Leste dos EUA). As 27 migrações versionadas estão registradas no banco; há 2 contas de autenticação, ambas com e-mail confirmado, 1 administrador e 2 perfis. As sete tabelas principais de perfis, consentimentos, registros de saúde e treinos estão com RLS habilitado.
+- Verificação direta em 11/11/2026: o projeto Supabase dedicado está ativo e saudável na região us-east-1 (Leste dos EUA). As 28 migrações versionadas estão registradas no banco; há 2 contas de autenticação, ambas com e-mail confirmado, 1 administrador e 2 perfis. As sete tabelas principais de perfis, consentimentos, registros de saúde e treinos estão com RLS habilitado.
 - A função Edge `admin-account` está implantada e ativa, com verificação JWT obrigatória. A consulta não expôs nem alterou segredos.
 - O banco está hospedado fora do Brasil; a transferência internacional de dados precisa ser avaliada na revisão jurídica/LGPD.
 - Não foi comprovada a entrega real de e-mails nem a configuração efetiva de SMTP, templates e URLs de retorno. Cadastro, confirmação, reenvio e recuperação ainda precisam de homologação com caixas de e-mail controladas.

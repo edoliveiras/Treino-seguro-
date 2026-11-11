@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { deleteUserFoodPhotos } from "../shared/photoCleanup.ts";
 
 const allowedOrigin = Deno.env.get("APP_ORIGIN") ?? "https://treino-seguro.vercel.app";
 const corsHeaders = {
@@ -37,16 +38,10 @@ Deno.serve(async (request) => {
   if (profile.role === "admin") return json(403, { error: "administrator_must_use_admin_account_removal" });
 
   // Remove owned objects first: Supabase Auth refuses deletion while the user owns Storage objects.
-  for (;;) {
-    const { data: objects, error: listError } = await adminClient.storage.from("food-photos").list(authData.user.id, { limit: 1000, offset: 0 });
-    if (listError) return json(503, { error: "photo_cleanup_failed_account_not_deleted" });
-    if (!objects?.length) break;
-    const paths = objects.filter((item) => item.id).map((item) => `${authData.user.id}/${item.name}`);
-    if (paths.length) {
-      const { error: removeError } = await adminClient.storage.from("food-photos").remove(paths);
-      if (removeError) return json(503, { error: "photo_cleanup_failed_account_not_deleted" });
-    }
-    if (objects.length < 1000) break;
+  try {
+    await deleteUserFoodPhotos(adminClient.storage, authData.user.id);
+  } catch {
+    return json(503, { error: "photo_cleanup_failed_account_not_deleted" });
   }
 
   const { error: deleteError } = await adminClient.auth.admin.deleteUser(authData.user.id);

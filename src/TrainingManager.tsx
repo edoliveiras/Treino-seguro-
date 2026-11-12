@@ -182,8 +182,8 @@ export default function TrainingManager({currentUserId}:{currentUserId:string}) 
     <small>{x.muscle_group}</small>
     <div className="form-grid">
      <label>Dia<input value={x.day_label} onChange={e=>updateItem(x.key,{day_label:e.target.value})}/></label>
-     <label>Séries<input type="number" min="1" max="8" value={x.sets} onChange={e=>updateItem(x.key,{sets:Math.max(1,Math.min(8,Number(e.target.value)||1))})}/></label>
-     <label>Repetições ou tempo<input value={x.reps} onChange={e=>updateItem(x.key,{reps:e.target.value})}/></label>
+     <label>Séries (1 a 30)<input type="number" min="1" max="30" value={x.sets} onChange={e=>updateItem(x.key,{sets:Math.max(1,Math.min(30,Number(e.target.value)||1))})}/></label>
+     <label>Repetições ou tempo<input type="text" value={x.reps} onChange={e=>updateItem(x.key,{reps:e.target.value})} placeholder="Ex.: 12, 8–12 ou 30 segundos"/></label>
      <label>Descanso (segundos)<input type="number" min="15" max="600" value={x.rest_seconds} onChange={e=>updateItem(x.key,{rest_seconds:Math.max(15,Math.min(600,Number(e.target.value)||15))})}/></label>
      <label>Tempo de execução<input value={x.tempo} onChange={e=>updateItem(x.key,{tempo:e.target.value})}/></label>
      <label>Versão academia<input value={x.gym_version} onChange={e=>updateItem(x.key,{gym_version:e.target.value})}/></label>

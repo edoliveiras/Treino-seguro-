@@ -233,7 +233,7 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
       selectedGroups.filter(g=>["Quadríceps","Posterior de coxa","Glúteos","Panturrilha","Abdômen","Lombar e core profundo"].includes(g))
      ].slice(0,days)
    : level==="Intermediário"
-    ? (days<=2 ? [["Peito","Costas","Ombros","Bíceps","Tríceps"],["Quadríceps","Posterior de coxa","Glúteos","Panturrilha","Abdômen"]] : days===3 ? [["Peito","Tríceps","Ombros"],["Costas","Bíceps"],["Quadríceps","Posterior de coxa","Glúteos","Panturrilha","Abdômen"]] : [["Peito","Tríceps"],["Costas","Bíceps"],["Quadríceps","Posterior de coxa","Panturrilha"],["Ombros","Glúteos","Abdômen"]]).slice(0,days).map(day=>day.filter(g=>selectedGroups.includes(g as StrictGroup)) as StrictGroup[])
+    ? (days<=2 ? [["Peito","Costas","Ombros","Bíceps","Tríceps"],["Quadríceps","Posterior de coxa","Glúteos","Panturrilha","Abdômen"]].map(day=>day.filter(g=>selectedGroups.includes(g as StrictGroup)) as StrictGroup[]) : days===3 ? [["Peito","Tríceps","Ombros"],["Costas","Bíceps"],["Quadríceps","Posterior de coxa","Glúteos","Panturrilha","Abdômen"]] : [["Peito","Tríceps"],["Costas","Bíceps"],["Quadríceps","Posterior de coxa","Panturrilha"],["Ombros","Glúteos","Abdômen"]]).slice(0,days).map(day=>day.filter(g=>selectedGroups.includes(g as StrictGroup)) as StrictGroup[])
     : (days===5 ? [["Peito","Tríceps"],["Costas","Bíceps"],["Quadríceps","Panturrilha"],["Ombros","Antebraço","Abdômen"],["Posterior de coxa","Glúteos","Lombar e core profundo"]] : days>=6 ? [["Peito","Ombros","Tríceps"],["Costas","Bíceps","Antebraço"],["Quadríceps","Posterior de coxa","Glúteos","Panturrilha"],["Peito","Ombros","Tríceps"],["Costas","Bíceps","Antebraço"],["Quadríceps","Posterior de coxa","Glúteos","Panturrilha"]] : [["Peito","Ombros","Tríceps"],["Costas","Bíceps","Antebraço"],["Quadríceps","Posterior de coxa","Glúteos","Panturrilha"],["Peito","Ombros","Tríceps"],["Costas","Bíceps","Antebraço"]]).slice(0,days).map(day=>day.filter(g=>selectedGroups.includes(g as StrictGroup)) as StrictGroup[]);
   const extras=selectedGroups.filter(g=>["Cardio","Alongamento","Equilíbrio"].includes(g));
   if(extras.length&&splitByLevel.length) splitByLevel[splitByLevel.length-1]=[...new Set([...splitByLevel[splitByLevel.length-1],...extras])];
@@ -242,7 +242,8 @@ export default function WorkoutBuilder({ initialDays = "3", initialPlace = "Casa
    : level==="Intermediário"
     ? [["Peito","Tríceps","Ombros"],["Costas","Bíceps","Antebraço"],["Quadríceps","Posterior de coxa","Glúteos","Panturrilha","Abdômen"],["Ombros","Glúteos","Abdômen"]]
     : [["Peito","Ombros","Tríceps"],["Costas","Bíceps","Antebraço"],["Quadríceps","Posterior de coxa","Glúteos","Panturrilha"],["Peito","Ombros","Tríceps"],["Costas","Bíceps","Antebraço"],["Quadríceps","Posterior de coxa","Glúteos","Panturrilha"]];
-  const completedSplit=splitByLevel.map((groups,index)=>groups.length?groups:fallbackSplits[index%fallbackSplits.length]);
+  // Nunca preencher dias vazios com grupos padrão: isso adicionava músculos que a pessoa não selecionou.
+  const completedSplit=splitByLevel.filter(groups=>groups.length>0);
   return completedSplit.map((groups,index)=>{
    const catalog=getStrictExercises(groups,level as "Iniciante"|"Intermediário"|"Avançado",place as "Casa"|"Academia",painAreas);
    const byGroup=new Map<StrictGroup,Exercise[]>();

@@ -82,10 +82,9 @@ export default function App({ userId, initialLevel = "Iniciante", initialPlace =
    <div className="home-hero-actions"><button className="home-primary" onClick={()=>setTab("Avaliação")}>Começar minha jornada <span>→</span></button><button className="home-text-button" onClick={()=>setTab("Montar treino")}>Conhecer os treinos <span>↗</span></button></div>
    <div className="home-trust"><ShieldCheck size={17}/><span>Conteúdo educativo com foco em segurança e evidências.</span></div>
   </div>
-  <div className="home-hero-visual" aria-label="Ilustração abstrata de movimento e saúde">
-   <div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="hero-spark spark-one">✳</div><div className="hero-spark spark-two">+</div>
-   <div className="hero-number"><small>SEU PRÓXIMO PASSO</small><b>01</b><span>Comece de onde você está.</span></div>
-   <div className="hero-stamp"><HeartPulse size={25}/><b>Movimento<br/>com propósito</b></div>
+  <div className="home-hero-visual" aria-label="Um homem e uma mulher lado a lado em roupas esportivas numa academia">
+   <img className="home-hero-photo" src="https://images.pexels.com/photos/17065198/pexels-photo-17065198.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Homem e mulher em roupas esportivas lado a lado em uma academia" loading="eager"/>
+   <div className="hero-photo-caption"><HeartPulse size={19}/><b>Movimento com propósito</b></div>
   </div>
  </section>
  <div className="home-intro"><div><span className="eyebrow">UM PLANO QUE COMEÇA POR VOCÊ</span><h2>Mais do que treinar.<br/><em>Aprender a cuidar de si.</em></h2></div><p>Não existe uma fórmula única. Aqui você encontra caminhos para desenvolver força, condicionamento e bem-estar com progressão gradual e atenção aos sinais do seu corpo.</p></div>

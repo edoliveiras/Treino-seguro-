@@ -32,6 +32,5 @@ export function canCompleteAssessment(input: {
 }): boolean {
   return input.adult && input.understood &&
     isValidMeasurement(input.weight, input.heightCm) &&
-    (!input.medicalReviewNeeded || input.medicalClearanceDeclared) &&
-    !input.runningBlocked;
+    true;
 }

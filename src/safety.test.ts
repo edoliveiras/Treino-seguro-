@@ -44,13 +44,13 @@ describe("liberação do fluxo de treino", () => {
     adult: true, understood: true, weight: 90, heightCm: 170,
     medicalReviewNeeded: false, medicalClearanceDeclared: false, runningBlocked: false,
   };
-  it("só libera a avaliação quando todos os requisitos estão atendidos", () => {
+  it("permite concluir a avaliação, mantendo a liberação de treino como etapa separada", () => {
     expect(canCompleteAssessment(valid)).toBe(true);
     expect(canCompleteAssessment({ ...valid, adult: false })).toBe(false);
     expect(canCompleteAssessment({ ...valid, understood: false })).toBe(false);
-    expect(canCompleteAssessment({ ...valid, medicalReviewNeeded: true })).toBe(false);
+    expect(canCompleteAssessment({ ...valid, medicalReviewNeeded: true })).toBe(true);
     expect(canCompleteAssessment({ ...valid, medicalReviewNeeded: true, medicalClearanceDeclared: true })).toBe(true);
-    expect(canCompleteAssessment({ ...valid, runningBlocked: true })).toBe(false);
+    expect(canCompleteAssessment({ ...valid, runningBlocked: true })).toBe(true);
   });
 });
 

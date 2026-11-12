@@ -91,6 +91,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .home-text-button{border:0;background:transparent;color:#f0f6ed;font:700 12px 'DM Sans',sans-serif;cursor:pointer;padding:12px 0}
 .home-trust{display:flex;align-items:center;gap:9px;color:#b8d0bd;font-size:11px;margin-top:29px}
 .home-hero-visual{position:relative;min-height:300px;display:grid;place-items:center}
+.home-hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%;border-radius:22px;box-shadow:0 24px 60px #061e1430}
+.hero-photo-caption{position:absolute;left:16px;bottom:16px;display:flex;align-items:center;gap:9px;padding:12px 15px;border-radius:13px;background:#f8fbf4ee;color:#244b35;box-shadow:0 10px 25px #061e1430;font:800 11px Manrope}
 .orbit{position:absolute;border:1px solid #c5e6a447;border-radius:50%;transform:rotate(-25deg)}
 .orbit-one{width:300px;height:220px}.orbit-two{width:360px;height:270px;transform:rotate(38deg);border-color:#ffffff20}
 .hero-number{position:relative;width:205px;height:205px;border-radius:50%;background:linear-gradient(145deg,#d7edc2,#9fc77e);color:#1b4a32;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 24px 70px #061e144f;transform:rotate(8deg)}

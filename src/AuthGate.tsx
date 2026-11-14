@@ -141,7 +141,7 @@ export default function AuthGate() {
     });
     if (signupError) throw signupError;
     setMode("login");
-    setNotice("Cadastro iniciado. Confirme o link enviado ao seu e-mail para liberar o acesso. O telefone informado fica apenas como contato; não enviaremos mensagens.");
+    setNotice("Cadastro iniciado. O acesso só será liberado após a confirmação do e-mail. A entrega do link depende da configuração do serviço de e-mail; esta tela não confirma que a mensagem chegou. O telefone informado fica apenas como contato.");
   };
 
   const signIn = async () => {
@@ -154,14 +154,14 @@ export default function AuthGate() {
     if (!supabase) return;
     const { error: recoveryError } = await supabase!.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: window.location.origin + "/?flow=recovery" });
     if (recoveryError) throw recoveryError;
-    setNotice("Se houver uma conta para esse e-mail, enviaremos um link de recuperação.");
+    setNotice("Se houver uma conta para esse e-mail, a solicitação de recuperação foi aceita. A entrega do link depende da configuração do serviço de e-mail; esta tela não confirma que a mensagem chegou.");
   };
 
   const resendConfirmation = async () => {
     if (!supabase) return;
     const { error: resendError } = await supabase!.auth.resend({ type: "signup", email: email.trim().toLowerCase(), options: { emailRedirectTo: window.location.origin } });
     if (resendError) throw resendError;
-    setNotice("Se a confirmação ainda estiver pendente, enviaremos um novo link para o e-mail informado.");
+    setNotice("Se a confirmação ainda estiver pendente, a solicitação de reenvio foi aceita. A entrega depende da configuração do serviço de e-mail; esta tela não confirma que a mensagem chegou.");
   };
 
   const updatePassword = async () => {

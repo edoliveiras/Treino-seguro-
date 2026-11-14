@@ -63,7 +63,7 @@ describe("fluxos de segurança da interface", () => {
     expect(screen.getByRole("button", { name: /Concluir avaliação/ })).toHaveProperty("disabled", true);
   });
 
-  it("bloqueia concluir a avaliação com objetivo de corrida e IMC estimado igual ou maior que 35", () => {
+  it("permite concluir a avaliação, mas bloqueia o treino automático de corrida quando o IMC estimado é igual ou maior que 35", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "Avaliação" }));
     fireEvent.change(screen.getByLabelText("Peso atual (kg)"), { target: { value: "100" } });
@@ -71,8 +71,13 @@ describe("fluxos de segurança da interface", () => {
     fireEvent.change(screen.getByLabelText("Objetivo"), { target: { value: "Começar a correr" } });
     fireEvent.click(screen.getByText("Confirmo que tenho 18 anos ou mais.").previousElementSibling as HTMLInputElement);
     fireEvent.click(screen.getByText(/Compreendo que o app é educativo/).previousElementSibling as HTMLInputElement);
+
     expect(screen.getByText("Corrida não liberada nesta etapa")).toBeTruthy();
-    expect(screen.getByRole("button", { name: /Concluir avaliação/ })).toHaveProperty("disabled", true);
+    const completeButton = screen.getByRole("button", { name: /Concluir avaliação/ });
+    expect(completeButton).toHaveProperty("disabled", false);
+    fireEvent.click(completeButton);
+
+    expect(screen.getByText("Comece com segurança")).toBeTruthy();
   });
 
   it("mantém Nenhuma exclusiva no formulário de limitações", () => {

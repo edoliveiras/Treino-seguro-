@@ -417,7 +417,6 @@ $training_removal$;
 reset role;
 
 -- New embedded image data is rejected; no existing user data is modified by this test.
-set role service_role;
 do $food_photo_storage_guard$
 declare
   v_denied boolean := false;
@@ -451,6 +450,5 @@ begin
   end if;
 end;
 $food_photo_storage_guard$;
-reset role;
 
 select 'account_security_health_data_and_training_sql_tests_passed' as result;

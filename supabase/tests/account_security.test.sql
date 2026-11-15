@@ -50,6 +50,7 @@ grant execute on function auth.uid(), auth.role(), auth.jwt() to anon, authentic
 \ir ../migrations/20261109181208_atomic_plan_save_preserve_history.sql
 \ir ../migrations/20261109181919_one_completion_per_exercise_per_day.sql
 \ir ../migrations/20261109182011_persist_example_workout_history.sql
+\ir ../migrations/20261115174400_prevent_new_embedded_food_photo_data.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),
@@ -413,6 +414,43 @@ begin
   end if;
 end;
 $training_removal$;
+reset role;
+
+-- New embedded image data is rejected; no existing user data is modified by this test.
+set role service_role;
+do $food_photo_storage_guard$
+declare
+  v_denied boolean := false;
+begin
+  begin
+    insert into public.health_data_records(user_id,payload)
+    values (
+      '00000000-0000-4000-8000-000000000005',
+      '{"foodLogs":[{"id":"new-photo","photo":"data:image/jpeg;base64,AA=="}]}'::jsonb
+    );
+  exception when insufficient_privilege then
+    v_denied := true;
+  end;
+  if not v_denied then
+    raise exception 'embedded_food_photo_insert_was_not_blocked';
+  end if;
+
+  insert into public.health_data_records(user_id,payload)
+  values ('00000000-0000-4000-8000-000000000005','{"foodLogs":[]}'::jsonb);
+
+  v_denied := false;
+  begin
+    update public.health_data_records
+    set payload='{"foodLogs":[{"id":"new-photo","photo":"data:image/jpeg;base64,AA=="}]}'::jsonb
+    where user_id='00000000-0000-4000-8000-000000000005';
+  exception when insufficient_privilege then
+    v_denied := true;
+  end;
+  if not v_denied then
+    raise exception 'embedded_food_photo_update_was_not_blocked';
+  end if;
+end;
+$food_photo_storage_guard$;
 reset role;
 
 select 'account_security_health_data_and_training_sql_tests_passed' as result;

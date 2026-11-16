@@ -7,7 +7,7 @@
 - Inclui avaliação educativa, filtros por grupos musculares e modalidades, biblioteca de exercícios, diário alimentar, registros de evolução e informações científicas.
 - A avaliação considera idade declarada, peso, altura, objetivo, disponibilidade, local, nível, dores e condições informadas. IMC é apenas triagem; não é diagnóstico.
 - Dor ou limitação não gera diagnóstico nem prescrição automática; a biblioteca oculta movimentos classificados com alerta compatível e o montador de treino exige avaliação individual quando necessário.
-- O diário alimentar permite registrar refeições. Fotos de alimentos são opcionais; armazenamento e exclusão precisam ser homologados no ambiente real antes de uso público.
+- O diário alimentar permite registrar refeições em texto. O envio de fotos de alimentos está temporariamente desabilitado até a integração do cliente com Storage privado e a homologação de consentimento, exclusão e retenção.
 
 ## 2. Cadastro e acesso
 - O código contém cadastro, login por e-mail e senha, confirmação por e-mail, reenvio do link, recuperação e redefinição de senha.
@@ -34,7 +34,7 @@
 - O painel não deve exibir avaliações, refeições, peso, medidas ou outros dados de saúde.
 
 ## 5. Testes e validação
-- Última execução do CI verificada em 15/11/2026: o único trabalho e todas as etapas foram concluídos com sucesso: instalação, `npm test`, `npm run build`, verificação de tipos da função administrativa e teste SQL das migrações. O resumo da execução não expôs a contagem de testes; não reutilizar os 44 testes de uma execução anterior como resultado atual. O SQL roda em PostgreSQL temporário com stubs mínimos de Supabase Auth, portanto é simulado e não substitui testes no banco real.
+- Última execução do CI concluída em 16/11/2026 após a recuperação das fontes das funções: instalação, `npm test`, `npm run build`, verificação de tipos de `admin-account` e teste SQL simulado passaram. O resumo não expôs a contagem de testes. A configuração do fluxo foi ampliada para verificar também os tipos das três funções de privacidade recuperadas; essa ampliação aguarda a próxima execução.
 - Os testes SQL usam stubs mínimos de Supabase Auth em PostgreSQL temporário. São testes automatizados simulados; não comprovam que as migrações estejam aplicadas no Supabase real.
 - Os testes de interface foram atualizados para refletir o filtro atual da biblioteca e o caminho correto para marcar exercícios no plano.
 - Ainda faltam testes reais de cadastro, confirmação de e-mail, recuperação, isolamento entre duas contas, consentimento, revogação, exclusão e ações administrativas no Supabase de homologação.
@@ -68,5 +68,5 @@ O telefone é apenas contato. O projeto não deve configurar, chamar, integrar o
 
 ### Pendências e recomendações
 - A proteção do Supabase Auth contra senhas vazadas continua desativada segundo o verificador de segurança. Recomenda-se ativá-la antes de abrir o cadastro ao público; essa configuração não pôde ser alterada pela conexão disponível.
-- Ainda não há alunos reais cadastrados no projeto para um teste de ponta a ponta com contas de produção. Os testes de isolamento foram feitos com contas temporárias em transação revertida.
-- A última execução do fluxo automático foi concluída com sucesso em 11/11/2026: testes, compilação, verificação de tipos da função administrativa e testes SQL simulados passaram.
+- Há 4 contas cadastradas, mas ainda faltam testes ponta a ponta recentes com contas reais para cadastro, confirmação, recuperação, isolamento, consentimento, exportação, exclusão e ações administrativas. O teste transacional anterior de isolamento entre dois alunos foi revertido.
+- A execução automática de 16/11/2026 após a recuperação das fontes passou em testes, compilação, verificação da função administrativa e SQL simulado. A nova verificação de tipos das três funções de privacidade foi adicionada ao fluxo e ainda precisa ser confirmada na próxima execução.

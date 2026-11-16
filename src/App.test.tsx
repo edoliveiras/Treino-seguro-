@@ -146,6 +146,15 @@ describe("fluxos de segurança da interface", () => {
 
 
 
+
+it("informa que fotos de alimentos estão desativadas até a integração do armazenamento privado", () => {
+  render(<App />);
+  fireEvent.click(screen.getByRole("button", { name: "Evolução" }));
+  expect(screen.getByText(/O envio de fotos está temporariamente desativado nesta versão/)).toBeTruthy();
+  expect(screen.getByText("Desativadas")).toBeTruthy();
+  expect(screen.queryByText(/você pode fotografar a refeição/)).toBeNull();
+});
+
 describe("acessibilidade de navegação", () => {
   it("oferece atalho de teclado e informa a seção ativa", () => {
     render(<App />);

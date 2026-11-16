@@ -68,7 +68,7 @@ Dados de saúde só podem ser gravados se a finalidade estiver documentada e hou
 
 O campo `payload` deve ter esquema validado no servidor por tipo; não aceitar JSON arbitrário ou conteúdo ilimitado. Avaliar separar refeições e medidas em tabelas próprias para aplicar retenção e permissões específicas.
 
-**Não criar tabela de fotos agora.** Se o recurso for aprovado futuramente, usar bucket privado, caminhos imprevisíveis por usuário, limites de tipo/tamanho, verificação de conteúdo, URLs assinadas de curta duração e exclusão coordenada de metadados e objetos.
+Já existe um bucket privado `food-photos` e funções de consentimento, exclusão e exportação implantadas. Porém, o cliente ainda não integra o Storage e não há objetos no bucket; por isso o envio de fotos está desabilitado. Há um registro legado com imagem embutida que foi preservado e não deve ser ampliado. Antes de reativar o recurso, integrar caminhos por usuário, limites de tipo/tamanho, validação de conteúdo, URLs assinadas curtas e exclusão coordenada de metadados e objetos.
 
 ## 4. RLS — regras obrigatórias
 

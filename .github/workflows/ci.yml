@@ -34,6 +34,12 @@ jobs:
       - run: npm run build
       - name: Type-check administrative Edge Function
         run: deno check --no-lock supabase/functions/admin-account/index.ts
+      - name: Type-check food-photo-consent Edge Function
+        run: deno check --no-lock supabase/functions/food-photo-consent/index.ts
+      - name: Type-check delete-my-account Edge Function
+        run: deno check --no-lock supabase/functions/delete-my-account/index.ts
+      - name: Type-check export-my-data Edge Function
+        run: deno check --no-lock supabase/functions/export-my-data/index.ts
       - name: Test account and health-data database migrations
         env:
           PGPASSWORD: postgres

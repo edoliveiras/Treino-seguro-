@@ -24,7 +24,7 @@ Status: o código contém cadastro e login por e-mail, confirmação por e-mail,
 - O acesso depende de papel administrativo armazenado em app_metadata, não de um campo editável pelo usuário.
 - A interface permite consultar dados cadastrais e solicitar suspensão, reativação ou exclusão.
 - As operações privilegiadas são executadas por Edge Function no servidor e conferidas novamente no banco.
-- A Edge Function administrativa ainda precisa ser implantada e testada no Supabase real.
+- A Edge Function `admin-account` está implantada e exige JWT. As funções `food-photo-consent`, `delete-my-account` e `export-my-data` também estão ativas; seus arquivos-fonte foram recuperados para o repositório em 16/11/2026. As operações ainda precisam de testes ponta a ponta com contas reais.
 - O primeiro administrador deve ser criado por procedimento restrito à service_role, sem expor essa chave ao navegador.
 
 ## Migrações e compatibilidade

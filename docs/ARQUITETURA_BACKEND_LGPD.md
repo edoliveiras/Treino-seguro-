@@ -1,6 +1,6 @@
 # Arquitetura proposta — backend, segurança e LGPD
 
-Status: especificação técnica inicial; **não implementada nem implantada**. Não habilitar persistência de dados de saúde com base apenas neste documento.
+Status em 16/11/2026: implementação parcial. Existe projeto Supabase dedicado ativo, autenticação por e-mail, tabelas com RLS, função administrativa e funções de privacidade implantadas. A homologação real, as revisões clínica/jurídica e a revisão independente de segurança continuam pendentes. O envio de fotos de alimentos está desabilitado no cliente até integrar o Storage privado; não habilitar persistência adicional de dados de saúde com base apenas neste documento.
 
 ## 1. Princípios
 

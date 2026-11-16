@@ -1,5 +1,5 @@
 # ESTADO DO PROJETO — Treino Seguro
-Última atualização: 11/11/2026
+Última atualização: 16/11/2026
 
 ## 1. Aplicativo
 - Aplicativo web em português, responsivo e mobile-first, destinado a adultos (18+), desenvolvido em React, TypeScript e Vite.
@@ -21,11 +21,11 @@
 - O código inclui migrações de contas, consentimentos, administração e registros de saúde, com políticas RLS para limitar dados à própria conta ativa e com consentimento vigente.
 - A migração mais recente renomeia o telefone para campo de contato, remove sua função de identificador único e revoga o acesso aos artefatos históricos de verificação telefônica, sem apagar dados dessas tabelas.
 - O código implementa sincronização de dados pessoais somente após autorização específica de dados de saúde. A revogação deve impedir novas leituras e gravações.
-- Verificação direta em 11/11/2026: o projeto Supabase dedicado está ativo e saudável na região us-east-1 (Leste dos EUA). As 24 migrações versionadas estão registradas no banco; há 2 contas de autenticação, ambas com e-mail confirmado, 1 administrador e 2 perfis. As sete tabelas principais de perfis, consentimentos, registros de saúde e treinos estão com RLS habilitado.
-- A função Edge `admin-account` está implantada e ativa, com verificação JWT obrigatória. A consulta não expôs nem alterou segredos.
+- Verificação direta em 16/11/2026: o projeto Supabase dedicado está ativo e saudável na região us-east-1. O banco registra 29 migrações; o repositório contém 25 arquivos de migração, portanto quatro scripts históricos aplicados ainda não foram recuperados. Há 4 contas de autenticação/perfis (3 com e-mail confirmado e 1 pendente), 1 administrador; as sete tabelas principais estão com RLS ativo. Foram observadas 27 políticas no esquema public e 4 políticas em storage.objects. Existem 3 registros de saúde, dos quais 1 ainda contém uma foto antiga codificada; o bucket privado food-photos está ativo e sem objetos.
+- As funções Edge `admin-account`, `food-photo-consent`, `delete-my-account` e `export-my-data` estão ativas com verificação JWT obrigatória. Em 16/11/2026, as fontes das três últimas foram recuperadas do ambiente implantado e incluídas no repositório; suas operações ainda precisam de testes ponta a ponta. A consulta não expôs nem alterou segredos.
 - O banco está hospedado fora do Brasil; a transferência internacional de dados precisa ser avaliada na revisão jurídica/LGPD.
 - Não foi comprovada a entrega real de e-mails nem a configuração efetiva de SMTP, templates e URLs de retorno. Cadastro, confirmação, reenvio e recuperação ainda precisam de homologação com caixas de e-mail controladas.
-- Fotos dos alimentos podem ser sincronizadas dentro do registro privado de saúde após consentimento específico; fotos de evolução não estão habilitadas.
+- O envio de fotos de alimentos está temporariamente desabilitado no cliente. O banco bloqueia novos dados de imagem embutidos nos registros; o único registro legado com imagem foi preservado. O bucket privado existe, mas ainda não há objetos e a integração do cliente ao Storage não está concluída. Fotos de evolução continuam desabilitadas.
 
 ## 4. Administração
 - Existe painel de administração restrito a contas com papel administrativo no token de autenticação.
@@ -34,7 +34,7 @@
 - O painel não deve exibir avaliações, refeições, peso, medidas ou outros dados de saúde.
 
 ## 5. Testes e validação
-- Última execução do CI em 11/11/2026: o único trabalho e todas as etapas foram concluídos com sucesso. `npm test`: 9 arquivos e 44 testes aprovados; `npm run build`: aprovado; verificação de tipos da função administrativa: aprovada; teste SQL das migrações: aprovado. O SQL roda em PostgreSQL temporário com stubs mínimos do Supabase Auth, portanto é simulado e não substitui testes no banco real. O build registrou apenas avisos de bundle acima de 500 kB e depreciação do módulo `punycode`.
+- Última execução do CI verificada em 15/11/2026: o único trabalho e todas as etapas foram concluídos com sucesso: instalação, `npm test`, `npm run build`, verificação de tipos da função administrativa e teste SQL das migrações. O resumo da execução não expôs a contagem de testes; não reutilizar os 44 testes de uma execução anterior como resultado atual. O SQL roda em PostgreSQL temporário com stubs mínimos de Supabase Auth, portanto é simulado e não substitui testes no banco real.
 - Os testes SQL usam stubs mínimos de Supabase Auth em PostgreSQL temporário. São testes automatizados simulados; não comprovam que as migrações estejam aplicadas no Supabase real.
 - Os testes de interface foram atualizados para refletir o filtro atual da biblioteca e o caminho correto para marcar exercícios no plano.
 - Ainda faltam testes reais de cadastro, confirmação de e-mail, recuperação, isolamento entre duas contas, consentimento, revogação, exclusão e ações administrativas no Supabase de homologação.
@@ -62,7 +62,7 @@ O telefone é apenas contato. O projeto não deve configurar, chamar, integrar o
 - O painel privado do administrador inclui criação/edição/cópia de planos, busca e filtros, atribuição para vários alunos, substituição e remoção de atribuições e diretório cadastral com nome, e-mail, telefone de contato, nível e treino atual.
 - As migrações das tabelas de treino, atribuições, histórico, políticas RLS e funções administrativas foram aplicadas ao Supabase. A conta proprietária está com papel administrativo confirmado.
 - Teste transacional no Supabase, com duas contas temporárias: o aluno A leu o próprio treino e registrou conclusão; o aluno B não conseguiu ler nem escrever no treino do aluno A. A edição do plano e a preservação do histórico são verificadas pelo teste SQL simulado do CI; não foram confirmadas em teste transacional real no Supabase. A massa do teste real de isolamento foi revertida; não ficaram contas, planos ou conclusões de teste.
-- A implantação de produção mais recente está marcada como pronta e o domínio principal está associado a ela. Isso confirma hospedagem/publicação técnica, mas não substitui o teste final de navegação, cadastro e e-mail.
+- Verificação em 16/11/2026: a implantação de produção ligada ao estado atual da branch principal está pronta; não foram encontrados erros de execução agregados nas últimas 24 horas. Isso confirma hospedagem/publicação técnica, mas não substitui o teste final de navegação, cadastro e e-mail.
 - Fotos dos exemplos são ilustrativas; o atalho de fotos abre uma busca específica e o YouTube abre uma busca pelo nome simples/técnico. O professor pode cadastrar links diretos de foto e vídeo no editor.
 - O telefone permanece somente como dado de contato, sem envio de mensagens, SMS ou autenticação por telefone.
 

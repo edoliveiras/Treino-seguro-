@@ -28,6 +28,7 @@ O CI executa testes do aplicativo, compilação, verificação de tipos da funç
 - Dor no peito, falta de ar intensa/incomum, tontura, desmaio, fraqueza/formigamento novo ou dor forte/piorando exigem interrupção e avaliação.
 - Cadastro e login usam e-mail e senha, com liberação após confirmação do e-mail. O telefone informado é somente um dado de contato; não há confirmação por telefone nem integração com serviços de mensagens ou SMS.
 - Avaliações, treinos, refeições, peso e medidas podem ser sincronizados na conta somente após autorização específica de dados de saúde. RLS limita leitura e gravação à própria conta, ativa e com e-mail confirmado; retirar a autorização bloqueia novas leituras/gravações. Fotos de evolução ainda não têm upload ou armazenamento habilitado.
+- Fotos de alimentos estão temporariamente desabilitadas no cliente. O banco rejeita novas imagens codificadas diretamente nos registros; o bucket privado está preparado, mas a integração do aplicativo ao Storage ainda não foi homologada. Um registro antigo com imagem foi preservado e não deve ser considerado parte de um fluxo ativo.
 - As telas iniciais de Termos e Política exigem revisão jurídica antes da publicação. Não use o aplicativo como serviço clínico ou para inserir dados sensíveis reais até concluir homologação e revisão.
 
 ## Fontes

@@ -34,7 +34,7 @@
 - O painel não deve exibir avaliações, refeições, peso, medidas ou outros dados de saúde.
 
 ## 5. Testes e validação
-- Última execução do CI concluída em 16/11/2026 após a recuperação das fontes das funções: instalação, `npm test`, `npm run build`, verificação de tipos de `admin-account` e teste SQL simulado passaram. O resumo não expôs a contagem de testes. A configuração do fluxo foi ampliada para verificar também os tipos das três funções de privacidade recuperadas; essa ampliação aguarda a próxima execução.
+- Última execução do CI concluída em 16/11/2026: o trabalho único e todas as etapas passaram: instalação, `npm test`, `npm run build`, verificação de tipos das quatro funções Edge (`admin-account`, `food-photo-consent`, `delete-my-account` e `export-my-data`) e teste SQL das migrações disponíveis. O resumo não expôs a contagem de testes. O SQL usa PostgreSQL temporário com stubs mínimos de Supabase Auth e carrega os 25 arquivos de migração presentes; não cobre os quatro scripts históricos ausentes nem substitui testes reais no Supabase.
 - Os testes SQL usam stubs mínimos de Supabase Auth em PostgreSQL temporário. São testes automatizados simulados; não comprovam que as migrações estejam aplicadas no Supabase real.
 - Os testes de interface foram atualizados para refletir o filtro atual da biblioteca e o caminho correto para marcar exercícios no plano.
 - Ainda faltam testes reais de cadastro, confirmação de e-mail, recuperação, isolamento entre duas contas, consentimento, revogação, exclusão e ações administrativas no Supabase de homologação.
@@ -69,4 +69,4 @@ O telefone é apenas contato. O projeto não deve configurar, chamar, integrar o
 ### Pendências e recomendações
 - A proteção do Supabase Auth contra senhas vazadas continua desativada segundo o verificador de segurança. Recomenda-se ativá-la antes de abrir o cadastro ao público; essa configuração não pôde ser alterada pela conexão disponível.
 - Há 4 contas cadastradas, mas ainda faltam testes ponta a ponta recentes com contas reais para cadastro, confirmação, recuperação, isolamento, consentimento, exportação, exclusão e ações administrativas. O teste transacional anterior de isolamento entre dois alunos foi revertido.
-- A execução automática de 16/11/2026 após a recuperação das fontes passou em testes, compilação, verificação da função administrativa e SQL simulado. A nova verificação de tipos das três funções de privacidade foi adicionada ao fluxo e ainda precisa ser confirmada na próxima execução.
+- A execução automática de 16/11/2026 passou nos testes, compilação, verificação de tipos das quatro funções Edge e SQL simulado.

@@ -18,13 +18,13 @@ create table storage.objects (
 );
 alter table storage.objects enable row level security;
 create function storage.foldername(name text) returns text[]
-language sql immutable as $
+language sql immutable as $body$
   select case
     when array_length(parts,1) > 1 then parts[1:array_length(parts,1)-1]
     else '{}'::text[]
   end
   from (select string_to_array(name,'/') as parts) s
-$;
+$body$;
 create role anon;
 create role authenticated;
 create role service_role;

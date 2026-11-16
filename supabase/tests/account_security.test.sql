@@ -1,10 +1,36 @@
--- Integration tests for the account and health-data migrations using a minimal Supabase Auth stub.
+-- Integration tests for account, health-data, training, and private food-photo migrations using minimal Supabase Auth and Storage stubs.
 -- This verifies PostgreSQL behavior in CI; it does not replace a real Supabase staging test.
 create schema auth;
 create schema extensions;
+
+create schema storage;
+create table storage.buckets (
+  id text primary key,
+  name text not null,
+  public boolean not null default false,
+  file_size_limit bigint,
+  allowed_mime_types text[]
+);
+create table storage.objects (
+  id bigint generated always as identity primary key,
+  bucket_id text not null,
+  name text not null
+);
+alter table storage.objects enable row level security;
+create function storage.foldername(name text) returns text[]
+language sql immutable as $
+  select case
+    when array_length(parts,1) > 1 then parts[1:array_length(parts,1)-1]
+    else '{}'::text[]
+  end
+  from (select string_to_array(name,'/') as parts) s
+$;
 create role anon;
 create role authenticated;
 create role service_role;
+grant usage on schema storage to anon, authenticated, service_role;
+grant execute on function storage.foldername(text) to authenticated, service_role;
+grant select, insert, update, delete on storage.objects to authenticated;
 create table auth.users (
   id uuid primary key,
   email text not null,
@@ -50,6 +76,10 @@ grant execute on function auth.uid(), auth.role(), auth.jwt() to anon, authentic
 \ir ../migrations/20261109181208_atomic_plan_save_preserve_history.sql
 \ir ../migrations/20261109181919_one_completion_per_exercise_per_day.sql
 \ir ../migrations/20261109182011_persist_example_workout_history.sql
+\ir ../migrations/20261111214532_private_food_photo_storage.sql
+\ir ../migrations/20261111214904_record_optional_food_photo_consent.sql
+\ir ../migrations/20261111215333_require_both_consents_for_food_photos.sql
+\ir ../migrations/20261111220005_require_active_account_for_food_photo_updates.sql
 \ir ../migrations/20261115175623_prevent_new_embedded_food_photo_data.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
@@ -80,8 +110,8 @@ begin
   if (select account_status from public.profiles where id='00000000-0000-4000-8000-000000000005') <> 'active' then
     raise exception 'email_confirmation_did_not_activate_account';
   end if;
-  if (select count(*) from public.account_consent_events where user_id='00000000-0000-4000-8000-000000000001') <> 2 then
-    raise exception 'required_consents_not_recorded';
+  if (select count(*) from public.account_consent_events where user_id='00000000-0000-4000-8000-000000000001') <> 4 then
+    raise exception 'required_and_optional_consents_not_recorded';
   end if;
 end $$;
 
@@ -451,4 +481,46 @@ begin
 end;
 $food_photo_storage_guard$;
 
-select 'account_security_health_data_and_training_sql_tests_passed' as result;
+
+-- Private food-photo storage must remain private, bounded, and consent-gated.
+do $food_photo_storage_migrations$
+declare
+  v_select text;
+  v_insert text;
+  v_update text;
+  v_update_check text;
+begin
+  if not exists (
+    select 1 from storage.buckets
+    where id='food-photos' and public=false
+      and file_size_limit=5242880
+      and allowed_mime_types=array['image/jpeg','image/png','image/webp']::text[]
+  ) then
+    raise exception 'private_food_photo_bucket_configuration_missing';
+  end if;
+  if not (select c.relrowsecurity from pg_class c join pg_namespace n on n.oid=c.relnamespace
+          where n.nspname='storage' and c.relname='objects') then
+    raise exception 'storage_objects_rls_not_enabled';
+  end if;
+  select qual into v_select from pg_policies
+    where schemaname='storage' and tablename='objects' and policyname='food_photos_read_own_with_consent';
+  select with_check into v_insert from pg_policies
+    where schemaname='storage' and tablename='objects' and policyname='food_photos_insert_own_with_consent';
+  select qual, with_check into v_update, v_update_check from pg_policies
+    where schemaname='storage' and tablename='objects' and policyname='food_photos_update_own_with_consent';
+  if v_select is null or v_select not like '%food_photos%' or v_select not like '%health_data%' or v_select not like '%account_status%' then
+    raise exception 'food_photo_read_policy_missing_required_consents';
+  end if;
+  if v_insert is null or v_insert not like '%food_photos%' or v_insert not like '%health_data%' or v_insert not like '%account_status%' then
+    raise exception 'food_photo_insert_policy_missing_required_consents';
+  end if;
+  if v_update is null or v_update not like '%food_photos%' or v_update not like '%health_data%' or v_update not like '%account_status%' then
+    raise exception 'food_photo_update_policy_missing_required_consents';
+  end if;
+  if v_update_check is null or v_update_check not like '%food_photos%' or v_update_check not like '%health_data%' or v_update_check not like '%account_status%' then
+    raise exception 'food_photo_update_check_missing_required_consents';
+  end if;
+end;
+$food_photo_storage_migrations$;
+
+select 'account_security_health_data_training_and_private_photo_sql_tests_passed' as result;

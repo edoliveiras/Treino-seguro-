@@ -3,13 +3,11 @@
 Verificação de 16/11/2026:
 
 - O Supabase registra 29 migrações aplicadas.
-- O repositório contém 25 arquivos SQL.
-- Quatro migrações aplicadas não têm o arquivo-fonte no histórico atual do repositório:
-  - `20261111214532_private_food_photo_storage`
-  - `20261111214904_record_optional_food_photo_consent`
-  - `20261111215333_require_both_consents_for_food_photos`
-  - `20261111220005_require_active_account_for_food_photo_updates`
+- O repositório agora contém os 29 arquivos SQL correspondentes.
+- Quatro arquivos que faltavam foram recuperados exatamente do campo `statements` do registro `supabase_migrations.schema_migrations` do projeto Supabase:
+  - `20261111214532_private_food_photo_storage.sql`
+  - `20261111214904_record_optional_food_photo_consent.sql`
+  - `20261111215333_require_both_consents_for_food_photos.sql`
+  - `20261111220005_require_active_account_for_food_photo_updates.sql`
 
-As versões e nomes foram confirmados pela lista de migrações do banco. A busca no histórico do repositório não encontrou cópias desses arquivos.
-
-**Não criar arquivos substitutos por suposição, não reaplicar essas migrações e não alterar o banco para tentar igualar contagens.** Recuperar os scripts originais de um backup confiável ou do ambiente de desenvolvimento que os gerou. Até lá, novas alterações devem ser aditivas, revisadas e testadas em ambiente separado.
+A recuperação foi somente de código-fonte. **Essas migrações não foram reaplicadas e o banco não foi alterado.** O teste SQL automatizado foi atualizado para carregar os 29 arquivos em PostgreSQL temporário com stubs mínimos de Supabase Auth e Storage. O resultado desse teste continua sendo simulado e não substitui a homologação no Supabase real.

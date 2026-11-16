@@ -34,7 +34,7 @@
 - O painel não deve exibir avaliações, refeições, peso, medidas ou outros dados de saúde.
 
 ## 5. Testes e validação
-- Última execução do CI concluída em 16/11/2026: o trabalho único e todas as etapas passaram: instalação, `npm test`, `npm run build`, verificação de tipos das quatro funções Edge (`admin-account`, `food-photo-consent`, `delete-my-account` e `export-my-data`) e teste SQL das migrações disponíveis. O resumo não expôs a contagem de testes. O SQL usa PostgreSQL temporário com stubs mínimos de Supabase Auth e Storage e agora carrega os 29 arquivos de migração em ordem; a nova cobertura aguarda confirmação da execução automática. O teste continua simulado e não substitui testes reais no Supabase.
+- Última execução do CI concluída em 16/11/2026: o trabalho único e todas as etapas passaram: instalação, `npm test`, `npm run build`, verificação de tipos das quatro funções Edge (`admin-account`, `food-photo-consent`, `delete-my-account` e `export-my-data`) e teste SQL das 29 migrações em ordem. O resumo não expôs a contagem de testes. O SQL usa PostgreSQL temporário com stubs mínimos de Supabase Auth e Storage; continua sendo teste automatizado simulado e não substitui testes reais no Supabase.
 - Os testes SQL usam stubs mínimos de Supabase Auth em PostgreSQL temporário. São testes automatizados simulados; não comprovam que as migrações estejam aplicadas no Supabase real.
 - Os testes de interface foram atualizados para refletir o filtro atual da biblioteca e o caminho correto para marcar exercícios no plano.
 - Ainda faltam testes reais de cadastro, confirmação de e-mail, recuperação, isolamento entre duas contas, consentimento, revogação, exclusão e ações administrativas no Supabase de homologação.

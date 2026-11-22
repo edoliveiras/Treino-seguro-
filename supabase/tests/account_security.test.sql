@@ -82,6 +82,7 @@ grant execute on function auth.uid(), auth.role(), auth.jwt() to anon, authentic
 \ir ../migrations/20261111220005_require_active_account_for_food_photo_updates.sql
 \ir ../migrations/20261115175623_prevent_new_embedded_food_photo_data.sql
 \ir ../migrations/20261122174553_require_active_verified_admin_for_account_actions.sql
+\ir ../migrations/20261122175003_require_active_verified_admin_for_training_access.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),
@@ -392,6 +393,38 @@ end $rls$;
 reset request.jwt.claim.role;
 reset request.jwt.claim.sub;
 reset request.jwt.claims;
+
+-- A suspended administrator with a stale admin JWT must lose all training RLS access.
+update public.profiles set account_status='suspended'
+where id='00000000-0000-4000-8000-000000000001';
+set role authenticated;
+set request.jwt.claim.role = 'authenticated';
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
+do $suspended_admin_training_denied$
+declare
+  v_denied boolean := false;
+begin
+  if public.is_treino_admin() then
+    raise exception 'suspended_admin_still_has_admin_flag';
+  end if;
+  if (select count(*) from public.workout_plans) <> 0 then
+    raise exception 'suspended_admin_can_read_training_library';
+  end if;
+  begin
+    insert into public.workout_plans(id,title,level,split_type,description,created_by)
+    values ('10000000-0000-4000-8000-000000000009','Plano bloqueado','Iniciante','Corpo inteiro','Não deve ser criado','00000000-0000-4000-8000-000000000001');
+  exception when insufficient_privilege then
+    v_denied := true;
+  end;
+  if not v_denied then
+    raise exception 'suspended_admin_created_workout_plan';
+  end if;
+end;
+$suspended_admin_training_denied$;
+reset role;
+update public.profiles set account_status='active'
+where id='00000000-0000-4000-8000-000000000001';
 
 -- Treinos: o professor cria e atribui; cada aluno só lê e registra o próprio treino.
 set role authenticated;

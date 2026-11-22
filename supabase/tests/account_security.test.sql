@@ -81,6 +81,7 @@ grant execute on function auth.uid(), auth.role(), auth.jwt() to anon, authentic
 \ir ../migrations/20261111215333_require_both_consents_for_food_photos.sql
 \ir ../migrations/20261111220005_require_active_account_for_food_photo_updates.sql
 \ir ../migrations/20261115175623_prevent_new_embedded_food_photo_data.sql
+\ir ../migrations/20261122174252_require_active_verified_admin_for_account_actions.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),
@@ -278,6 +279,81 @@ end
 $health_revoke$;
 reset role;
 update public.profiles set account_status='active'
+where id='00000000-0000-4000-8000-000000000001';
+
+-- A stale administrator token must not authorize actions after suspension.
+update public.profiles set account_status='suspended'
+where id='00000000-0000-4000-8000-000000000001';
+set role service_role;
+set request.jwt.claim.role = 'service_role';
+do $suspended_admin_denied$
+declare
+  v_denied boolean := false;
+begin
+  begin
+    perform public.admin_set_account_status(
+      '00000000-0000-4000-8000-000000000001',
+      '00000000-0000-4000-8000-000000000003',
+      'suspend'
+    );
+  exception when insufficient_privilege then
+    v_denied := true;
+  end;
+  if not v_denied then raise exception 'suspended_admin_changed_account_status'; end if;
+
+  v_denied := false;
+  begin
+    perform public.admin_delete_account(
+      '00000000-0000-4000-8000-000000000001',
+      '00000000-0000-4000-8000-000000000003'
+    );
+  exception when insufficient_privilege then
+    v_denied := true;
+  end;
+  if not v_denied then raise exception 'suspended_admin_deleted_account'; end if;
+  if not exists (select 1 from auth.users where id='00000000-0000-4000-8000-000000000003') then
+    raise exception 'denied_admin_action_changed_target_account';
+  end if;
+end;
+$suspended_admin_denied$;
+reset role;
+update public.profiles set account_status='active'
+where id='00000000-0000-4000-8000-000000000001';
+
+-- An administrator without a current profile email verification is also denied.
+update public.profiles set email_verified_at=null
+where id='00000000-0000-4000-8000-000000000001';
+set role service_role;
+set request.jwt.claim.role = 'service_role';
+do $unverified_admin_denied$
+declare
+  v_denied boolean := false;
+begin
+  begin
+    perform public.admin_set_account_status(
+      '00000000-0000-4000-8000-000000000001',
+      '00000000-0000-4000-8000-000000000003',
+      'suspend'
+    );
+  exception when insufficient_privilege then
+    v_denied := true;
+  end;
+  if not v_denied then raise exception 'unverified_admin_changed_account_status'; end if;
+
+  v_denied := false;
+  begin
+    perform public.admin_delete_account(
+      '00000000-0000-4000-8000-000000000001',
+      '00000000-0000-4000-8000-000000000003'
+    );
+  exception when insufficient_privilege then
+    v_denied := true;
+  end;
+  if not v_denied then raise exception 'unverified_admin_deleted_account'; end if;
+end;
+$unverified_admin_denied$;
+reset role;
+update public.profiles set email_verified_at=now()
 where id='00000000-0000-4000-8000-000000000001';
 
 -- Privileged actions are performed only through service_role after server-side

@@ -312,12 +312,18 @@ begin
     v_denied := true;
   end;
   if not v_denied then raise exception 'suspended_admin_deleted_account'; end if;
+end;
+$suspended_admin_denied$;
+reset role;
+do $suspended_admin_target_preserved$
+begin
+  -- Check the target through the migration-test owner role; service_role
+  -- intentionally has no direct SELECT permission on auth.users.
   if not exists (select 1 from auth.users where id='00000000-0000-4000-8000-000000000003') then
     raise exception 'denied_admin_action_changed_target_account';
   end if;
 end;
-$suspended_admin_denied$;
-reset role;
+$suspended_admin_target_preserved$;
 update public.profiles set account_status='active'
 where id='00000000-0000-4000-8000-000000000001';
 

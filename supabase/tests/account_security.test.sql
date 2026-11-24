@@ -83,6 +83,7 @@ grant execute on function auth.uid(), auth.role(), auth.jwt() to anon, authentic
 \ir ../migrations/20261115175623_prevent_new_embedded_food_photo_data.sql
 \ir ../migrations/20261122174553_require_active_verified_admin_for_account_actions.sql
 \ir ../migrations/20261122175003_require_active_verified_admin_for_training_access.sql
+\ir ../migrations/20261124180000_require_active_verified_admin_for_profile_directory.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),
@@ -430,6 +431,72 @@ end;
 $suspended_admin_training_denied$;
 reset role;
 update public.profiles set account_status='active'
+where id='00000000-0000-4000-8000-000000000001';
+
+-- An active, verified administrator can read the account directory.
+set role authenticated;
+set request.jwt.claim.role = 'authenticated';
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
+do $active_admin_profile_directory$
+begin
+  if (select count(*) from public.admin_account_directory) <> 5 then
+    raise exception 'active_admin_cannot_read_account_directory';
+  end if;
+end;
+$active_admin_profile_directory$;
+reset role;
+
+-- A stale administrator token must not read other profiles after account suspension.
+update public.profiles set account_status='suspended'
+where id='00000000-0000-4000-8000-000000000001';
+set role authenticated;
+set request.jwt.claim.role = 'authenticated';
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
+do $suspended_admin_profile_directory$
+declare
+  v_count integer;
+begin
+  if public.is_treino_admin() then
+    raise exception 'suspended_admin_still_has_admin_flag';
+  end if;
+  select count(*) into v_count from public.profiles;
+  if v_count <> 1 then
+    raise exception 'suspended_admin_can_read_other_profiles';
+  end if;
+  select count(*) into v_count from public.admin_account_directory;
+  if v_count <> 1 then
+    raise exception 'suspended_admin_can_read_account_directory';
+  end if;
+end;
+$suspended_admin_profile_directory$;
+reset role;
+update public.profiles set account_status='active'
+where id='00000000-0000-4000-8000-000000000001';
+
+-- Loss of email confirmation must also remove directory access despite a stale admin JWT.
+update auth.users set email_confirmed_at=null
+where id='00000000-0000-4000-8000-000000000001';
+set role authenticated;
+set request.jwt.claim.role = 'authenticated';
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
+do $unverified_admin_profile_directory$
+declare
+  v_count integer;
+begin
+  if public.is_treino_admin() then
+    raise exception 'unverified_admin_still_has_admin_flag';
+  end if;
+  select count(*) into v_count from public.admin_account_directory;
+  if v_count <> 1 then
+    raise exception 'unverified_admin_can_read_account_directory';
+  end if;
+end;
+$unverified_admin_profile_directory$;
+reset role;
+update auth.users set email_confirmed_at=now()
 where id='00000000-0000-4000-8000-000000000001';
 
 -- Treinos: o professor cria e atribui; cada aluno só lê e registra o próprio treino.

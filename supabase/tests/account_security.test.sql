@@ -83,7 +83,7 @@ grant execute on function auth.uid(), auth.role(), auth.jwt() to anon, authentic
 \ir ../migrations/20261115175623_prevent_new_embedded_food_photo_data.sql
 \ir ../migrations/20261122174553_require_active_verified_admin_for_account_actions.sql
 \ir ../migrations/20261122175003_require_active_verified_admin_for_training_access.sql
-\ir ../migrations/20261124180000_require_active_verified_admin_for_profile_directory.sql
+\ir ../migrations/20261124172610_require_active_verified_admin_for_profile_directory.sql
 
 insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
 ('00000000-0000-4000-8000-000000000001','adult1@example.test',now(),

@@ -445,7 +445,8 @@ set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
 set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
 do $active_admin_profile_directory$
 begin
-  if (select count(*) from public.admin_account_directory) <> 5 then
+  -- Account 2 was deleted by the preceding admin lifecycle test.
+  if (select count(*) from public.admin_account_directory) <> 4 then
     raise exception 'active_admin_cannot_read_account_directory';
   end if;
 end;

@@ -194,8 +194,11 @@ grant select, insert on public.account_consent_events to authenticated;
 grant select on public.admin_account_directory to authenticated;
 set role authenticated;
 set request.jwt.claim.role = 'authenticated';
-set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
-set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"user"}}';
+-- Use a real non-admin database identity here. User 1 is promoted in auth.users
+-- above, and is_treino_admin() deliberately checks that current database state
+-- instead of trusting a downgraded/stale JWT claim.
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000002';
+set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000002","role":"authenticated","app_metadata":{"role":"user"}}';
 do $rls$
 declare
   v_denied boolean := false;
@@ -211,13 +214,15 @@ begin
   if not v_denied then raise exception 'authenticated_user_can_read_admin_audit'; end if;
   v_denied := false;
   begin
-    perform public.admin_set_account_status('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000003','suspend');
+    perform public.admin_set_account_status('00000000-0000-4000-8000-000000000002','00000000-0000-4000-8000-000000000003','suspend');
   exception when insufficient_privilege then
     v_denied := true;
   end;
   if not v_denied then raise exception 'non_admin_changed_account_status'; end if;
 end $rls$;
 
+-- Restore the verified administrator identity for the directory check.
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
 set request.jwt.claims = '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"role":"admin"}}';
 do $rls$
 begin
